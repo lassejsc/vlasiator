@@ -30,16 +30,16 @@ jobs:
           cd $GITHUB_WORKSPACE
           #chmod +x ./.github/workflows/CI_git_diff.sh
           if [[ $(./.github/workflows/CI_git_diff.sh) = "run_test" ]]; then
-            echo "RUN_TP=True" >> $GITHUB_OUTPUT
+            echo "RUN_TP=False" >> $GITHUB_OUTPUT
           fi
   get_git_diff_check:
     runs-on: ubuntu-latest
     needs: get_git_diff
-    if: ${{ needs.get_git_diff.outputs.RUN_TP != 'True' }}
+    if: ${{ needs.get_git_diff.outputs.RUN_TP != 'False' }}
     steps:
       - name: Checking whether to run tests
         run: |
-          echo "Running tests"
+          echo "Running testpackage test runs"
 
 
   build_libraries:
