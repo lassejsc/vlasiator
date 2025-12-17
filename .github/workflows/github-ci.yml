@@ -35,7 +35,7 @@ jobs:
   get_git_diff_check:
     runs-on: ubuntu-latest
     needs: get_git_diff
-    if: ${{ needs.get_git_diff.outputs.RUN_TP == 'True' }}
+    if: ${{ needs.get_git_diff.outputs.RUN_TP != 'True' }}
     steps:
       - name: Checking whether to run tests
         run: |
