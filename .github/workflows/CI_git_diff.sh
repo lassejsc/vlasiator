@@ -22,4 +22,3 @@ done
 if [[ $allowed_count == $full_count ]]; then
   echo "run_test"
 fi
-#if [[ $(./r.sh) = "run_test"  ]]; then echo "test"; fi
