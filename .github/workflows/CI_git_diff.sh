@@ -1,0 +1,25 @@
+
+#!/bin/bash 
+
+git_diff=$(git diff --name-only upstream/vlasiator_gpu...)
+declare -i full_count=$(echo $git_diff | wc -w)
+declare -a unallowed_strings=(".cpp\b" ".hpp\b" ".c\b" ".sh\b" )
+for unallowed_string in ${unallowed_strings[@]}
+do
+  if [[ $(echo $git_diff | grep -Po $unallowed_string) ]]; then
+    exit 0
+  fi
+done
+
+declare -a file_check=("\w+.md" "INSTALL" "CITATION.cff" "Doxyfile*" "\bdoc/")
+declare -i allowed_count=0
+
+for allowed_string in ${file_check[@]}
+do
+  diff="$(echo $git_diff | grep -Po $allowed_string | wc -w)"
+  allowed_count=$(( $allowed_count + $diff ))
+done
+if [[ $allowed_count == $full_count ]]; then
+  echo "run_test"
+fi
+#if [[ $(./r.sh) = "run_test"  ]]; then echo "test"; fi
