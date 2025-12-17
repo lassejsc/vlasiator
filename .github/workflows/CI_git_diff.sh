@@ -11,7 +11,7 @@ do
   fi
 done
 
-declare -a file_check=("\w+.md" "INSTALL" "CITATION.cff" "Doxyfile*" "\bdoc/")
+declare -a file_check=("\w+.md" "INSTALL" "CITATION.cff" "Doxyfile." "\bdoc/")
 declare -i allowed_count=0
 
 for allowed_string in ${file_check[@]}
@@ -22,3 +22,4 @@ done
 if [[ $allowed_count == $full_count ]]; then
   echo "run_test"
 fi
+
