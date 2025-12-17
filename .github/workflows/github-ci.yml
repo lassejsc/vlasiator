@@ -24,6 +24,8 @@ jobs:
         id: gitdiff
         run: |
           cd $GITHUB_WORKSPACE
+          echo $PWD
+          ls -lh
           chmod +x ./.github/workflows/CI_git_diff.sh
           if [[ $(./.github/workflows/CI_git_diff.sh) = "run_test" ]]; then
             echo "RUN_TP=True" >> $GITHUB_OUTPUT
