@@ -1,7 +1,7 @@
 
 #!/bin/bash 
 
-git_diff=$(git diff --name-only upstream/vlasiator_gpu...)
+git_diff=$(git diff --name-only origin/dev...)
 declare -i full_count=$(echo $git_diff | wc -w)
 declare -a unallowed_strings=(".cpp\b" ".hpp\b" ".c\b" ".sh\b" )
 for unallowed_string in ${unallowed_strings[@]}
