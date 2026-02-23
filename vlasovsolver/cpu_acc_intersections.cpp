@@ -162,7 +162,7 @@ void compute_intersections_1st(
         intersection_dj=intersection_0_1_0[dimension]-intersection_0_0_0[dimension];
         intersection_dk=intersection_0_0_1[dimension]-intersection_0_0_0[dimension];
     }
-    if (dimension == 1) { //Prepare intersections for mapping along Y first (mapping order Y-Z-X)
+    else if (dimension == 1) { //Prepare intersections for mapping along Y first (mapping order Y-Z-X)
         // Normal of Lagrangian planes
         const Eigen::Matrix<Real,3,1> plane_normal = bwd_transform.linear()*Eigen::Matrix<Real,3,1>(0.0, 1.0, 0.0); 
         // Point on lowest possible Lagrangian plane
@@ -193,7 +193,7 @@ void compute_intersections_1st(
         intersection_dk=intersection_0_0_1[dimension]-intersection_0_0_0[dimension];
     }
 
-    if (dimension == 2) {
+    else if (dimension == 2) {
         // This is the  case presented in the Slice 3D article
         // Prepare intersections for mapping along Z first (mapping order Z-X-Y)
         
@@ -287,7 +287,7 @@ void compute_intersections_2nd(
         intersection_dj = intersect_0_1_0[dimension] - intersect_0_0_0[dimension];
         intersection_dk = intersect_0_0_1[dimension] - intersect_0_0_0[dimension];
     }
-    if (dimension == 1) { //Prepare intersections for mapping along Y second (mapping order X-Y-Z)
+    else if (dimension == 1) { //Prepare intersections for mapping along Y second (mapping order X-Y-Z)
         // Normal of Euclidian z-plane
         const Eigen::Matrix<Real,3,1> plane_normal = Eigen::Matrix<Real,3,1>(0.0, 0.0, 1.0);
         
@@ -324,7 +324,7 @@ void compute_intersections_2nd(
         intersection_dk = intersect_0_0_1[dimension] - intersect_0_0_0[dimension];
    
     }    
-    if (dimension == 2) { //Prepare intersections for mapping along Z second (mapping order Y-Z-X)
+    else if (dimension == 2) { //Prepare intersections for mapping along Z second (mapping order Y-Z-X)
         // Normal of Euclidian x-plane
         const Eigen::Matrix<Real,3,1> plane_normal = Eigen::Matrix<Real,3,1>(1.0, 0.0, 0.0);
         //Point on lowest Euclidian x-plane through middle of cells
@@ -401,7 +401,7 @@ void compute_intersections_3rd(
         intersection_dj = point_0_1_0[dimension]-point_0_0_0[dimension];
         intersection_dk = point_0_0_1[dimension]-point_0_0_0[dimension];
    }
-   if (dimension == 1) { //Prepare intersections for mapping along Y third (mapping order Z-X-Y)
+    else if (dimension == 1) { //Prepare intersections for mapping along Y third (mapping order Z-X-Y)
         // This is the case presented in the Slice 3D article, 
         // data along z has been moved to Lagrangian coordinates
         const Eigen::Matrix<Real,3,1> point_0_0_0 = bwd_transform
@@ -425,7 +425,7 @@ void compute_intersections_3rd(
         intersection_dj = point_0_1_0[dimension]-point_0_0_0[dimension];
         intersection_dk = point_0_0_1[dimension]-point_0_0_0[dimension];
     }
-    if (dimension == 2) { //Prepare intersections for mapping along Z third (mapping order X-Y-Z)
+    else if (dimension == 2) { //Prepare intersections for mapping along Z third (mapping order X-Y-Z)
         const Eigen::Matrix<Real,3,1> point_0_0_0 = bwd_transform
             * Eigen::Matrix<Real,3,1>(0.5 * vmesh->getCellSize()[0] + vmesh->getMeshMinLimits()[0],
                                       0.5 * vmesh->getCellSize()[1] + vmesh->getMeshMinLimits()[1],
