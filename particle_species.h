@@ -102,8 +102,8 @@ namespace species {
               )
         :
           name(name),
-          charge(charge),
           mass_units(mass_units),
+          charge(charge),
           mass(mass),                  
           sparseMinValue(sparseMinValue),       
           velocityMesh(velocityMesh),         
