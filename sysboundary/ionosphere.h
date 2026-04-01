@@ -449,8 +449,6 @@ namespace SBC {
       Real center[3]; /*!< Coordinates of the centre of the ionosphere. */
       uint geometry; /*!< Geometry of the ionosphere, 0: inf-norm (diamond), 1: 1-norm (square), 2: 2-norm (circle, DEFAULT), 3: polar-plane cylinder with line dipole. */
 
-      uint precedence;
-      uint reapplyUponRestart;
       std::string baseShape; /*!< Basic mesh shape (sphericalFibonacci / icosahedron / tetrahedron) */
       int fibonacciNodeNum;  /*!< If spherical fibonacci: number of nodes to generate */
       Real earthAngularVelocity; /*!< Earth rotation vector, in radians/s */

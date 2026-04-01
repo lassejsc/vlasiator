@@ -60,6 +60,48 @@ public:
    //           desc.c_str());
    //    }
    // }
+    template <typename T> static void add_each_lambda(const std::string& name, const std::string& desc, const T& defValue,
+        std::function<void(const std::string)> lambda
+                                                    ) {
+      int rank;
+      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+      if (rank == MASTER_RANK) {
+         // std::stringstream ss;
+         //
+         // static constexpr bool n = (std::is_floating_point<T>::value);
+         // if (n) {
+         //    ss << std::setprecision(std::numeric_limits<double>::digits10 + 1) << defValue;
+         // } else {
+         //    ss << defValue;
+         // }
+         options[name] = "";
+         isOptionParsed[name] = false;
+         app->add_option(
+             name.c_str(), defValue,
+             desc.c_str())->each(lambda);
+      }
+   }
+  // template <typename T> static void add_each_lambda(const std::string& name, const std::string& desc, const T& defValue,
+  //       std::function<void(const std::string)> lambda
+  //                                                   ) {
+  //     int rank;
+  //     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  //     if (rank == MASTER_RANK) {
+  //        // std::stringstream ss;
+  //        //
+  //        // static constexpr bool n = (std::is_floating_point<T>::value);
+  //        // if (n) {
+  //        //    ss << std::setprecision(std::numeric_limits<double>::digits10 + 1) << defValue;
+  //        // } else {
+  //        //    ss << defValue;
+  //        // }
+  //        options[name] = "";
+  //        isOptionParsed[name] = false;
+  //        app->add_option(
+  //            name.c_str(), defValue,
+  //            desc.c_str())->each(lambda);
+  //     }
+  //  }
    template <typename T> static void add(const std::string& name, const std::string& desc, const T& defValue) {
       int rank;
       MPI_Comm_rank(MPI_COMM_WORLD, &rank);

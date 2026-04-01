@@ -56,7 +56,7 @@ namespace SBC {
       Outflow();
       virtual ~Outflow();
       
-      static void addParameters();
+      void addParameters();
       virtual void getParameters() override;
       
       virtual void initSysBoundary(
@@ -147,6 +147,7 @@ namespace SBC {
       std::vector<std::string> faceList;
       /*! List of faces on which no fields outflow boundary conditions are to be applied ([xyz][+-]). */
       std::vector<std::string> faceNoFieldsList;
+      array<string, 6> vlasovSysBoundarySchemeName;
       std::vector<OutflowSpeciesParameters> speciesParams;
       
       /*! Factor by which to quench the inflowing parts of the velocity distribution function.*/

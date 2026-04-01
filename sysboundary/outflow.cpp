@@ -50,24 +50,33 @@ namespace SBC {
 
    void Outflow::addParameters() {
       const string defStr = "Copy";
-      Readparameters::add("outflow.faceNoFields", "List of faces on which no field outflow boundary conditions are to be applied ([xyz][+-]).");
-      Readparameters::add("outflow.precedence", "Precedence value of the outflow system boundary condition (integer), the higher the stronger.", 4);
-      Readparameters::add("outflow.reapplyUponRestart", "If 0 (default), keep going with the state existing in the restart file. If 1, calls again applyInitialState. Can be used to change boundary condition behaviour during a run.", 0);
+      Readparameters::add("outflow.faceNoFields", "List of faces on which no field outflow boundary conditions are to be applied ([xyz][+-]).",this->faceNoFieldsList);
+      Readparameters::add("outflow.precedence", "Precedence value of the outflow system boundary condition (integer), the higher the stronger.", this->precedence);
+      Readparameters::add("outflow.reapplyUponRestart", "If 0 (default), keep going with the state existing in the restart file. If 1, calls again applyInitialState. Can be used to change boundary condition behaviour during a run.", this->applyUponRestart);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
         const string& pop = getObjectWrapper().particleSpecies[i].name;
+        
+        OutflowSpeciesParameters sP;
+        Readparameters::add(pop + "_outflow.reapplyFaceUponRestart", "List of faces on which outflow boundary conditions are to be reapplied upon restart ([xyz][+-]).",sP.faceToReapplyUponRestartList);
+        std::function<void(const string)> lambda_fun=[this](const string face){  
+          if(face == "x+") { this->facesToProcess[0] = true;}// sP.facesToSkipVlasov[0] = false; }  This processing has to be done laters
+          if(face == "x-") { this->facesToProcess[1] = true;}// sP.facesToSkipVlasov[1] = false; }
+          if(face == "y+") { this->facesToProcess[2] = true;}// sP.facesToSkipVlasov[2] = false; }
+          if(face == "y-") { this->facesToProcess[3] = true;}// sP.facesToSkipVlasov[3] = false; }
+          if(face == "z+") { this->facesToProcess[4] = true;}// sP.facesToSkipVlasov[4] = false; }
+          if(face == "z-") { this->facesToProcess[5] = true;}// sP.facesToSkipVlasov[5] = false; }
+        };
+        Readparameters::add_each_lambda(pop + "_outflow.face", "List of faces on which outflow boundary conditions are to be applied ([xyz][+-]).",vector<string>{},lambda_fun);
+        Readparameters::add(pop + "_outflow.vlasovScheme_face_x+", "Scheme to use on the face x+ (Copy, None)", this->vlasovSysBoundarySchemeName);
+        // Readparameters::add(pop + "_outflow.vlasovScheme_face_x-", "Scheme to use on the face x- (Copy, None)", defStr);
+        // Readparameters::add(pop + "_outflow.vlasovScheme_face_y+", "Scheme to use on the face y+ (Copy, None)", defStr);
+        // Readparameters::add(pop + "_outflow.vlasovScheme_face_y-", "Scheme to use on the face y- (Copy, None)", defStr);
+        // Readparameters::add(pop + "_outflow.vlasovScheme_face_z+", "Scheme to use on the face z+ (Copy, None)", defStr);
+        // Readparameters::add(pop + "_outflow.vlasovScheme_face_z-", "Scheme to use on the face z- (Copy, None)", defStr);
 
-        Readparameters::add(pop + "_outflow.reapplyFaceUponRestart", "List of faces on which outflow boundary conditions are to be reapplied upon restart ([xyz][+-]).");
-        Readparameters::add(pop + "_outflow.face", "List of faces on which outflow boundary conditions are to be applied ([xyz][+-]).");
-        Readparameters::add(pop + "_outflow.vlasovScheme_face_x+", "Scheme to use on the face x+ (Copy, None)", defStr);
-        Readparameters::add(pop + "_outflow.vlasovScheme_face_x-", "Scheme to use on the face x- (Copy, None)", defStr);
-        Readparameters::add(pop + "_outflow.vlasovScheme_face_y+", "Scheme to use on the face y+ (Copy, None)", defStr);
-        Readparameters::add(pop + "_outflow.vlasovScheme_face_y-", "Scheme to use on the face y- (Copy, None)", defStr);
-        Readparameters::add(pop + "_outflow.vlasovScheme_face_z+", "Scheme to use on the face z+ (Copy, None)", defStr);
-        Readparameters::add(pop + "_outflow.vlasovScheme_face_z-", "Scheme to use on the face z- (Copy, None)", defStr);
-
-        Readparameters::add(pop + "_outflow.quench", "Factor by which to quench the inflowing parts of the velocity distribution function.", 1.0);
+        Readparameters::add(pop + "_outflow.quench", "Factor by which to quench the inflowing parts of the velocity distribution function.", sP.quenchFactor);
       }
    }
 
@@ -97,12 +106,12 @@ namespace SBC {
         //Readparameters::get(pop + "_outflow.face", thisSpeciesFaceList);
 
         for(auto& face : thisSpeciesFaceList) {
-          if(face == "x+") { facesToProcess[0] = true; sP.facesToSkipVlasov[0] = false; }
-          if(face == "x-") { facesToProcess[1] = true; sP.facesToSkipVlasov[1] = false; }
-          if(face == "y+") { facesToProcess[2] = true; sP.facesToSkipVlasov[2] = false; }
-          if(face == "y-") { facesToProcess[3] = true; sP.facesToSkipVlasov[3] = false; }
-          if(face == "z+") { facesToProcess[4] = true; sP.facesToSkipVlasov[4] = false; }
-          if(face == "z-") { facesToProcess[5] = true; sP.facesToSkipVlasov[5] = false; }
+          if(face == "x+") { this->facesToProcess[0] = true; sP.facesToSkipVlasov[0] = false; }
+          if(face == "x-") { this->facesToProcess[1] = true; sP.facesToSkipVlasov[1] = false; }
+          if(face == "y+") { this->facesToProcess[2] = true; sP.facesToSkipVlasov[2] = false; }
+          if(face == "y-") { this->facesToProcess[3] = true; sP.facesToSkipVlasov[3] = false; }
+          if(face == "z+") { this->facesToProcess[4] = true; sP.facesToSkipVlasov[4] = false; }
+          if(face == "z-") { this->facesToProcess[5] = true; sP.facesToSkipVlasov[5] = false; }
         }
 
         //Readparameters::get(pop + "_outflow.reapplyFaceUponRestart", sP.faceToReapplyUponRestartList);

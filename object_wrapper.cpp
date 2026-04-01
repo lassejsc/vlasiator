@@ -14,10 +14,11 @@ bool ObjectWrapper::addParameters() {
    if (RP::helpRequested) { // dummy name for the help message
      RP::populations.push_back("<population>");
    }
-   
-   RP::add("ParticlePopulations","Name of the simulated particle populations (string)", RP::populations);
+   //WE NEED A SOLUTION SO WE DONT GET POINTER STUPIDITY
+  //DOES IT GO OUT OF SCOPE???? (solution; i think it does not og out of scope, seems smart enough)
    std::function<void(const std::string)> lambda_fun=[this](std::string s){initpop(s);};
-   RP::get_option("ParticlePopulations")->each(&lambda_fun); 
+   RP::add_each_lambda("ParticlePopulations","Name of the simulated particle populations (string)", RP::populations,lambda_fun);
+   // RP::get_option("ParticlePopulations")->each(lambda_fun); 
 
    return true;
 }

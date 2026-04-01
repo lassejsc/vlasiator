@@ -2196,14 +2196,14 @@ namespace SBC {
    Ionosphere::~Ionosphere() { }
 
    void Ionosphere::addParameters() {
-      Readparameters::add("ionosphere.centerX", "X coordinate of ionosphere center (m)",Ionosphere::center);
+      Readparameters::add("ionosphere.centerX", "X coordinate of ionosphere center (m)",this->center);
       // Readparameters::add("ionosphere.centerY", "Y coordinate of ionosphere center (m)", Ionosphere::centerY);
       // Readparameters::add("ionosphere.centerZ", "Z coordinate of ionosphere center (m)", Ionosphere::centerZ);
       Readparameters::add("ionosphere.radius", "Radius of the inner simulation boundary (unit is assumed to be R_E if value < 1000, otherwise m).", Ionosphere::radius);
       Readparameters::add("ionosphere.innerRadius", "Radius of the ionosphere model (m).", Ionosphere::innerRadius);
       Readparameters::add("ionosphere.geometry", "Select the geometry of the ionosphere, 0: inf-norm (diamond), 1: 1-norm (square), 2: 2-norm (circle, DEFAULT), 3: 2-norm cylinder aligned with y-axis, use with polar plane/line dipole.", this->geometry);
       Readparameters::add("ionosphere.precedence", "Precedence value of the ionosphere system boundary condition (integer), the higher the stronger.",this->precedence);
-      Readparameters::add("ionosphere.reapplyUponRestart", "If 0 (default), keep going with the state existing in the restart file. If 1, calls again applyInitialState. Can be used to change boundary condition behaviour during a run.", this->reapplyUponRestart);
+      Readparameters::add("ionosphere.reapplyUponRestart", "If 0 (default), keep going with the state existing in the restart file. If 1, calls again applyInitialState. Can be used to change boundary condition behaviour during a run.", this->applyUponRestart);
       Readparameters::add("ionosphere.baseShape", "Select the seed mesh geometry for the spherical ionosphere grid. Options are: sphericalFibonacci, tetrahedron, icosahedron.", this->baseShape);
       Readparameters::add("ionosphere.conductivityModel", "Select ionosphere conductivity tensor construction model. Options are: 0=GUMICS style (Vertical B, only SigmaH and SigmaP), 1=Ridley et al 2004 (1000 mho longitudinal conductivity), 2=Koskinen 2011 full conductivity tensor.", Ionosphere::conductivityModel);
       Readparameters::add("ionosphere.ridleyParallelConductivity", "Constant parallel conductivity value. 1000 mho is given without justification by Ridley et al 2004.", Ionosphere::ridleyParallelConductivity);
