@@ -84,12 +84,12 @@ namespace SBC {
    }
 
    void Maxwellian::getParameters() {
-      Readparameters::get("maxwellian.face", faceList);
-      Readparameters::get("maxwellian.precedence", precedence);
+      //Readparameters::get("maxwellian.face", faceList);
+      //Readparameters::get("maxwellian.precedence", precedence);
 
       uint reapply;
-      Readparameters::get("maxwellian.reapplyUponRestart", reapply);
-      Readparameters::get("maxwellian.t_interval", tInterval);
+      //Readparameters::get("maxwellian.reapplyUponRestart", reapply);
+      //Readparameters::get("maxwellian.t_interval", tInterval);
       this->applyUponRestart = false;
       if(reapply == 1) {
          this->applyUponRestart = true;
@@ -102,13 +102,13 @@ namespace SBC {
          InflowSpeciesParameters sP;
          sP.nParams = 9;
 
-         Readparameters::get(pop + "_maxwellian.dynamic", dynamic);
-         Readparameters::get(pop + "_maxwellian.file_x+", sP.files[0]);
-         Readparameters::get(pop + "_maxwellian.file_x-", sP.files[1]);
-         Readparameters::get(pop + "_maxwellian.file_y+", sP.files[2]);
-         Readparameters::get(pop + "_maxwellian.file_y-", sP.files[3]);
-         Readparameters::get(pop + "_maxwellian.file_z+", sP.files[4]);
-         Readparameters::get(pop + "_maxwellian.file_z-", sP.files[5]);
+         //Readparameters::get(pop + "_maxwellian.dynamic", dynamic);
+         //Readparameters::get(pop + "_maxwellian.file_x+", sP.files[0]);
+         //Readparameters::get(pop + "_maxwellian.file_x-", sP.files[1]);
+         //Readparameters::get(pop + "_maxwellian.file_y+", sP.files[2]);
+         //Readparameters::get(pop + "_maxwellian.file_y-", sP.files[3]);
+         //Readparameters::get(pop + "_maxwellian.file_z+", sP.files[4]);
+         //Readparameters::get(pop + "_maxwellian.file_z-", sP.files[5]);
 
          speciesParams.push_back(sP);
       }

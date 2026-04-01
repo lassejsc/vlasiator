@@ -69,11 +69,6 @@ Readparameters::Readparameters(int cmdargc, char* cmdargv[]) {
       // PO::store(PO::command_line_parser(argc, argv).options(*descriptions).allow_unregistered().run(), *variables);
       // PO::notify(*variables);
 
-      try {                                                                                                              \
-          app->parse(argc,argv);
-      } catch(const CLI::ParseError &e) {                                                                                \
-          app->exit(e);                                                                                          \
-      }
    }
    MPI_Bcast(&Readparameters::helpRequested, sizeof(bool), MPI_BYTE, 0, MPI_COMM_WORLD);
 }
@@ -157,6 +152,13 @@ std::string Readparameters::configInfo() {
  * @param allowUnknown true if unregistered options are parsed without error.
  * @return True if input file(s) were parsed successfully.
  */
+void Readparameters::parse() {
+  try {                                                                                                              \
+      app->parse(argc,argv);
+  } catch(const CLI::ParseError &e) {                                                                                \
+      app->exit(e);
+  }
+}
 // bool Readparameters::parse(const bool needsRunConfig, const bool allowUnknown) {
 //
 //    int rank;

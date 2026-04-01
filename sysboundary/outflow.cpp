@@ -74,10 +74,10 @@ namespace SBC {
    void Outflow::getParameters() {
       int myRank;
       MPI_Comm_rank(MPI_COMM_WORLD,&myRank);
-      Readparameters::get("outflow.faceNoFields", this->faceNoFieldsList);
-      Readparameters::get("outflow.precedence", precedence);
+      //Readparameters::get("outflow.faceNoFields", this->faceNoFieldsList);
+      //Readparameters::get("outflow.precedence", precedence);
       uint reapply;
-      Readparameters::get("outflow.reapplyUponRestart", reapply);
+      //Readparameters::get("outflow.reapplyUponRestart", reapply);
       this->applyUponRestart = false;
       if(reapply == 1) {
          this->applyUponRestart = true;
@@ -94,7 +94,7 @@ namespace SBC {
         }
 
         vector<string> thisSpeciesFaceList;
-        Readparameters::get(pop + "_outflow.face", thisSpeciesFaceList);
+        //Readparameters::get(pop + "_outflow.face", thisSpeciesFaceList);
 
         for(auto& face : thisSpeciesFaceList) {
           if(face == "x+") { facesToProcess[0] = true; sP.facesToSkipVlasov[0] = false; }
@@ -105,15 +105,15 @@ namespace SBC {
           if(face == "z-") { facesToProcess[5] = true; sP.facesToSkipVlasov[5] = false; }
         }
 
-        Readparameters::get(pop + "_outflow.reapplyFaceUponRestart", sP.faceToReapplyUponRestartList);
+        //Readparameters::get(pop + "_outflow.reapplyFaceUponRestart", sP.faceToReapplyUponRestartList);
         array<string, 6> vlasovSysBoundarySchemeName;
-        Readparameters::get(pop + "_outflow.vlasovScheme_face_x+", vlasovSysBoundarySchemeName[0]);
-        Readparameters::get(pop + "_outflow.vlasovScheme_face_x-", vlasovSysBoundarySchemeName[1]);
-        Readparameters::get(pop + "_outflow.vlasovScheme_face_y+", vlasovSysBoundarySchemeName[2]);
+        //Readparameters::get(pop + "_outflow.vlasovScheme_face_x+", vlasovSysBoundarySchemeName[0]);
+        //Readparameters::get(pop + "_outflow.vlasovScheme_face_x-", vlasovSysBoundarySchemeName[1]);
+        //Readparameters::get(pop + "_outflow.vlasovScheme_face_y+", vlasovSysBoundarySchemeName[2]);
 
-        Readparameters::get(pop + "_outflow.vlasovScheme_face_y-", vlasovSysBoundarySchemeName[3]);
-        Readparameters::get(pop + "_outflow.vlasovScheme_face_z+", vlasovSysBoundarySchemeName[4]);
-        Readparameters::get(pop + "_outflow.vlasovScheme_face_z-", vlasovSysBoundarySchemeName[5]);
+        //Readparameters::get(pop + "_outflow.vlasovScheme_face_y-", vlasovSysBoundarySchemeName[3]);
+        //Readparameters::get(pop + "_outflow.vlasovScheme_face_z+", vlasovSysBoundarySchemeName[4]);
+        //Readparameters::get(pop + "_outflow.vlasovScheme_face_z-", vlasovSysBoundarySchemeName[5]);
         for(uint j=0; j<6 ; j++) {
            if(vlasovSysBoundarySchemeName[j] == "None") {
               sP.faceVlasovScheme[j] = vlasovscheme::NONE;
@@ -124,7 +124,7 @@ namespace SBC {
            }
         }
 
-        Readparameters::get(pop + "_outflow.quench", sP.quenchFactor);
+        //Readparameters::get(pop + "_outflow.quench", sP.quenchFactor);
 
         speciesParams.push_back(sP);
       }

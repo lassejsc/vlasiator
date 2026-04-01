@@ -43,6 +43,7 @@ namespace species {
    /** Variables common to a particle species.*/
    struct Species {
       std::string name;               /**< Name of the species.*/
+      std::string mass_units;
       Real charge;                    /**< Particle species charge, in simulation units.*/
       Real mass;                      /**< Particle species mass, in simulation units.*/
       Real sparseMinValue;            /**< Sparse mesh threshold value for the population.*/
@@ -70,6 +71,58 @@ namespace species {
       Real precipitationLossConeAngle;         /*!< Fixed loss cone opening angle (in deg) for precipitation differential flux evaluation. Default 10. */
 
       Species();
+      /* Constructor for setting everything at once*/
+      Species(std::string name,std::string mass_units,
+              Real charge,
+              Real mass,                  
+              Real sparseMinValue,       
+              size_t velocityMesh,         
+
+              int sparseBlockAddWidthV,  
+              bool sparse_conserve_mass,   
+              int  sparseDynamicAlgorithm, 
+              Real sparseDynamicBulkValue1,
+              Real sparseDynamicBulkValue2,
+              Real sparseDynamicMinValue1,
+              Real sparseDynamicMinValue2, 
+
+              Real thermalRadius,   
+              std::array<Real, 3> thermalV,
+
+              Real EnergyDensityLimit1,
+              Real EnergyDensityLimit2,   
+              Real SolarWindEnergy,   
+              Real SolarWindSpeed,        
+
+              int precipitationNChannels, 
+              Real precipitationEmin,    
+              Real precipitationEmax,      
+              Real precipitationLossConeAngle
+              )
+        :
+          charge(charge),
+          mass_units(mass_units),
+          mass(mass),                  
+          sparseMinValue(sparseMinValue),       
+          velocityMesh(velocityMesh),         
+          sparseBlockAddWidthV(sparseBlockAddWidthV),  
+          sparse_conserve_mass(sparse_conserve_mass),   
+          sparseDynamicAlgorithm(sparseDynamicAlgorithm), 
+          sparseDynamicBulkValue1(sparseDynamicBulkValue1),
+          sparseDynamicBulkValue2(sparseDynamicBulkValue2),
+          sparseDynamicMinValue1(sparseDynamicMinValue1),
+          sparseDynamicMinValue2(sparseDynamicMinValue2), 
+          thermalRadius(thermalRadius),   
+          thermalV(thermalV),
+          EnergyDensityLimit1(EnergyDensityLimit1),
+          EnergyDensityLimit2(EnergyDensityLimit2),   
+          SolarWindEnergy(SolarWindEnergy),   
+          SolarWindSpeed(SolarWindSpeed),        
+          precipitationNChannels(precipitationNChannels), 
+          precipitationEmin(precipitationEmin),    
+          precipitationEmax(precipitationEmax),      
+          precipitationLossConeAngle(precipitationLossConeAngle)
+      {}
       Species(const Species& other);
       ~Species();
     };

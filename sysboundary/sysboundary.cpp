@@ -103,10 +103,10 @@ void SysBoundary::addParameters() {
 void SysBoundary::getParameters() {
    string periodic_x, periodic_y, periodic_z;
 
-   Readparameters::get("boundaries.boundary", sysBoundaryCondList);
-   Readparameters::get("boundaries.periodic_x", periodic_x);
-   Readparameters::get("boundaries.periodic_y", periodic_y);
-   Readparameters::get("boundaries.periodic_z", periodic_z);
+   //Readparameters::get("boundaries.boundary", sysBoundaryCondList);
+   //Readparameters::get("boundaries.periodic_x", periodic_x);
+   //Readparameters::get("boundaries.periodic_y", periodic_y);
+   //Readparameters::get("boundaries.periodic_z", periodic_z);
 
    periodic[0] = (periodic_x == "yes");
    periodic[1] = (periodic_y == "yes");
@@ -476,7 +476,7 @@ void SysBoundary::classifyCells(dccrg::Dccrg<spatial_cell::SpatialCell, dccrg::C
    SysBoundary& sysBoundaryContainer = getObjectWrapper().sysBoundaryContainer;
    Real ionosphereDownmapRadius = 0;
    if (sysBoundaryContainer.existSysBoundary("Ionosphere")) {
-      Readparameters::get("ionosphere.downmapRadius", ionosphereDownmapRadius);
+      //Readparameters::get("ionosphere.downmapRadius", ionosphereDownmapRadius);
    }
    if(ionosphereDownmapRadius < 1000) {
       ionosphereDownmapRadius *= physicalconstants::R_E;

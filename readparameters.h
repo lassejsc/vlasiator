@@ -60,7 +60,6 @@ public:
    //           desc.c_str());
    //    }
    // }
-
    template <typename T> static void add(const std::string& name, const std::string& desc, const T& defValue) {
       int rank;
       MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -165,7 +164,9 @@ public:
    static bool isSet(const std::string& name) {
       return(app->get_option_no_throw(name)!=nullptr);
    }
-
+   static CLI::Option* get_option(const std::string& name) {
+      return app->get_option(name);
+   }
 
    static void helpMessage();
 
@@ -175,10 +176,12 @@ public:
    
    static std::string configInfo();
 
-   static bool parse(const bool needsRunConfig = true, const bool allowUnknown = true);
+   static void parse();
 
    static bool helpRequested;
    static bool versionRequested;
+
+   static std::vector<std::string> populations;
 
 private:
    static int argc;    /**< How many entries argv contains.*/
@@ -187,7 +190,6 @@ private:
 
    // static boost::program_options::options_description* descriptions;
    // static boost::program_options::variables_map* variables;
-
    static std::map<std::string, std::string> options;
    static std::map<std::string, bool> isOptionParsed;
    static std::map<std::string, std::vector<std::string>> vectorOptions;

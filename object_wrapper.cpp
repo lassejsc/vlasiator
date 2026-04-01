@@ -1,6 +1,8 @@
 #include "object_wrapper.h"
 #include "velocity_mesh_parameters.h"
 #include "readparameters.h"
+#include <array>
+#include <functional>
 #include <iostream>
 #include <string>
 
@@ -10,84 +12,89 @@ bool ObjectWrapper::addParameters() {
    // Parameters needed to create particle populations
 
    if (RP::helpRequested) { // dummy name for the help message
-      RP::add("ParticlePopulations","Name of the simulated particle populations (string)","<population>");
-   } else {
-      RP::add("ParticlePopulations","Name of the simulated particle populations (string)");
+     RP::populations.push_back("<population>");
    }
+   
+   RP::add("ParticlePopulations","Name of the simulated particle populations (string)", RP::populations);
+   std::function<void(const std::string)> lambda_fun=[this](std::string s){initpop(s);};
+   RP::get_option("ParticlePopulations")->each(&lambda_fun); 
 
    return true;
 }
+void ObjectWrapper::initpop(std::string pop){
 
-bool ObjectWrapper::addPopulationParameters() {
    typedef Readparameters RP;
+   vmesh::MeshParameters newVMesh;
 
-   std::vector<std::string> popNames;
-   if (RP::helpRequested) {
-      popNames.push_back(std::string("<population>"));
-   } else {
-      //RP::get("ParticlePopulations", popNames);
-   }
+   // Originally, there was support for species and velocity meshes to be separate.
+   // This was abandoned, since there wasn't really any use for it.
+   newVMesh.name = pop;
+   size_t meshsize=vmesh::getMeshWrapper()->velocityMeshesCreation->size();
+   std::array<Real, 3> thermv={-500000.0,0,0};
+   species::Species newSpecies(pop,std::string("PROTON"),1,1,1e-15,meshsize,1,false,0,0,0,1,1,0.0,thermv,5.0,10.0,0.0,0.0,16,0.1,100.0,10.0);
 
-  // Create appropriate subparameters for each population
-  for(auto& pop : popNames) {
-     species::Species newSpecies;
-     vmesh::MeshParameters newVMesh;
+   getObjectWrapper().particleSpecies.push_back(newSpecies);
+   vmesh::getMeshWrapper()->velocityMeshesCreation->push_back(newVMesh);
 
-     // Originally, there was support for species and velocity meshes to be separate.
-     // This was abandoned, since there wasn't really any use for it.
-     newSpecies.name = newVMesh.name = pop;
-     newSpecies.velocityMesh = vmesh::getMeshWrapper()->velocityMeshesCreation->size();
+   RP::add(pop + "_properties.charge", "Particle charge, in units of elementary charges (int)", newSpecies.charge);
+   RP::add(pop + "_properties.mass_units", "Units in which particle mass is given, either 'PROTON' or 'ELECTRON' (string)", newSpecies.mass_units);
+   RP::add(pop + "_properties.mass","Particle mass in given units (float)", newSpecies.mass);
 
-     getObjectWrapper().particleSpecies.push_back(newSpecies);
-     vmesh::getMeshWrapper()->velocityMeshesCreation->push_back(newVMesh);
+   // Grid sparsity parameters
+   RP::add(pop + "_sparse.minValue", "Minimum value of distribution function in any cell of a velocity block for the block to be considered to have contents", newSpecies.sparseMinValue);
+   RP::add(pop + "_sparse.blockAddWidthV", "Number of layers of blocks that are kept in velocity space around the blocks with content", newSpecies.sparseBlockAddWidthV);
+   RP::add(pop + "_sparse.conserve_mass", "If true, then mass is conserved by scaling the dist. func. in the remaining blocks", newSpecies.sparse_conserve_mass);
+   RP::add(pop + "_sparse.dynamicAlgorithm", "Type of algorithm used for calculating the dynamic minValue; 0 = none, 1 = linear algorithm based on rho, 2 = linear algorithm based on Blocks, (Example linear algorithm: y = kx+b, where dynamicMinValue1=k*dynamicBulkValue1 + b, and dynamicMinValue2 = k*dynamicBulkValue2 + b", newSpecies.sparseDynamicAlgorithm);
+   RP::add(pop + "_sparse.dynamicMinValue1", "The minimum value for the dynamic minValue", newSpecies.sparseDynamicMinValue1);
+   RP::add(pop + "_sparse.dynamicMinValue2", "The maximum value (value 2) for the dynamic minValue", newSpecies.sparseDynamicMinValue2);
+   RP::add(pop + "_sparse.dynamicBulkValue1", "Minimum value for the dynamic algorithm range, so for example if dynamicAlgorithm=1 then for sparse.dynamicBulkValue1 = 1e3, sparse.dynamicBulkValue2=1e5, we apply the algorithm to cells for which 1e3<cell.rho<1e5", newSpecies.sparseDynamicBulkValue1);
+   RP::add(pop + "_sparse.dynamicBulkValue2", "Maximum value for the dynamic algorithm range, so for example if dynamicAlgorithm=1 then for sparse.dynamicBulkValue1 = 1e3, sparse.dynamicBulkValue2=1e5, we apply the algorithm to cells for which 1e3<cell.rho<1e5", newSpecies.sparseDynamicBulkValue2);
 
-     RP::add(pop + "_properties.charge", "Particle charge, in units of elementary charges (int)", 1);
-     RP::add(pop + "_properties.mass_units", "Units in which particle mass is given, either 'PROTON' or 'ELECTRON' (string)", std::string("PROTON"));
-     RP::add(pop + "_properties.mass","Particle mass in given units (float)", 1);
+   // Grid parameters
+   RP::add(pop + "_vspace.vx_min","Minimum value for velocity mesh vx-coordinates.", newVMesh.meshLimits);
+   // RP::add(pop + "_vspace.vx_max","Maximum value for velocity mesh vx-coordinates.", newSpecies.vspacevx_max);
+   // RP::add(pop + "_vspace.vy_min","Minimum value for velocity mesh vy-coordinates.", newSpecies.vspacevy_min);
+   // RP::add(pop + "_vspace.vy_max","Maximum value for velocity mesh vx-coordinates.", newSpecies.vspacevy_max);
+   // RP::add(pop + "_vspace.vz_min","Minimum value for velocity mesh vz-coordinates.", newSpecies.vspacevz_min);
+   // RP::add(pop + "_vspace.vz_max","Maximum value for velocity mesh vx-coordinates.", newSpecies.vspacevz_max);
+   RP::add(pop + "_vspace.vx_length","Initial number of velocity blocks in vx-direction.", newVMesh.gridLength);
+   // RP::add(pop + "_vspace.vy_length","Initial number of velocity blocks in vy-direction.", newSpecies.vspacevy_length);
+   // RP::add(pop + "_vspace.vz_length","Initial number of velocity blocks in vz-direction.", newSpecies.vspacevz_length);
+   // RP::add(pop + "_vspace.max_refinement_level","Maximum allowed mesh refinement level.", newVMesh.meshMinLimits); //Was not even used?
 
-     // Grid sparsity parameters
-     RP::add(pop + "_sparse.minValue", "Minimum value of distribution function in any cell of a velocity block for the block to be considered to have contents", 1e-15);
-     RP::add(pop + "_sparse.blockAddWidthV", "Number of layers of blocks that are kept in velocity space around the blocks with content",1);
-     RP::add(pop + "_sparse.conserve_mass", "If true, then mass is conserved by scaling the dist. func. in the remaining blocks", false);
-     RP::add(pop + "_sparse.dynamicAlgorithm", "Type of algorithm used for calculating the dynamic minValue; 0 = none, 1 = linear algorithm based on rho, 2 = linear algorithm based on Blocks, (Example linear algorithm: y = kx+b, where dynamicMinValue1=k*dynamicBulkValue1 + b, and dynamicMinValue2 = k*dynamicBulkValue2 + b", 0);
-     RP::add(pop + "_sparse.dynamicMinValue1", "The minimum value for the dynamic minValue", 1);
-     RP::add(pop + "_sparse.dynamicMinValue2", "The maximum value (value 2) for the dynamic minValue", 1);
-     RP::add(pop + "_sparse.dynamicBulkValue1", "Minimum value for the dynamic algorithm range, so for example if dynamicAlgorithm=1 then for sparse.dynamicBulkValue1 = 1e3, sparse.dynamicBulkValue2=1e5, we apply the algorithm to cells for which 1e3<cell.rho<1e5", 0);
-     RP::add(pop + "_sparse.dynamicBulkValue2", "Maximum value for the dynamic algorithm range, so for example if dynamicAlgorithm=1 then for sparse.dynamicBulkValue1 = 1e3, sparse.dynamicBulkValue2=1e5, we apply the algorithm to cells for which 1e3<cell.rho<1e5", 0);
+   // Thermal / suprathermal parameters
+   RP::add(pop + "_thermal.vx", "Center coordinate for the maxwellian distribution. Used for calculating the suprathermal moments.", newSpecies.thermalV);
+   RP::add(pop + "_thermal.radius", "Radius of the maxwellian distribution. Used for calculating the suprathermal moments. If set to 0 (default), the thermal/suprathermal DROs are skipped.", newSpecies.thermalRadius);
 
-     // Grid parameters
-     RP::add(pop + "_vspace.vx_min","Minimum value for velocity mesh vx-coordinates.",0);
-     RP::add(pop + "_vspace.vx_max","Maximum value for velocity mesh vx-coordinates.",0);
-     RP::add(pop + "_vspace.vy_min","Minimum value for velocity mesh vy-coordinates.",0);
-     RP::add(pop + "_vspace.vy_max","Maximum value for velocity mesh vx-coordinates.",0);
-     RP::add(pop + "_vspace.vz_min","Minimum value for velocity mesh vz-coordinates.",0);
-     RP::add(pop + "_vspace.vz_max","Maximum value for velocity mesh vx-coordinates.",0);
-     RP::add(pop + "_vspace.vx_length","Initial number of velocity blocks in vx-direction.",1);
-     RP::add(pop + "_vspace.vy_length","Initial number of velocity blocks in vy-direction.",1);
-     RP::add(pop + "_vspace.vz_length","Initial number of velocity blocks in vz-direction.",1);
-     RP::add(pop + "_vspace.max_refinement_level","Maximum allowed mesh refinement level.", 1);
+   // Precipitation parameters
+   RP::add(pop + "_precipitation.nChannels", "Number of energy channels for precipitation differential flux evaluation", newSpecies.precipitationNChannels);
+   RP::add(pop + "_precipitation.emin", "Lowest energy channel (in eV) for precipitation differential flux evaluation", newSpecies.precipitationEmin);
+   RP::add(pop + "_precipitation.emax", "Highest energy channel (in eV) for precipitation differential flux evaluation", newSpecies.precipitationEmax);
+   RP::add(pop + "_precipitation.lossConeAngle", "Fixed loss cone opening angle (in deg) for precipitation differential flux evaluation", newSpecies.precipitationLossConeAngle);
 
-     // Thermal / suprathermal parameters
-     RP::add(pop + "_thermal.vx", "Center coordinate for the maxwellian distribution. Used for calculating the suprathermal moments.", -500000.0);
-     RP::add(pop + "_thermal.vy", "Center coordinate for the maxwellian distribution. Used for calculating the suprathermal moments.", 0.0);
-     RP::add(pop + "_thermal.vz", "Center coordinate for the maxwellian distribution. Used for calculating the suprathermal moments.", 0.0);
-     RP::add(pop + "_thermal.radius", "Radius of the maxwellian distribution. Used for calculating the suprathermal moments. If set to 0 (default), the thermal/suprathermal DROs are skipped.", 0.0);
-
-     // Precipitation parameters
-     RP::add(pop + "_precipitation.nChannels", "Number of energy channels for precipitation differential flux evaluation", 16);
-     RP::add(pop + "_precipitation.emin", "Lowest energy channel (in eV) for precipitation differential flux evaluation", 0.1);
-     RP::add(pop + "_precipitation.emax", "Highest energy channel (in eV) for precipitation differential flux evaluation", 100.0);
-     RP::add(pop + "_precipitation.lossConeAngle", "Fixed loss cone opening angle (in deg) for precipitation differential flux evaluation", 10.0);
-
-     // Energy density parameters
-     RP::add(pop + "_energydensity.limit1", "Lower limit of second bin for energy density, given in units of solar wind ram energy.", 5.0);
-     RP::add(pop + "_energydensity.limit2", "Lower limit of third bin for energy density, given in units of solar wind ram energy.", 10.0);
-     RP::add(pop + "_energydensity.solarwindspeed", "Incoming solar wind velocity magnitude in m/s. Used for calculating energy densities.", 0.0);
-     RP::add(pop + "_energydensity.solarwindenergy", "Incoming solar wind ram energy in eV. Used for calculating energy densities.", 0.0);
-  }
-
-  return true;
+   // Energy density parameters
+   RP::add(pop + "_energydensity.limit1", "Lower limit of second bin for energy density, given in units of solar wind ram energy.", newSpecies.EnergyDensityLimit1);
+   RP::add(pop + "_energydensity.limit2", "Lower limit of third bin for energy density, given in units of solar wind ram energy.", newSpecies.EnergyDensityLimit2);
+   RP::add(pop + "_energydensity.solarwindspeed", "Incoming solar wind velocity magnitude in m/s. Used for calculating energy densities.", newSpecies.SolarWindSpeed);
+   RP::add(pop + "_energydensity.solarwindenergy", "Incoming solar wind ram energy in eV. Used for calculating energy densities.", newSpecies.SolarWindEnergy);
 }
+
+// bool ObjectWrapper::addPopulationParameters() {
+//    typedef Readparameters RP;
+//
+//    std::vector<std::string> popNames=RP::populations;
+//    if (RP::helpRequested) {
+//       popNames.push_back(std::string("<population>"));
+//    } else {
+//       RP::add("", const std::string &desc, const T &defValue)
+//    }
+//
+//   // Create appropriate subparameters for each population
+//   for(auto& pop : popNames) {
+//  }
+//
+//   return true;
+// }
 
 
 bool ObjectWrapper::getPopulationParameters() {
@@ -177,16 +184,16 @@ bool ObjectWrapper::getPopulationParameters() {
       vMesh.blockLength[0] = vMesh.blockLength[1] = vMesh.blockLength[2] = WID;
 
       ////Get thermal / suprathermal moments parameters
-      //Readparameters::get(pop + "_thermal.radius", species.thermalRadius);
-      //Readparameters::get(pop + "_thermal.vx", species.thermalV[0]);
-      //Readparameters::get(pop + "_thermal.vy", species.thermalV[1]);
-      //Readparameters::get(pop + "_thermal.vz", species.thermalV[2]);
+      ////Readparameters::get(pop + "_thermal.radius", species.thermalRadius);
+      ////Readparameters::get(pop + "_thermal.vx", species.thermalV[0]);
+      ////Readparameters::get(pop + "_thermal.vy", species.thermalV[1]);
+      ////Readparameters::get(pop + "_thermal.vz", species.thermalV[2]);
       //
       ////Get energy density parameters
-      //Readparameters::get(pop + "_energydensity.limit1", species.EnergyDensityLimit1);
-      //Readparameters::get(pop + "_energydensity.limit2", species.EnergyDensityLimit2);
-      //Readparameters::get(pop + "_energydensity.solarwindenergy", species.SolarWindEnergy);
-      //Readparameters::get(pop + "_energydensity.solarwindspeed", species.SolarWindSpeed);
+      ////Readparameters::get(pop + "_energydensity.limit1", species.EnergyDensityLimit1);
+      ////Readparameters::get(pop + "_energydensity.limit2", species.EnergyDensityLimit2);
+      ////Readparameters::get(pop + "_energydensity.solarwindenergy", species.SolarWindEnergy);
+      ////Readparameters::get(pop + "_energydensity.solarwindspeed", species.SolarWindSpeed);
       //
       const Real EPSILON = 1.e-25;
       if (species.SolarWindEnergy < EPSILON) {
@@ -197,10 +204,10 @@ bool ObjectWrapper::getPopulationParameters() {
       }
 
       // // Get precipitation parameters
-      // Readparameters::get(pop + "_precipitation.nChannels", species.precipitationNChannels);
-      // Readparameters::get(pop + "_precipitation.emin", species.precipitationEmin);
-      // Readparameters::get(pop + "_precipitation.emax", species.precipitationEmax);
-      // Readparameters::get(pop + "_precipitation.lossConeAngle", species.precipitationLossConeAngle);
+      // //Readparameters::get(pop + "_precipitation.nChannels", species.precipitationNChannels);
+      // //Readparameters::get(pop + "_precipitation.emin", species.precipitationEmin);
+      // //Readparameters::get(pop + "_precipitation.emax", species.precipitationEmax);
+      // //Readparameters::get(pop + "_precipitation.lossConeAngle", species.precipitationLossConeAngle);
       // Convert from eV to SI units
       species.precipitationEmin = species.precipitationEmin*physicalconstants::CHARGE;
       species.precipitationEmax = species.precipitationEmax*physicalconstants::CHARGE;

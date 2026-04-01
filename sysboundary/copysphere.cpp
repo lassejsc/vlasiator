@@ -76,21 +76,21 @@ namespace SBC {
 
    void Copysphere::getParameters() {
 
-      Readparameters::get("copysphere.centerX", this->center[0]);
-      Readparameters::get("copysphere.centerY", this->center[1]);
-      Readparameters::get("copysphere.centerZ", this->center[2]);
-      Readparameters::get("copysphere.radius", this->radius);
+      //Readparameters::get("copysphere.centerX", this->center[0]);
+      //Readparameters::get("copysphere.centerY", this->center[1]);
+      //Readparameters::get("copysphere.centerZ", this->center[2]);
+      //Readparameters::get("copysphere.radius", this->radius);
       FieldTracing::fieldTracingParameters.innerBoundaryRadius = this->radius;
-      Readparameters::get("copysphere.geometry", this->geometry);
-      Readparameters::get("copysphere.precedence", this->precedence);
+      //Readparameters::get("copysphere.geometry", this->geometry);
+      //Readparameters::get("copysphere.precedence", this->precedence);
       uint reapply;
-      Readparameters::get("copysphere.reapplyUponRestart",reapply);
+      //Readparameters::get("copysphere.reapplyUponRestart",reapply);
       this->applyUponRestart = false;
       if(reapply == 1) {
          this->applyUponRestart = true;
       }
       uint noperb;
-      Readparameters::get("copysphere.zeroPerB",noperb);
+      //Readparameters::get("copysphere.zeroPerB",noperb);
       this->zeroPerB = false;
       if(noperb == 1) {
          this->zeroPerB = true;
@@ -100,20 +100,20 @@ namespace SBC {
         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
         CopysphereSpeciesParameters sP;
 
-        Readparameters::get(pop + "_copysphere.rho", sP.rho);
-        Readparameters::get(pop + "_copysphere.VX0", sP.V0[0]);
-        Readparameters::get(pop + "_copysphere.VY0", sP.V0[1]);
-        Readparameters::get(pop + "_copysphere.VZ0", sP.V0[2]);
-        Readparameters::get(pop + "_copysphere.fluffiness", sP.fluffiness);
-        Readparameters::get(pop + "_copysphere.T", sP.T);
+        //Readparameters::get(pop + "_copysphere.rho", sP.rho);
+        //Readparameters::get(pop + "_copysphere.VX0", sP.V0[0]);
+        //Readparameters::get(pop + "_copysphere.VY0", sP.V0[1]);
+        //Readparameters::get(pop + "_copysphere.VZ0", sP.V0[2]);
+        //Readparameters::get(pop + "_copysphere.fluffiness", sP.fluffiness);
+        //Readparameters::get(pop + "_copysphere.T", sP.T);
 
         // Failsafe, if density or temperature is zero, read from Magnetosphere
         // (compare the corresponding verbose handling in projects/Magnetosphere/Magnetosphere.cpp)
         if(sP.T == 0) {
-            Readparameters::get(pop + "_Magnetosphere.T", sP.T);
+            //Readparameters::get(pop + "_Magnetosphere.T", sP.T);
          }
          if(sP.rho == 0) {
-            Readparameters::get(pop + "_Magnetosphere.rho", sP.rho);
+            //Readparameters::get(pop + "_Magnetosphere.rho", sP.rho);
          }
 
          speciesParams.push_back(sP);
