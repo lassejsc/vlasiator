@@ -101,6 +101,7 @@ namespace species {
               Real precipitationLossConeAngle
               )
         :
+          name(name),
           charge(charge),
           mass_units(mass_units),
           mass(mass),                  
