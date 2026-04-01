@@ -57,7 +57,7 @@ namespace SBC {
       Copysphere();
       virtual ~Copysphere();
       
-      static void addParameters();
+      void addParameters();
       virtual void getParameters() override;
       
       virtual void initSysBoundary(
@@ -154,6 +154,7 @@ namespace SBC {
 
       std::vector<CopysphereSpeciesParameters> speciesParams;
       bool zeroPerB;
+      uint reapply;
       
       spatial_cell::SpatialCell templateCell;
 

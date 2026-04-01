@@ -2235,12 +2235,23 @@ namespace SBC {
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
-         Readparameters::add(pop + "_ionosphere.rho", "Number density of the ionosphere (m^-3)", 0.0);
-         Readparameters::add(pop + "_ionosphere.T", "Temperature of the ionosphere (K)", 0.0);
-         Readparameters::add(pop + "_ionosphere.VX0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", 0.0);
-         Readparameters::add(pop + "_ionosphere.VY0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", 0.0);
-         Readparameters::add(pop + "_ionosphere.VZ0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", 0.0);
+
+        IonosphereSpeciesParameters sP;
+         const std::string& pop =getObjectWrapper().particleSpecies[i].name;
+         Readparameters::add(pop + "_ionosphere.rho", "Number density of the ionosphere (m^-3)", sP.rho);
+         Readparameters::add(pop + "_ionosphere.T", "Temperature of the ionosphere (K)", sP.T);
+         Readparameters::add(pop + "_ionosphere.VX0", "Bulk velocity of ionospheric distribution function in X direction (m/s)",sP.V0);
+         // Readparameters::add(pop + "_ionosphere.VY0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", 0.0);
+         // Readparameters::add(pop + "_ionosphere.VZ0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", 0.0);
+         // if(sP.T == 0) {
+         //   //Readparameters::get(pop + "_Magnetosphere.T", sP.T);
+         // }
+         // if(sP.rho == 0) {
+         //    //Readparameters::get(pop + "_Magnetosphere.rho", sP.rho);
+         // }
+          //We need a way to set the sP.rho to Magnetosphere rho IF sp.Rho=0, currently that cannot be done because this initializes the population 
+          //Later those values are got from the population specific options when parsing, this is pre-parse
+        speciesParams.push_back(sP);
       }
    }
 
@@ -2340,27 +2351,27 @@ namespace SBC {
       //Readparameters::get("ionosphere.F10_7",F10_7);
       //Readparameters::get("ionosphere.backgroundIonisation",backgroundIonisation);
 
-      for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-        const std::string& pop = getObjectWrapper().particleSpecies[i].name;
-        IonosphereSpeciesParameters sP;
-
-        //Readparameters::get(pop + "_ionosphere.rho", sP.rho);
-        //Readparameters::get(pop + "_ionosphere.VX0", sP.V0[0]);
-        //Readparameters::get(pop + "_ionosphere.VY0", sP.V0[1]);
-        //Readparameters::get(pop + "_ionosphere.VZ0", sP.V0[2]);
-        //Readparameters::get(pop + "_ionosphere.T", sP.T);
-
-        // Failsafe, if density or temperature is zero, read from Magnetosphere
-        // (compare the corresponding verbose handling in projects/Magnetosphere/Magnetosphere.cpp)
-        if(sP.T == 0) {
-           //Readparameters::get(pop + "_Magnetosphere.T", sP.T);
-        }
-        if(sP.rho == 0) {
-           //Readparameters::get(pop + "_Magnetosphere.rho", sP.rho);
-        }
-
-        speciesParams.push_back(sP);
-      }
+      // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
+      //   const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+      //   IonosphereSpeciesParameters sP;
+      //
+      //   //Readparameters::get(pop + "_ionosphere.rho", sP.rho);
+      //   //Readparameters::get(pop + "_ionosphere.VX0", sP.V0[0]);
+      //   //Readparameters::get(pop + "_ionosphere.VY0", sP.V0[1]);
+      //   //Readparameters::get(pop + "_ionosphere.VZ0", sP.V0[2]);
+      //   //Readparameters::get(pop + "_ionosphere.T", sP.T);
+      //
+      //   // Failsafe, if density or temperature is zero, read from Magnetosphere
+      //   // (compare the corresponding verbose handling in projects/Magnetosphere/Magnetosphere.cpp)
+      //   if(sP.T == 0) {
+      //      //Readparameters::get(pop + "_Magnetosphere.T", sP.T);
+      //   }
+      //   if(sP.rho == 0) {
+      //      //Readparameters::get(pop + "_Magnetosphere.rho", sP.rho);
+      //   }
+      //
+      //   // speciesParams.push_back(sP);
+      // }
    }
 
    void Ionosphere::initSysBoundary(

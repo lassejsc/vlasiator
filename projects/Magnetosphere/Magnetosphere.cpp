@@ -48,52 +48,56 @@ namespace projects {
    void Magnetosphere::addParameters() {
       typedef Readparameters RP;
       // Common (field / etc.) parameters
-      RP::add("Magnetosphere.constBgBX", "Constant flat Bx component in the whole simulation box. Default is none.", 0.0);
-      RP::add("Magnetosphere.constBgBY", "Constant flat By component in the whole simulation box. Default is none.", 0.0);
-      RP::add("Magnetosphere.constBgBZ", "Constant flat Bz component in the whole simulation box. Default is none.", 0.0);
-      RP::add("Magnetosphere.noDipoleInSW", "If set to 1, the dipole magnetic field is not set in the solar wind inflow cells. Default 0.", 0.0);
-      RP::add("Magnetosphere.dipoleScalingFactor","Scales the field strength of the magnetic dipole compared to Earths.", 1.0);
-      RP::add("Magnetosphere.dipoleType","0: Normal 3D dipole, 1: line-dipole for 2D polar simulations, 2: line-dipole with mirror, 3: 3D dipole with mirror", 0);
-      RP::add("Magnetosphere.dipoleMirrorLocationX","x-coordinate of dipole Mirror", -1.0);
+      RP::add("Magnetosphere.constBgBX", "Constant flat Bx component in the whole simulation box. Default is none.", this->constBgB);
+      // RP::add("Magnetosphere.constBgBY", "Constant flat By component in the whole simulation box. Default is none.", this->constBgBY);
+      // RP::add("Magnetosphere.constBgBZ", "Constant flat Bz component in the whole simulation box. Default is none.", this->constBgBZ);
+      RP::add("Magnetosphere.noDipoleInSW", "If set to 1, the dipole magnetic field is not set in the solar wind inflow cells. Default 0.", this->noDipoleInSW);
+      RP::add("Magnetosphere.dipoleScalingFactor","Scales the field strength of the magnetic dipole compared to Earths.", this->dipoleScalingFactor);
+      RP::add("Magnetosphere.dipoleType","0: Normal 3D dipole, 1: line-dipole for 2D polar simulations, 2: line-dipole with mirror, 3: 3D dipole with mirror", this->dipoleType);
+      RP::add("Magnetosphere.dipoleMirrorLocationX","x-coordinate of dipole Mirror", this->dipoleMirrorLocationX);
 
-      RP::add("Magnetosphere.refine_L4radius","Radius of L4-refined sphere or cap", 6.0e7);
-      RP::add("Magnetosphere.refine_L4nosexmin","Low x-value of nose L4-refined box", 5.5e7);
+      RP::add("Magnetosphere.refine_L4radius","Radius of L4-refined sphere or cap", this->refine_L4radius);
+      RP::add("Magnetosphere.refine_L4nosexmin","Low x-value of nose L4-refined box", this->refine_L4nosexmin);
 
-      RP::add("Magnetosphere.refine_L3radius","Radius of L3-refined sphere or cap", 6.371e7); // 10 RE
-      RP::add("Magnetosphere.refine_L3nosexmin","Low x-value of nose L3-refined box", 5.0e7); //
-      RP::add("Magnetosphere.refine_L3tailheight","Height in +-z of tail L3-refined box", 1.0e7); //
-      RP::add("Magnetosphere.refine_L3tailwidth","Width in +-y of tail L3-refined box", 5.0e7); // 10 RE
-      RP::add("Magnetosphere.refine_L3tailxmin","Low x-value of tail L3-refined box", -20.0e7); // 10 RE
-      RP::add("Magnetosphere.refine_L3tailxmax","High x-value of tail L3-refined box", -5.0e7); // 10 RE
+      RP::add("Magnetosphere.refine_L3radius","Radius of L3-refined sphere or cap", this->refine_L3radius); // 10 RE
+      RP::add("Magnetosphere.refine_L3nosexmin","Low x-value of nose L3-refined box", this->refine_L3nosexmin); //
+      RP::add("Magnetosphere.refine_L3tailheight","Height in +-z of tail L3-refined box", this->refine_L3tailheight); //
+      RP::add("Magnetosphere.refine_L3tailwidth","Width in +-y of tail L3-refined box", this->refine_L3tailwidth); // 10 RE
+      RP::add("Magnetosphere.refine_L3tailxmin","Low x-value of tail L3-refined box", this->refine_L3tailxmin); // 10 RE
+      RP::add("Magnetosphere.refine_L3tailxmax","High x-value of tail L3-refined box", this->refine_L3tailxmax); // 10 RE
 
-      RP::add("Magnetosphere.refine_L2radius","Radius of L2-refined sphere", 9.5565e7); // 15 RE
-      RP::add("Magnetosphere.refine_L2tailthick","Thickness of L2-refined tail region", 3.1855e7); // 5 RE
-      RP::add("Magnetosphere.refine_L1radius","Radius of L1-refined sphere", 1.59275e8); // 25 RE
-      RP::add("Magnetosphere.refine_L1tailthick","Thickness of L1-refined tail region", 6.371e7); // 10 RE
+      RP::add("Magnetosphere.refine_L2radius","Radius of L2-refined sphere", this->refine_L2radius); // 15 RE
+      RP::add("Magnetosphere.refine_L2tailthick","Thickness of L2-refined tail region", this->refine_L2tailthick); // 5 RE
+      RP::add("Magnetosphere.refine_L1radius","Radius of L1-refined sphere", this->refine_L1radius); // 25 RE
+      RP::add("Magnetosphere.refine_L1tailthick","Thickness of L1-refined tail region", this->refine_L1tailthick); // 10 RE
 
-      RP::add("Magnetosphere.dipoleTiltPhi","Magnitude of dipole tilt, in degrees", 0.0);
-      RP::add("Magnetosphere.dipoleTiltTheta","Direction of dipole tilt from Sun-Earth-line, in degrees", 0.0);
-      RP::add("Magnetosphere.dipoleXFull","X-coordinate up to which dipole is at full strength, in metres", 9.5565e7); // 15 RE
-      RP::add("Magnetosphere.dipoleXZero","X-coordinate after which dipole is at zero strength, in metres", 1.9113e8); // 30 RE
-      RP::add("Magnetosphere.dipoleInflowBX","Inflow magnetic field Bx component to which the vector potential dipole converges. Default is none.", 0.0);
-      RP::add("Magnetosphere.dipoleInflowBY","Inflow magnetic field By component to which the vector potential dipole converges. Default is none.", 0.0);
-      RP::add("Magnetosphere.dipoleInflowBZ","Inflow magnetic field Bz component to which the vector potential dipole converges. Default is none.", 0.0);
+      RP::add("Magnetosphere.dipoleTiltPhi","Magnitude of dipole tilt, in degrees", this->dipoleTiltPhi);
+      RP::add("Magnetosphere.dipoleTiltTheta","Direction of dipole tilt from Sun-Earth-line, in degrees", this->dipoleTiltTheta);
+      RP::add("Magnetosphere.dipoleXFull","X-coordinate up to which dipole is at full strength, in metres", this->dipoleXFull); // 15 RE
+      RP::add("Magnetosphere.dipoleXZero","X-coordinate after which dipole is at zero strength, in metres", this->dipoleXZero); // 30 RE
+      RP::add("Magnetosphere.dipoleInflowBX","Inflow magnetic field Bx component to which the vector potential dipole converges. Default is none.", this->dipoleInflowB);
+      // RP::add("Magnetosphere.dipoleInflowBY","Inflow magnetic field By component to which the vector potential dipole converges. Default is none.", this->dipoleInflowBY);
+      // RP::add("Magnetosphere.dipoleInflowBZ","Inflow magnetic field Bz component to which the vector potential dipole converges. Default is none.", this->dipoleInflowBZ);
       //New Parameter for zeroing out derivativeNew Parameter for zeroing out derivativess
-      RP::add("Magnetosphere.zeroOutDerivativesX","Zero Out Perpendicular components", 1.0);
-      RP::add("Magnetosphere.zeroOutDerivativesY","Zero Out Perpendicular components", 1.0);
-      RP::add("Magnetosphere.zeroOutDerivativesZ","Zero Out Perpendicular components", 1.0);
+      RP::add("Magnetosphere.zeroOutDerivativesX","Zero Out Perpendicular components", this->zeroOutComponents);
+      // RP::add("Magnetosphere.zeroOutDerivativesY","Zero Out Perpendicular components", this->zeroOutDerivativesY);
+      // RP::add("Magnetosphere.zeroOutDerivativesZ","Zero Out Perpendicular components", this->zeroOutDerivativesZ);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
+        
+         MagnetosphereSpeciesParameters sP;
          const std::string& pop = getObjectWrapper().particleSpecies[i].name;
 
-         RP::add(pop + "_Magnetosphere.rho", "Tail region number density (m^-3)", 0.0);
-         RP::add(pop + "_Magnetosphere.T", "Temperature (K)", 0.0);
-         RP::add(pop + "_Magnetosphere.VX0", "Initial bulk velocity in x-direction", 0.0);
-         RP::add(pop + "_Magnetosphere.VY0", "Initial bulk velocity in y-direction", 0.0);
-         RP::add(pop + "_Magnetosphere.VZ0", "Initial bulk velocity in z-direction", 0.0);
-         RP::add(pop + "_Magnetosphere.taperInnerRadius", "Inner radius of the zone with a density tapering from the ionospheric value to the background (m)", 0.0);
-         RP::add(pop + "_Magnetosphere.taperOuterRadius", "Outer radius of the zone with a density tapering from the ionospheric value to the background (m)", 0.0);
+         RP::add(pop + "_Magnetosphere.rho", "Tail region number density (m^-3)", sP.rho);
+         RP::add(pop + "_Magnetosphere.T", "Temperature (K)", sP.T);
+         RP::add(pop + "_Magnetosphere.VX0", "Initial bulk velocity in x-direction", sP.V0);
+         // RP::add(pop + "_Magnetosphere.VY0", "Initial bulk velocity in y-direction", 0.0);
+         // RP::add(pop + "_Magnetosphere.VZ0", "Initial bulk velocity in z-direction", 0.0);
+         RP::add(pop + "_Magnetosphere.taperInnerRadius", "Inner radius of the zone with a density tapering from the ionospheric value to the background (m)", sP.taperInnerRadius);
+         RP::add(pop + "_Magnetosphere.taperOuterRadius", "Outer radius of the zone with a density tapering from the ionospheric value to the background (m)", sP.taperOuterRadius);
+         this->speciesParams.push_back(sP);
+
       }
    }
 
@@ -250,7 +254,7 @@ namespace projects {
             sP.ionosphereRho = sP.rho;
          }
 
-         speciesParams.push_back(sP);
+         // speciesParams.push_back(sP);
       }
 
    }
