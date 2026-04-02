@@ -68,7 +68,7 @@ namespace projects {
          auto sP=&this->speciesParams.at(i);
          RP::add(pop + "_Alfven.rho", "Number density (m^-3)", sP->rho);
          RP::add(pop + "_Alfven.Temperature", "Temperature (K)", sP->T);
-         RP::add(pop + "_Alfven.A_vel", "Amplitude of the velocity perturbation", sP->A_vel);
+         RP::add(pop + "_Alfven.A_vel", "Amplitude of the velocity perturbation", sP->A_VEL);
 
       }
    }
