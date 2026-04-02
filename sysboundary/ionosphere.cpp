@@ -2289,9 +2289,9 @@ namespace SBC {
 
       //Readparameters::get("ionosphere.baseShape",baseShape);
 
-      int cm;
+      // int cm;
       //Readparameters::get("ionosphere.conductivityModel", cm);
-      conductivityModel = static_cast<Ionosphere::IonosphereConductivityModel>(cm);
+      // conductivityModel = static_cast<Ionosphere::IonosphereConductivityModel>(cm);
 
       std::string VDFmodeString;
       //Readparameters::get("ionosphere.innerBoundaryVDFmode", VDFmodeString);

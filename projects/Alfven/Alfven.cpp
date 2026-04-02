@@ -51,26 +51,29 @@ namespace projects {
 
    void Alfven::addParameters() {
       typedef Readparameters RP;
-      RP::add("Alfven.B0", "Guiding field value (T)", 1.0e-10);
-      RP::add("Alfven.Bx_guiding", "Guiding field x component", 1);
-      RP::add("Alfven.By_guiding", "Guiding field y component", 0);
-      RP::add("Alfven.Bz_guiding", "Guiding field z component", 0);
-      RP::add("Alfven.Wavelength", "Wavelength (m)", 100000.0);
-      RP::add("Alfven.A_mag", "Amplitude of the magnetic perturbation", 0.1);
+      RP::add("Alfven.B0", "Guiding field value (T)", this->B0);
+      RP::add("Alfven.Bx_guiding", "Guiding field x component", this->Bx_guiding);
+      RP::add("Alfven.By_guiding", "Guiding field y component", this->By_guiding);
+      RP::add("Alfven.Bz_guiding", "Guiding field z component", this->Bz_guiding);
+      RP::add("Alfven.Wavelength", "Wavelength (m)", this->WAVELENGTH);
+      RP::add("Alfven.A_mag", "Amplitude of the magnetic perturbation", this->A_MAG);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i].name;
 
-         RP::add(pop + "_Alfven.rho", "Number density (m^-3)", 1.0e8);
-         RP::add(pop + "_Alfven.Temperature", "Temperature (K)", 0.86456498092);
-         RP::add(pop + "_Alfven.A_vel", "Amplitude of the velocity perturbation", 0.1);
+         AlfvenSpeciesParameters newsP;
+         
+         this->speciesParams.push_back(newsP);
+         auto sP=&this->speciesParams.at(i);
+         RP::add(pop + "_Alfven.rho", "Number density (m^-3)", sP->rho);
+         RP::add(pop + "_Alfven.Temperature", "Temperature (K)", sP->T);
+         RP::add(pop + "_Alfven.A_vel", "Amplitude of the velocity perturbation", sP->A_vel);
 
       }
    }
 
    void Alfven::getParameters(){
-      Project::getParameters();
 
       typedef Readparameters RP;
       //RP::get("Alfven.B0", this->B0);
@@ -81,17 +84,17 @@ namespace projects {
       //RP::get("Alfven.A_mag", this->A_MAG);
 
       // Per-population parameters
-      for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
-
-         AlfvenSpeciesParameters sP;
-
-         //RP::get(pop + "_Alfven.rho", sP.rho);
-         //RP::get(pop + "_Alfven.Temperature",sP.T);
-         //RP::get(pop + "_Alfven.A_vel", sP.A_VEL);
-
-         speciesParams.push_back(sP);
-      }
+      // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
+      //    const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+      //
+      //    AlfvenSpeciesParameters sP;
+      //
+      //    //RP::get(pop + "_Alfven.rho", sP.rho);
+      //    //RP::get(pop + "_Alfven.Temperature",sP.T);
+      //    //RP::get(pop + "_Alfven.A_vel", sP.A_VEL);
+      //
+      //    speciesParams.push_back(sP);
+      // }
    }
 
    Realf Alfven::fillPhaseSpace(spatial_cell::SpatialCell *cell,

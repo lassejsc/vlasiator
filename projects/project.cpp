@@ -75,27 +75,27 @@ namespace projects {
    void Project::addParameters() {
       typedef Readparameters RP;
       // TODO add all projects' static addParameters() functions here.
-      projects::Alfven::addParameters();
-      projects::Diffusion::addParameters();
-      projects::Dispersion::addParameters();
-      projects::Distributions::addParameters();
-      projects::Firehose::addParameters();
-      projects::Flowthrough::addParameters();
-      projects::Fluctuations::addParameters();
-      projects::Harris::addParameters();
-      projects::KHB::addParameters();
-      projects::Larmor::addParameters();
-      // projects::Magnetosphere::addParameters();
-      projects::MultiPeak::addParameters();
-      projects::Riemann1::addParameters();
-      projects::Shock::addParameters();
-      projects::IPShock::addParameters();
-      projects::Template::addParameters();
-      projects::test_fp::addParameters();
-      projects::TestHall::addParameters();
-      projects::verificationLarmor::addParameters();
-      projects::Shocktest::addParameters();
-      projects::LossCone::addParameters();
+      // projects::Alfven::addParameters();
+      // projects::Diffusion::addParameters();
+      // projects::Dispersion::addParameters();
+      // projects::Distributions::addParameters();
+      // projects::Firehose::addParameters();
+      // projects::Flowthrough::addParameters();
+      // projects::Fluctuations::addParameters();
+      // projects::Harris::addParameters();
+      // projects::KHB::addParameters();
+      // projects::Larmor::addParameters();
+      // // projects::Magnetosphere::addParameters();
+      // projects::MultiPeak::addParameters();
+      // projects::Riemann1::addParameters();
+      // projects::Shock::addParameters();
+      // projects::IPShock::addParameters();
+      // projects::Template::addParameters();
+      // projects::test_fp::addParameters();
+      // projects::TestHall::addParameters();
+      // projects::verificationLarmor::addParameters();
+      // projects::Shocktest::addParameters();
+      // projects::LossCone::addParameters();
       RP::add("Project_common.seed", "Seed for the RNG", this->seed);
 
    }
@@ -727,6 +727,7 @@ Project* createProject() {
    }
 
    getObjectWrapper().project = rvalue;
+   rvalue->addParameters();
    return rvalue;
 }
 
