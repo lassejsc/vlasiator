@@ -41,7 +41,7 @@ namespace projects {
       virtual ~Diffusion();
       
       virtual bool initialize(void) override;
-      static void addParameters(void);
+      void addParameters(void);
       virtual void getParameters(void) override;
       /*! set background field, should set it for all cells */
       virtual void setProjectBField(

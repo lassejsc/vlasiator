@@ -45,37 +45,43 @@ namespace projects {
 
    void Diffusion::addParameters() {
       typedef Readparameters RP;
-      RP::add("Diffusion.B0", "Background field value (T)", 1.0e-9);
+      RP::add("Diffusion.B0", "Background field value (T)", this->B0);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
 
-         RP::add(pop + "_Diffusion.rho", "Number density (m^-3)", 1.0e7);
-         RP::add(pop + "_Diffusion.Temperature", "Temperature (K)", 2.0e6);
-         RP::add(pop + "_Diffusion.Scale_x", "Scale length in x (m)", 100000.0);
-         RP::add(pop + "_Diffusion.Scale_y", "Scale length in y (m)", 100000.0);
+         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+        
+
+         DiffusionSpeciesParameters newsP;
+    
+         this->speciesParams.push_back(newsP);
+         auto sP=&this->speciesParams.at(i); 
+         RP::add(pop + "_Diffusion.rho", "Number density (m^-3)",sP->rho );
+         RP::add(pop + "_Diffusion.Temperature", "Temperature (K)", sP->Temperature);
+         RP::add(pop + "_Diffusion.Scale_x", "Scale length in x (m)", sP->Scale_x);
+         RP::add(pop + "_Diffusion.Scale_y", "Scale length in y (m)", sP->Scale_y);
       }
    }
 
    void Diffusion::getParameters() {
-      Project::getParameters();
+      // Project::getParameters();
 
-      typedef Readparameters RP;
-      //RP::get("Diffusion.B0", this->B0);
-
-      // Per-population parameters
-      for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-        const std::string& pop = getObjectWrapper().particleSpecies[i].name;
-        DiffusionSpeciesParameters sP;
-
-        //RP::get(pop + "_Diffusion.rho", sP.DENSITY);
-        //RP::get(pop + "_Diffusion.Temperature", sP.TEMPERATURE);
-        //RP::get(pop + "_Diffusion.Scale_x", sP.SCA_X);
-        //RP::get(pop + "_Diffusion.Scale_y", sP.SCA_Y);
-
-        speciesParams.push_back(sP);
-      }
+      // typedef Readparameters RP;
+      // //RP::get("Diffusion.B0", this->B0);
+      //
+      // // Per-population parameters
+      // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
+      //   const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+      //   DiffusionSpeciesParameters sP;
+      //
+      //   //RP::get(pop + "_Diffusion.rho", sP.DENSITY);
+      //   //RP::get(pop + "_Diffusion.Temperature", sP.TEMPERATURE);
+      //   //RP::get(pop + "_Diffusion.Scale_x", sP.SCA_X);
+      //   //RP::get(pop + "_Diffusion.Scale_y", sP.SCA_Y);
+      //
+      //   speciesParams.push_back(sP);
+      // }
    }
 
    Realf Diffusion::fillPhaseSpace(spatial_cell::SpatialCell *cell,
