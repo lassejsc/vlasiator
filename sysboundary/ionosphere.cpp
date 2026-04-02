@@ -2196,9 +2196,9 @@ namespace SBC {
    Ionosphere::~Ionosphere() { }
 
    void Ionosphere::addParameters() {
-      std::function<void(const std::string)>lambda_fun = [this](std::string){
+      std::function<void(const std::string)>lambda_fun = [this](std::string VDFmodeString){
        if(VDFmodeString == "FixedMoments") {
-         boundaryVDFmode = FixedMoments;
+         boundaryVDFmode = boundaryVDFmode::FixedMoments;
         } else if(VDFmodeString == "AverageMoments") {
           boundaryVDFmode = AverageMoments;
         } else if(VDFmodeString == "AverageAllMoments") {
@@ -2206,8 +2206,8 @@ namespace SBC {
         } else if(VDFmodeString == "CopyAndLosscone") {
           boundaryVDFmode = CopyAndLosscone;
         } else {
-         cerr << "(IONOSPHERE) Unknown inner boundary VDF mode \"" << VDFmodeString << "\". Aborting." << endl;
-         abort
+          cerr << "(IONOSPHERE) Unknown inner boundary VDF mode \"" << VDFmodeString << "\". Aborting." << endl;
+          abort();
         }
       };
       Readparameters::add("ionosphere.centerX", "X coordinate of ionosphere center (m)",this->center[0]);
