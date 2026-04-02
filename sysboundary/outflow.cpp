@@ -65,6 +65,7 @@ namespace SBC {
         for(int j=0; j<6; j++) {
           sP->facesToSkipVlasov[j] = true;
         }
+        sP->faceVlasovScheme={0,0,0,0,0,0};
         Readparameters::add(pop + "_outflow.reapplyFaceUponRestart", "List of faces on which outflow boundary conditions are to be reapplied upon restart ([xyz][+-]).",sP->faceToReapplyUponRestartList);
         std::function<void(const string)> lambda_fun=[this](const string face){  
           if(face == "x+") { this->facesToProcess[0] = true;}// sP.facesToSkipVlasov[0] = false; }  This processing has to be done laters
