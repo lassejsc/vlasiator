@@ -74,11 +74,23 @@ public:
          // } else {
          //    ss << defValue;
          // }
-         options[name] = "";
-         isOptionParsed[name] = false;
-         app->add_option(
-             name.c_str(), defValue,
-             desc.c_str())->each(lambda);
+        options[name] = "";
+        isOptionParsed[name] = false;
+        if (name.find('.') != std::string::npos) {
+
+          auto indx = name.find('.');
+          auto subcom = name.substr(0, indx);
+          auto namein = name.substr(indx + 1, name.size());
+          auto sub = app->add_subcommand(subcom, "uhuhh");
+          sub->add_option(namein.c_str(), defValue, desc.c_str())->each(lambda);
+        } else {
+          app->add_option(name.c_str(), defValue, desc.c_str())->each(lambda);
+        }  
+         // options[name] = "";
+         // isOptionParsed[name] = false;
+         // app->add_option(
+         //     name.c_str(), defValue,
+             // desc.c_str())->each(lambda);
       }
    }
   // template <typename T> static void add_each_lambda(const std::string& name, const std::string& desc, const T& defValue,
@@ -114,11 +126,22 @@ public:
          // } else {
          //    ss << defValue;
          // }
-         options[name] = "";
-         isOptionParsed[name] = false;
-         app->add_option(
-             name.c_str(), defValue,
-             desc.c_str());
+      //
+        options[name] = "";
+        isOptionParsed[name] = false;
+        if (name.find('.') != std::string::npos) {
+
+          auto indx = name.find('.');
+          auto subcom = name.substr(0, indx);
+          auto namein = name.substr(indx + 1, name.size());
+          auto sub = app->add_subcommand(subcom, "uhuhh");
+          sub->add_option(namein.c_str(), defValue, desc.c_str()); //->each(lambda);
+        } else {
+          app->add_option(name.c_str(), defValue, desc.c_str()); //->each(lambda);
+        }
+         // app->add_option(
+         //     name.c_str(), defValue,
+             // desc.c_str());
       }
    }
 
