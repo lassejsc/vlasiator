@@ -2198,7 +2198,7 @@ namespace SBC {
    void Ionosphere::addParameters() {
       std::function<void(const std::string)>lambda_fun = [this](std::string VDFmodeString){
        if(VDFmodeString == "FixedMoments") {
-         boundaryVDFmode = boundaryVDFmode::FixedMoments;
+         boundaryVDFmode = FixedMoments;
         } else if(VDFmodeString == "AverageMoments") {
           boundaryVDFmode = AverageMoments;
         } else if(VDFmodeString == "AverageAllMoments") {
