@@ -60,7 +60,7 @@ public:
    //           desc.c_str());
    //    }
    // }
-    template <typename T> void add_each_lambda(const std::string& name, const std::string& desc, T& defValue,
+    template <typename T> static void add_each_lambda(const std::string& name, const std::string& desc, T& defValue,
         std::function<void(const std::string)> lambda
                                                     ) {
       int rank;
@@ -102,7 +102,7 @@ public:
   //            desc.c_str())->each(lambda);
   //     }
   //  }
-   template <typename T> void add(const std::string& name, const std::string& desc,  T& defValue) {
+   template <typename T> static void add(const std::string& name, const std::string& desc,  T& defValue) {
       int rank;
       MPI_Comm_rank(MPI_COMM_WORLD, &rank);
       if (rank == MASTER_RANK) {
