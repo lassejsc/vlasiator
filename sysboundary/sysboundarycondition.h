@@ -58,7 +58,7 @@ namespace SBC {
          SysBoundaryCondition();
          virtual ~SysBoundaryCondition();
          
-         static void addParameters();
+         void addParameters();
          virtual void getParameters()=0;
          
          virtual void initSysBoundary(

@@ -45,7 +45,7 @@
 using namespace std;
 
 namespace SBC {
-   Outflow::Outflow(): OuterBoundaryCondition() { }
+   Outflow::Outflow(): OuterBoundaryCondition() { this->addParameters();}
    Outflow::~Outflow() { }
 
    void Outflow::addParameters() {
@@ -68,7 +68,7 @@ namespace SBC {
           if(face == "z+") { this->facesToProcess[4] = true;}// sP.facesToSkipVlasov[4] = false; }
           if(face == "z-") { this->facesToProcess[5] = true;}// sP.facesToSkipVlasov[5] = false; }
         };
-        Readparameters::add_each_lambda(pop + "_outflow.face", "List of faces on which outflow boundary conditions are to be applied ([xyz][+-]).",vector<string>{},lambda_fun);
+        Readparameters::add_each_lambda(pop + "_outflow.face", "List of faces on which outflow boundary conditions are to be applied ([xyz][+-]).",this->populations,lambda_fun);
         Readparameters::add(pop + "_outflow.vlasovScheme_face_x+", "Scheme to use on the face x+ (Copy, None)", this->vlasovSysBoundarySchemeName);
         // Readparameters::add(pop + "_outflow.vlasovScheme_face_x-", "Scheme to use on the face x- (Copy, None)", defStr);
         // Readparameters::add(pop + "_outflow.vlasovScheme_face_y+", "Scheme to use on the face y+ (Copy, None)", defStr);

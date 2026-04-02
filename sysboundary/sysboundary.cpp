@@ -80,17 +80,17 @@ void SysBoundary::addParameters() {
    Readparameters::add(
        "boundaries.boundary",
        "List of boundary condition (BC) types to be used. Each boundary condition to be used has to be on a new line "
-       "boundary = YYY. Available options are: Outflow, Ionosphere, Copysphere, Maxwellian.");
-   Readparameters::add("boundaries.periodic_x", "Set the grid periodicity in x-direction. 'yes'(default)/'no'.", "yes");
-   Readparameters::add("boundaries.periodic_y", "Set the grid periodicity in y-direction. 'yes'(default)/'no'.", "yes");
-   Readparameters::add("boundaries.periodic_z", "Set the grid periodicity in z-direction. 'yes'(default)/'no'.", "yes");
+       "boundary = YYY. Available options are: Outflow, Ionosphere, Copysphere, Maxwellian.",sysBoundaryCondList);
+   Readparameters::add("boundaries.periodic_x", "Set the grid periodicity in x-direction. 'yes'(default)/'no'.", this->periodic);
+   // Readparameters::add("boundaries.periodic_y", "Set the grid periodicity in y-direction. 'yes'(default)/'no'.", "yes");
+   // Readparameters::add("boundaries.periodic_z", "Set the grid periodicity in z-direction. 'yes'(default)/'no'.", "yes");
 
    // call static addParameter functions in all bc's
    SBC::DoNotCompute::addParameters();
-   SBC::Ionosphere::addParameters();
-   SBC::Copysphere::addParameters();
-   SBC::Outflow::addParameters();
-   SBC::Maxwellian::addParameters();
+   // SBC::Ionosphere::addParameters();
+   // SBC::Copysphere::addParameters();
+   // SBC::Outflow::addParameters();
+   // SBC::Maxwellian::addParameters();
 }
 
 /*!\brief Get this class' parameters.

@@ -52,9 +52,9 @@ namespace SBC {
       // conditions, in the order of x+, x-, y+, y-, z+, z-.
       std::fill_n(facesToProcess, 6, false);
 
-      this->getParameters();
+      // this->getParameters();
 
-      for (auto& it : faceList) {
+      for (auto& it : this->faceList) {
          if (it == "x+") {
             facesToProcess[0] = true;
          } else if (it == "x-") {

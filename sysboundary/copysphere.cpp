@@ -47,7 +47,7 @@
 #endif
 
 namespace SBC {
-   Copysphere::Copysphere(): SysBoundaryCondition() { }
+   Copysphere::Copysphere(): SysBoundaryCondition() { this->addParameters();}
 
    Copysphere::~Copysphere() { }
 

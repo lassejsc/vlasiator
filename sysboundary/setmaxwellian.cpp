@@ -35,51 +35,54 @@
 #include "sysboundarycondition.h"
 
 namespace SBC {
-   Maxwellian::Maxwellian() : Inflow() {}
+   Maxwellian::Maxwellian() : Inflow() {this->addParameters();}
    Maxwellian::~Maxwellian() {}
-
    void Maxwellian::addParameters() {
       Readparameters::add(
-          "maxwellian.face", "List of faces on which set Maxwellian boundary conditions are to be applied ([xyz][+-]).");
+          "maxwellian.face", "List of faces on which set Maxwellian boundary conditions are to be applied ([xyz][+-]).",this->faceList);
       Readparameters::add("maxwellian.precedence",
                           "Precedence value of the set Maxwellian boundary condition (integer), the higher the stronger.",
-                          3);
+                          this->precedence);
       Readparameters::add("maxwellian.reapplyUponRestart",
                           "If 0 (default), keep going with the state existing in the restart file. If 1, calls again "
                           "applyInitialState. Can be used to change boundary condition behaviour during a run.",
-                          0);
+                          this->applyUponRestart);
       Readparameters::add("maxwellian.t_interval", "Time interval in seconds for applying the varying inflow condition.",
-                          0.0); // 0 = re-calculate every time
+                          this->tInterval); // 0 = re-calculate every time
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i].name;
 
+         InflowSpeciesParameters sP;
+         sP.nParams = 9;
          Readparameters::add(pop + "_maxwellian.file_x+",
                              "Input files for the set Maxwellian inflow parameters on face x+. Data format per line: time "
                              "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-                             "");
-         Readparameters::add(pop + "_maxwellian.file_x-",
-                             "Input files for the set Maxwellian inflow parameters on face x-. Data format per line: time "
-                             "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-                             "");
-         Readparameters::add(pop + "_maxwellian.file_y+",
-                             "Input files for the set Maxwellian inflow parameters on face y+. Data format per line: time "
-                             "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-                             "");
-         Readparameters::add(pop + "_maxwellian.file_y-",
-                             "Input files for the set Maxwellian inflow parameters on face y-. Data format per line: time "
-                             "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-                             "");
-         Readparameters::add(pop + "_maxwellian.file_z+",
-                             "Input files for the set Maxwellian inflow parameters on face z+. Data format per line: time "
-                             "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-                             "");
-         Readparameters::add(pop + "_maxwellian.file_z-",
-                             "Input files for the set Maxwellian inflow parameters on face z-. Data format per line: time "
-                             "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-                             "");
+                             sP.files);
+         // Readparameters::add(pop + "_maxwellian.file_x-",
+         //                     "Input files for the set Maxwellian inflow parameters on face x-. Data format per line: time "
+         //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
+         //                     "");
+         // Readparameters::add(pop + "_maxwellian.file_y+",
+         //                     "Input files for the set Maxwellian inflow parameters on face y+. Data format per line: time "
+         //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
+         //                     "");
+         // Readparameters::add(pop + "_maxwellian.file_y-",
+         //                     "Input files for the set Maxwellian inflow parameters on face y-. Data format per line: time "
+         //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
+         //                     "");
+         // Readparameters::add(pop + "_maxwellian.file_z+",
+         //                     "Input files for the set Maxwellian inflow parameters on face z+. Data format per line: time "
+         //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
+         //                     "");
+         // Readparameters::add(pop + "_maxwellian.file_z-",
+         //                     "Input files for the set Maxwellian inflow parameters on face z-. Data format per line: time "
+         //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
+         //                     "");
          Readparameters::add(pop + "_maxwellian.dynamic",
-                             "Boolean value, is the set Maxwellian inflow dynamic in time or not.", 0);
+                             "Boolean value, is the set Maxwellian inflow dynamic in time or not.", dynamic);
+
+         speciesParams.push_back(sP);
       }
    }
 
@@ -87,31 +90,31 @@ namespace SBC {
       //Readparameters::get("maxwellian.face", faceList);
       //Readparameters::get("maxwellian.precedence", precedence);
 
-      uint reapply;
-      //Readparameters::get("maxwellian.reapplyUponRestart", reapply);
-      //Readparameters::get("maxwellian.t_interval", tInterval);
-      this->applyUponRestart = false;
-      if(reapply == 1) {
-         this->applyUponRestart = true;
-      }
+      // uint reapply;
+      // //Readparameters::get("maxwellian.reapplyUponRestart", reapply);
+      // //Readparameters::get("maxwellian.t_interval", tInterval);
+      // this->applyUponRestart = false;
+      // if(reapply == 1) {
+      //    this->applyUponRestart = true;
+      // }
 
       // Per-population parameters
-      for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
-
-         InflowSpeciesParameters sP;
-         sP.nParams = 9;
-
-         //Readparameters::get(pop + "_maxwellian.dynamic", dynamic);
-         //Readparameters::get(pop + "_maxwellian.file_x+", sP.files[0]);
-         //Readparameters::get(pop + "_maxwellian.file_x-", sP.files[1]);
-         //Readparameters::get(pop + "_maxwellian.file_y+", sP.files[2]);
-         //Readparameters::get(pop + "_maxwellian.file_y-", sP.files[3]);
-         //Readparameters::get(pop + "_maxwellian.file_z+", sP.files[4]);
-         //Readparameters::get(pop + "_maxwellian.file_z-", sP.files[5]);
-
-         speciesParams.push_back(sP);
-      }
+      // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
+      //    const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+      //
+      //    InflowSpeciesParameters sP;
+      //    sP.nParams = 9;
+      //
+      //    //Readparameters::get(pop + "_maxwellian.dynamic", dynamic);
+      //    //Readparameters::get(pop + "_maxwellian.file_x+", sP.files[0]);
+      //    //Readparameters::get(pop + "_maxwellian.file_x-", sP.files[1]);
+      //    //Readparameters::get(pop + "_maxwellian.file_y+", sP.files[2]);
+      //    //Readparameters::get(pop + "_maxwellian.file_y-", sP.files[3]);
+      //    //Readparameters::get(pop + "_maxwellian.file_z+", sP.files[4]);
+      //    //Readparameters::get(pop + "_maxwellian.file_z-", sP.files[5]);
+      //
+      //    speciesParams.push_back(sP);
+      // }
    }
 
    /*!\brief Generate the template cell for the face corresponding to the index passed.

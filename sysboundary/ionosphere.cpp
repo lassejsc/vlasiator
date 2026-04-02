@@ -2191,7 +2191,7 @@ namespace SBC {
 
    // Actual ionosphere object implementation
 
-   Ionosphere::Ionosphere(): SysBoundaryCondition() { }
+   Ionosphere::Ionosphere(): SysBoundaryCondition() { this->addParameters();}
 
    Ionosphere::~Ionosphere() { }
 

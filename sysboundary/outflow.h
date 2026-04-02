@@ -140,6 +140,7 @@ namespace SBC {
       
    protected:
       /*! Array of bool telling which faces are going to be processed by the fields system boundary condition.*/
+      std::vector<std::string> populations;
       bool facesToSkipFields[6];
       /*! Array of bool telling which faces are going to be reapplied upon restart.*/
       bool facesToReapply[6];
