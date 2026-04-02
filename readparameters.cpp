@@ -74,7 +74,7 @@ Readparameters::Readparameters(int cmdargc, char* cmdargv[]) {
 }
 
 Readparameters::~Readparameters() {
-  delete app;
+  //delete app;
 }
 
 /** Add a new composing input parameter.

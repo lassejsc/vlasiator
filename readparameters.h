@@ -60,7 +60,7 @@ public:
    //           desc.c_str());
    //    }
    // }
-    template <typename T> static void add_each_lambda(const std::string& name, const std::string& desc, const T& defValue,
+    template <typename T> static void add_each_lambda(const std::string& name, const std::string& desc, T& defValue,
         std::function<void(const std::string)> lambda
                                                     ) {
       int rank;
