@@ -70,7 +70,7 @@ namespace projects {
       baseClassInitialized = false;
    }
 
-   Project::~Project() { }
+   Project::~Project() {Project::addParameters(); }
 
    void Project::addParameters() {
       typedef Readparameters RP;
@@ -85,7 +85,7 @@ namespace projects {
       projects::Harris::addParameters();
       projects::KHB::addParameters();
       projects::Larmor::addParameters();
-      projects::Magnetosphere::addParameters();
+      // projects::Magnetosphere::addParameters();
       projects::MultiPeak::addParameters();
       projects::Riemann1::addParameters();
       projects::Shock::addParameters();
@@ -96,7 +96,7 @@ namespace projects {
       projects::verificationLarmor::addParameters();
       projects::Shocktest::addParameters();
       projects::LossCone::addParameters();
-      RP::add("Project_common.seed", "Seed for the RNG", 42);
+      RP::add("Project_common.seed", "Seed for the RNG", this->seed);
 
    }
 

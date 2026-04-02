@@ -61,27 +61,27 @@ namespace SBC {
          Readparameters::add(pop + "_maxwellian.file_x+",
                              "Input files for the set Maxwellian inflow parameters on face x+. Data format per line: time "
                              "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-                             sP->files);
-         // Readparameters::add(pop + "_maxwellian.file_x-",
-         //                     "Input files for the set Maxwellian inflow parameters on face x-. Data format per line: time "
-         //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-         //                     "");
-         // Readparameters::add(pop + "_maxwellian.file_y+",
-         //                     "Input files for the set Maxwellian inflow parameters on face y+. Data format per line: time "
-         //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-         //                     "");
-         // Readparameters::add(pop + "_maxwellian.file_y-",
-         //                     "Input files for the set Maxwellian inflow parameters on face y-. Data format per line: time "
-         //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-         //                     "");
-         // Readparameters::add(pop + "_maxwellian.file_z+",
-         //                     "Input files for the set Maxwellian inflow parameters on face z+. Data format per line: time "
-         //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-         //                     "");
-         // Readparameters::add(pop + "_maxwellian.file_z-",
-         //                     "Input files for the set Maxwellian inflow parameters on face z-. Data format per line: time "
-         //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-         //                     "");
+                             sP->files[0]);
+         Readparameters::add(pop + "_maxwellian.file_x-",
+                             "Input files for the set Maxwellian inflow parameters on face x-. Data format per line: time "
+                             "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
+                             sP->files[1]);
+         Readparameters::add(pop + "_maxwellian.file_y+",
+                             "Input files for the set Maxwellian inflow parameters on face y+. Data format per line: time "
+                             "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
+                             sP->files[2]);
+         Readparameters::add(pop + "_maxwellian.file_y-",
+                             "Input files for the set Maxwellian inflow parameters on face y-. Data format per line: time "
+                             "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
+                             sP->files[3]);
+         Readparameters::add(pop + "_maxwellian.file_z+",
+                             "Input files for the set Maxwellian inflow parameters on face z+. Data format per line: time "
+                             "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
+                             sP->files[4]);
+         Readparameters::add(pop + "_maxwellian.file_z-",
+                             "Input files for the set Maxwellian inflow parameters on face z-. Data format per line: time "
+                             "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
+                             sP->files[5]);
          Readparameters::add(pop + "_maxwellian.dynamic",
                              "Boolean value, is the set Maxwellian inflow dynamic in time or not.", this->dynamic);
 

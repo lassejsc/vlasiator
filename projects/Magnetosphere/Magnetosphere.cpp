@@ -106,7 +106,7 @@ namespace projects {
       int myRank;
       MPI_Comm_rank(MPI_COMM_WORLD,&myRank);
 
-      Project::getParameters();
+      // Project::getParameters();
       SysBoundary& sysBoundaryContainer = getObjectWrapper().sysBoundaryContainer;
 
       Real dummy;

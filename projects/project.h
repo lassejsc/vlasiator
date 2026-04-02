@@ -78,7 +78,7 @@ namespace projects {
       virtual ~Project();
       
       /*! Register parameters that should be read in. */
-      static void addParameters();
+      void addParameters();
       
       virtual Real getCorrectNumberDensity(spatial_cell::SpatialCell* cell,const uint popID) const;
       
