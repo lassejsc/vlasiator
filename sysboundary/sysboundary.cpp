@@ -80,10 +80,10 @@ void SysBoundary::addParameters() {
    Readparameters::add(
        "boundaries.boundary",
        "List of boundary condition (BC) types to be used. Each boundary condition to be used has to be on a new line "
-       "boundary = YYY. Available options are: Outflow, Ionosphere, Copysphere, Maxwellian.",sysBoundaryCondList);
-   Readparameters::add("boundaries.periodic_x", "Set the grid periodicity in x-direction. 'yes'(default)/'no'.", this->periodic);
-   // Readparameters::add("boundaries.periodic_y", "Set the grid periodicity in y-direction. 'yes'(default)/'no'.", "yes");
-   // Readparameters::add("boundaries.periodic_z", "Set the grid periodicity in z-direction. 'yes'(default)/'no'.", "yes");
+       "boundary = YYY. Available options are: Outflow, Ionosphere, Copysphere, Maxwellian.",this->sysBoundaryCondList);
+   Readparameters::add("boundaries.periodic_x", "Set the grid periodicity in x-direction. 'yes'(default)/'no'.", this->periodic[0]);
+   Readparameters::add("boundaries.periodic_y", "Set the grid periodicity in y-direction. 'yes'(default)/'no'.", this->periodic[1]);
+   Readparameters::add("boundaries.periodic_z", "Set the grid periodicity in z-direction. 'yes'(default)/'no'.", this->periodic[2]);
 
    // call static addParameter functions in all bc's
    SBC::DoNotCompute::addParameters();
@@ -108,9 +108,6 @@ void SysBoundary::getParameters() {
    //Readparameters::get("boundaries.periodic_y", periodic_y);
    //Readparameters::get("boundaries.periodic_z", periodic_z);
 
-   periodic[0] = (periodic_x == "yes");
-   periodic[1] = (periodic_y == "yes");
-   periodic[2] = (periodic_z == "yes");
 }
 
 /*! Add a new SBC::SysBoundaryCondition which has been created with new sysBoundary.

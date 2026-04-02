@@ -2236,11 +2236,14 @@ namespace SBC {
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
 
-        IonosphereSpeciesParameters sP;
+         IonosphereSpeciesParameters newsP;
+
+         speciesParams.push_back(newsP);
+         auto sP = &speciesParams.at(i);
          const std::string& pop =getObjectWrapper().particleSpecies[i].name;
-         Readparameters::add(pop + "_ionosphere.rho", "Number density of the ionosphere (m^-3)", sP.rho);
-         Readparameters::add(pop + "_ionosphere.T", "Temperature of the ionosphere (K)", sP.T);
-         Readparameters::add(pop + "_ionosphere.VX0", "Bulk velocity of ionospheric distribution function in X direction (m/s)",sP.V0);
+         Readparameters::add(pop + "_ionosphere.rho", "Number density of the ionosphere (m^-3)", sP->rho);
+         Readparameters::add(pop + "_ionosphere.T", "Temperature of the ionosphere (K)", sP->T);
+         Readparameters::add(pop + "_ionosphere.VX0", "Bulk velocity of ionospheric distribution function in X direction (m/s)",sP->V0);
          // Readparameters::add(pop + "_ionosphere.VY0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", 0.0);
          // Readparameters::add(pop + "_ionosphere.VZ0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", 0.0);
          // if(sP.T == 0) {
@@ -2251,7 +2254,6 @@ namespace SBC {
          // }
           //We need a way to set the sP.rho to Magnetosphere rho IF sp.Rho=0, currently that cannot be done because this initializes the population 
           //Later those values are got from the population specific options when parsing, this is pre-parse
-        speciesParams.push_back(sP);
       }
    }
 

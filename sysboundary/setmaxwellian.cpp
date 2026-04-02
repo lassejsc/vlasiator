@@ -52,13 +52,16 @@ namespace SBC {
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+          
+         InflowSpeciesParameters newsP;
 
-         InflowSpeciesParameters sP;
-         sP.nParams = 9;
+         this->speciesParams.push_back(newsP);
+         auto sP = &this->speciesParams.at(i);  
+         sP->nParams = 9;
          Readparameters::add(pop + "_maxwellian.file_x+",
                              "Input files for the set Maxwellian inflow parameters on face x+. Data format per line: time "
                              "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
-                             sP.files);
+                             sP->files);
          // Readparameters::add(pop + "_maxwellian.file_x-",
          //                     "Input files for the set Maxwellian inflow parameters on face x-. Data format per line: time "
          //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
@@ -80,9 +83,8 @@ namespace SBC {
          //                     "(s) density (p/m^3) Temperature (K) Vx Vy Vz (m/s) Bx By Bz (T).",
          //                     "");
          Readparameters::add(pop + "_maxwellian.dynamic",
-                             "Boolean value, is the set Maxwellian inflow dynamic in time or not.", dynamic);
+                             "Boolean value, is the set Maxwellian inflow dynamic in time or not.", this->dynamic);
 
-         speciesParams.push_back(sP);
       }
    }
 

@@ -41,6 +41,7 @@
 #ifdef DEBUG_SYSBOUNDARY
    #define DEBUG_OUTFLOW
 #endif
+        const string& pop = getObjectWrapper().particleSpecies[i].name;
 
 using namespace std;
 
@@ -58,8 +59,14 @@ namespace SBC {
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
         const string& pop = getObjectWrapper().particleSpecies[i].name;
         
-        OutflowSpeciesParameters sP;
-        Readparameters::add(pop + "_outflow.reapplyFaceUponRestart", "List of faces on which outflow boundary conditions are to be reapplied upon restart ([xyz][+-]).",sP.faceToReapplyUponRestartList);
+        OutflowSpeciesParameters newsP;
+
+        this->speciesParams.push_back(newsP);
+        auto sP=&this->speciesParams.at(i); 
+        for(int j=0; j<6; j++) {
+          sP->facesToSkipVlasov[j] = true;
+        }
+        Readparameters::add(pop + "_outflow.reapplyFaceUponRestart", "List of faces on which outflow boundary conditions are to be reapplied upon restart ([xyz][+-]).",sP->faceToReapplyUponRestartList);
         std::function<void(const string)> lambda_fun=[this](const string face){  
           if(face == "x+") { this->facesToProcess[0] = true;}// sP.facesToSkipVlasov[0] = false; }  This processing has to be done laters
           if(face == "x-") { this->facesToProcess[1] = true;}// sP.facesToSkipVlasov[1] = false; }
@@ -68,7 +75,7 @@ namespace SBC {
           if(face == "z+") { this->facesToProcess[4] = true;}// sP.facesToSkipVlasov[4] = false; }
           if(face == "z-") { this->facesToProcess[5] = true;}// sP.facesToSkipVlasov[5] = false; }
         };
-        Readparameters::add_each_lambda(pop + "_outflow.face", "List of faces on which outflow boundary conditions are to be applied ([xyz][+-]).",this->populations,lambda_fun);
+        Readparameters::add_each_lambda(pop + "_outflow.face", "List of faces on which outflow boundary conditions are to be applied ([xyz][+-]).",this->faceList,lambda_fun);
         Readparameters::add(pop + "_outflow.vlasovScheme_face_x+", "Scheme to use on the face x+ (Copy, None)", this->vlasovSysBoundarySchemeName);
         // Readparameters::add(pop + "_outflow.vlasovScheme_face_x-", "Scheme to use on the face x- (Copy, None)", defStr);
         // Readparameters::add(pop + "_outflow.vlasovScheme_face_y+", "Scheme to use on the face y+ (Copy, None)", defStr);
@@ -76,7 +83,7 @@ namespace SBC {
         // Readparameters::add(pop + "_outflow.vlasovScheme_face_z+", "Scheme to use on the face z+ (Copy, None)", defStr);
         // Readparameters::add(pop + "_outflow.vlasovScheme_face_z-", "Scheme to use on the face z- (Copy, None)", defStr);
 
-        Readparameters::add(pop + "_outflow.quench", "Factor by which to quench the inflowing parts of the velocity distribution function.", sP.quenchFactor);
+        Readparameters::add(pop + "_outflow.quench", "Factor by which to quench the inflowing parts of the velocity distribution function.", sP->quenchFactor);
       }
    }
 
@@ -85,38 +92,33 @@ namespace SBC {
       MPI_Comm_rank(MPI_COMM_WORLD,&myRank);
       //Readparameters::get("outflow.faceNoFields", this->faceNoFieldsList);
       //Readparameters::get("outflow.precedence", precedence);
-      uint reapply;
       //Readparameters::get("outflow.reapplyUponRestart", reapply);
-      this->applyUponRestart = false;
-      if(reapply == 1) {
-         this->applyUponRestart = true;
-      }
 
       // Per-species parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-        const string& pop = getObjectWrapper().particleSpecies[i].name;
-        OutflowSpeciesParameters sP;
+        // const string& pop = getObjectWrapper().particleSpecies[i].name;
+        OutflowSpeciesParameters* sP=&this->speciesParams.at(i);
 
         // Unless we find out otherwise, we assume that this species will not be treated at any boundary
-        for(int j=0; j<6; j++) {
-          sP.facesToSkipVlasov[j] = true;
-        }
+        // for(int j=0; j<6; j++) {
+        //   sP.facesToSkipVlasov[j] = true;
+        // }
 
         vector<string> thisSpeciesFaceList;
         //Readparameters::get(pop + "_outflow.face", thisSpeciesFaceList);
 
-        for(auto& face : thisSpeciesFaceList) {
-          if(face == "x+") { this->facesToProcess[0] = true; sP.facesToSkipVlasov[0] = false; }
-          if(face == "x-") { this->facesToProcess[1] = true; sP.facesToSkipVlasov[1] = false; }
-          if(face == "y+") { this->facesToProcess[2] = true; sP.facesToSkipVlasov[2] = false; }
-          if(face == "y-") { this->facesToProcess[3] = true; sP.facesToSkipVlasov[3] = false; }
-          if(face == "z+") { this->facesToProcess[4] = true; sP.facesToSkipVlasov[4] = false; }
-          if(face == "z-") { this->facesToProcess[5] = true; sP.facesToSkipVlasov[5] = false; }
+        for(auto& face :this->faceList) {
+          if(face == "x+") { this->facesToProcess[0] = true; sP->facesToSkipVlasov[0] = false; }
+          if(face == "x-") { this->facesToProcess[1] = true; sP->facesToSkipVlasov[1] = false; }
+          if(face == "y+") { this->facesToProcess[2] = true; sP->facesToSkipVlasov[2] = false; }
+          if(face == "y-") { this->facesToProcess[3] = true; sP->facesToSkipVlasov[3] = false; }
+          if(face == "z+") { this->facesToProcess[4] = true; sP->facesToSkipVlasov[4] = false; }
+          if(face == "z-") { this->facesToProcess[5] = true; sP->facesToSkipVlasov[5] = false; }
         }
 
         //Readparameters::get(pop + "_outflow.reapplyFaceUponRestart", sP.faceToReapplyUponRestartList);
-        array<string, 6> vlasovSysBoundarySchemeName;
-        //Readparameters::get(pop + "_outflow.vlasovScheme_face_x+", vlasovSysBoundarySchemeName[0]);
+        // array<string, 6> vlasovSysBoundarySchemeName;
+        // //Readparameters::get(pop + "_outflow.vlasovScheme_face_x+", vlasovSysBoundarySchemeName[0]);
         //Readparameters::get(pop + "_outflow.vlasovScheme_face_x-", vlasovSysBoundarySchemeName[1]);
         //Readparameters::get(pop + "_outflow.vlasovScheme_face_y+", vlasovSysBoundarySchemeName[2]);
 
@@ -124,18 +126,17 @@ namespace SBC {
         //Readparameters::get(pop + "_outflow.vlasovScheme_face_z+", vlasovSysBoundarySchemeName[4]);
         //Readparameters::get(pop + "_outflow.vlasovScheme_face_z-", vlasovSysBoundarySchemeName[5]);
         for(uint j=0; j<6 ; j++) {
-           if(vlasovSysBoundarySchemeName[j] == "None") {
-              sP.faceVlasovScheme[j] = vlasovscheme::NONE;
-           } else if (vlasovSysBoundarySchemeName[j] == "Copy") {
-              sP.faceVlasovScheme[j] = vlasovscheme::COPY;
+           if(this->vlasovSysBoundarySchemeName[j] == "None") {
+              sP->faceVlasovScheme[j] = vlasovscheme::NONE;
+           } else if (this->vlasovSysBoundarySchemeName[j] == "Copy") {
+              sP->faceVlasovScheme[j] = vlasovscheme::COPY;
            } else {
-              abort_mpi("ERROR: " + vlasovSysBoundarySchemeName[j] + " is an invalid Outflow Vlasov scheme!");
+              abort_mpi("ERROR: " + this->vlasovSysBoundarySchemeName[j] + " is an invalid Outflow Vlasov scheme!");
            }
         }
 
         //Readparameters::get(pop + "_outflow.quench", sP.quenchFactor);
 
-        speciesParams.push_back(sP);
       }
    }
 

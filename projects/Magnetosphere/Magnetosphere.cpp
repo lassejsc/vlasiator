@@ -86,17 +86,18 @@ namespace projects {
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
         
-         MagnetosphereSpeciesParameters sP;
+         MagnetosphereSpeciesParameters newsP;
          const std::string& pop = getObjectWrapper().particleSpecies[i].name;
 
-         RP::add(pop + "_Magnetosphere.rho", "Tail region number density (m^-3)", sP.rho);
-         RP::add(pop + "_Magnetosphere.T", "Temperature (K)", sP.T);
-         RP::add(pop + "_Magnetosphere.VX0", "Initial bulk velocity in x-direction", sP.V0);
+         this->speciesParams.push_back(newsP);
+         auto sP=this->speciesParams.at(i);
+         RP::add(pop + "_Magnetosphere.rho", "Tail region number density (m^-3)", sP->rho);
+         RP::add(pop + "_Magnetosphere.T", "Temperature (K)", sP->T);
+         RP::add(pop + "_Magnetosphere.VX0", "Initial bulk velocity in x-direction", sP->V0);
          // RP::add(pop + "_Magnetosphere.VY0", "Initial bulk velocity in y-direction", 0.0);
          // RP::add(pop + "_Magnetosphere.VZ0", "Initial bulk velocity in z-direction", 0.0);
-         RP::add(pop + "_Magnetosphere.taperInnerRadius", "Inner radius of the zone with a density tapering from the ionospheric value to the background (m)", sP.taperInnerRadius);
-         RP::add(pop + "_Magnetosphere.taperOuterRadius", "Outer radius of the zone with a density tapering from the ionospheric value to the background (m)", sP.taperOuterRadius);
-         this->speciesParams.push_back(sP);
+         RP::add(pop + "_Magnetosphere.taperInnerRadius", "Inner radius of the zone with a density tapering from the ionospheric value to the background (m)", sP->taperInnerRadius);
+         RP::add(pop + "_Magnetosphere.taperOuterRadius", "Outer radius of the zone with a density tapering from the ionospheric value to the background (m)", sP->taperOuterRadius);
 
       }
    }

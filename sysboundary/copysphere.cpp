@@ -58,7 +58,7 @@ namespace SBC {
       Readparameters::add("copysphere.radius", "Radius of copysphere (m).", this->radius);
       Readparameters::add("copysphere.geometry", "Select the geometry of the copysphere, 0: inf-norm (diamond), 1: 1-norm (square), 2: 2-norm (circle, DEFAULT), 3: 2-norm cylinder aligned with y-axis, use with polar plane/line dipole.", this->geometry);
       Readparameters::add("copysphere.precedence", "Precedence value of the copysphere system boundary condition (integer), the higher the stronger.", this->precedence);
-      Readparameters::add("copysphere.reapplyUponRestart", "If 0 (default), keep going with the state existing in the restart file. If 1, calls again applyInitialState. Can be used to change boundary condition behaviour during a run.", this->reapply);
+      Readparameters::add("copysphere.reapplyUponRestart", "If 0 (default), keep going with the state existing in the restart file. If 1, calls again applyInitialState. Can be used to change boundary condition behaviour during a run.", this->applyUponRestart);
       Readparameters::add("copysphere.zeroPerB","If 0 (default), normal copysphere behaviour of magnetic field at inner boundary. If 1, keep magnetic field static at the inner boundary",this->zeroPerB);
 
       // Per-population parameters
@@ -92,18 +92,7 @@ namespace SBC {
       FieldTracing::fieldTracingParameters.innerBoundaryRadius = this->radius;
       //Readparameters::get("copysphere.geometry", this->geometry);
       //Readparameters::get("copysphere.precedence", this->precedence);
-      uint reapply;
-      //Readparameters::get("copysphere.reapplyUponRestart",reapply);
-      this->applyUponRestart = false;
-      if(reapply == 1) {
-         this->applyUponRestart = true;
-      }
-      uint noperb;
       //Readparameters::get("copysphere.zeroPerB",noperb);
-      this->zeroPerB = false;
-      if(noperb == 1) {
-         this->zeroPerB = true;
-      }
 
       // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
       //   const std::string& pop = getObjectWrapper().particleSpecies[i].name;
