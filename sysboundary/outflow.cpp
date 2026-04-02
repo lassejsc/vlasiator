@@ -58,7 +58,7 @@ namespace SBC {
       for(uint i=0; i < getObjectWrapper().particleSpecies.size(); i++) {
         const string& pop = getObjectWrapper().particleSpecies[i].name;
         
-        OutflowSpeciesParameters newsP;
+        OutflowSpeciesParameters newsP = OutflowSpeciesParameters {{true,true,true,true,true,true},{0,0,0,0,0,0},"",0.0};
 
         this->speciesParams.push_back(newsP);
         auto sP=&this->speciesParams.at(i); 
