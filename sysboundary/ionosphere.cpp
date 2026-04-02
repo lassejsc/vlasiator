@@ -2196,9 +2196,22 @@ namespace SBC {
    Ionosphere::~Ionosphere() { }
 
    void Ionosphere::addParameters() {
-      Readparameters::add("ionosphere.centerX", "X coordinate of ionosphere center (m)",this->center);
-      // Readparameters::add("ionosphere.centerY", "Y coordinate of ionosphere center (m)", Ionosphere::centerY);
-      // Readparameters::add("ionosphere.centerZ", "Z coordinate of ionosphere center (m)", Ionosphere::centerZ);
+      std::function<void(const std::string)>lambda_fun = [this](std::string){
+       if(VDFmodeString == "FixedMoments") {
+         boundaryVDFmode = FixedMoments;
+      } else if(VDFmodeString == "AverageMoments") {
+         boundaryVDFmode = AverageMoments;
+      } else if(VDFmodeString == "AverageAllMoments") {
+         boundaryVDFmode = AverageAllMoments;
+      } else if(VDFmodeString == "CopyAndLosscone") {
+         boundaryVDFmode = CopyAndLosscone;
+      } else {
+         cerr << "(IONOSPHERE) Unknown inner boundary VDF mode \"" << VDFmodeString << "\". Aborting." << endl;
+         abort
+      };
+      Readparameters::add("ionosphere.centerX", "X coordinate of ionosphere center (m)",this->center[0]);
+      Readparameters::add("ionosphere.centerY", "Y coordinate of ionosphere center (m)",this->center[1]));
+      Readparameters::add("ionosphere.centerZ", "Z coordinate of ionosphere center (m)",this->center[2]);
       Readparameters::add("ionosphere.radius", "Radius of the inner simulation boundary (unit is assumed to be R_E if value < 1000, otherwise m).", Ionosphere::radius);
       Readparameters::add("ionosphere.innerRadius", "Radius of the ionosphere model (m).", Ionosphere::innerRadius);
       Readparameters::add("ionosphere.geometry", "Select the geometry of the ionosphere, 0: inf-norm (diamond), 1: 1-norm (square), 2: 2-norm (circle, DEFAULT), 3: 2-norm cylinder aligned with y-axis, use with polar plane/line dipole.", this->geometry);
@@ -2212,15 +2225,15 @@ namespace SBC {
       Readparameters::add("ionosphere.refineMaxLatitude", "Refine the grid equatorwards of the given latitude. Multiple of these lines can be given for successive refinement, paired up with refineMinLatitude lines.",this->refineMaxLatitudes);
       Readparameters::add("ionosphere.atmosphericModelFile", "Filename to read the MSIS atmosphere data from (default: NRLMSIS.dat)", this->atmosphericModelFile);
       Readparameters::add("ionosphere.recombAlpha", "Ionospheric recombination parameter (m^3/s)", Ionosphere::recombAlpha);
-      Readparameters::add("ionosphere.ionizationModel", "Ionospheric electron production rate model. Options are: Rees1963, Rees1989, SergienkoIvanov (default).", this->ionizationModel);
-      Readparameters::add("ionosphere.innerBoundaryVDFmode", "Inner boundary VDF construction method. Options ar: FixedMoments, AverageMoments, AverageAllMoments, CopyAndLosscone.", this->boundaryVDFmode);
+      Readparameters::add("ionosphere.ionizationModel", "Ionospheric electron production rate model. Options are: Rees1963, Rees1989, SergienkoIvanov (default).", ionosphereGrid.ionizationModel);
+      Readparameters::add_each_lambda("ionosphere.innerBoundaryVDFmode", "Inner boundary VDF construction method. Options ar: FixedMoments, AverageMoments, AverageAllMoments, CopyAndLosscone.", this->VDFmodeString,lambda_fun);
       Readparameters::add("ionosphere.F10_7", "Solar 10.7 cm radio flux (sfu = 10^{-22} W/m^2)", Ionosphere::F10_7);
       Readparameters::add("ionosphere.backgroundIonisation", "Background ionoisation due to cosmic rays (mho)", Ionosphere::backgroundIonisation);
       Readparameters::add("ionosphere.solverMaxIterations", "Maximum number of iterations for the conjugate gradient solver", Ionosphere::solverMaxIterations);
       Readparameters::add("ionosphere.solverRelativeL2ConvergenceThreshold", "Convergence threshold for the relative L2 metric", Ionosphere::solverRelativeL2ConvergenceThreshold);
       Readparameters::add("ionosphere.solverMaxFailureCount", "Maximum number of iterations allowed to diverge before restarting the ionosphere solver", Ionosphere::solverMaxFailureCount);
       Readparameters::add("ionosphere.solverMaxErrorGrowthFactor", "Maximum allowed factor of growth with respect to the minimum error before restarting the ionosphere solver", Ionosphere::solverMaxErrorGrowthFactor);
-      Readparameters::add("ionosphere.solverGaugeFixing", "Gauge fixing method of the ionosphere solver. Options are: pole, integral, equator",this->gaugeFixing);
+      Readparameters::add("ionosphere.solverGaugeFixing", "Gauge fixing method of the ionosphere solver. Options are: pole, integral, equator",ionosphereGrid.gaugeFixing);
       Readparameters::add("ionosphere.shieldingLatitude", "Latitude below which the potential is set to zero in the equator gauge fixing scheme (degree)", Ionosphere::shieldingLatitude);
       Readparameters::add("ionosphere.solverPreconditioning", "Use preconditioning for the solver? (0/1)", Ionosphere::solverPreconditioning);
       Readparameters::add("ionosphere.solverUseMinimumResidualVariant", "Use minimum residual variant", Ionosphere::solverUseMinimumResidualVariant);
@@ -2243,9 +2256,9 @@ namespace SBC {
          const std::string& pop =getObjectWrapper().particleSpecies[i].name;
          Readparameters::add(pop + "_ionosphere.rho", "Number density of the ionosphere (m^-3)", sP->rho);
          Readparameters::add(pop + "_ionosphere.T", "Temperature of the ionosphere (K)", sP->T);
-         Readparameters::add(pop + "_ionosphere.VX0", "Bulk velocity of ionospheric distribution function in X direction (m/s)",sP->V0);
-         // Readparameters::add(pop + "_ionosphere.VY0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", 0.0);
-         // Readparameters::add(pop + "_ionosphere.VZ0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", 0.0);
+         Readparameters::add(pop + "_ionosphere.VX0", "Bulk velocity of ionospheric distribution function in X direction (m/s)",sP->V0[0]);
+         Readparameters::add(pop + "_ionosphere.VY0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", sP->V0[1]);
+         Readparameters::add(pop + "_ionosphere.VZ0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", sP->V0[2]);
          // if(sP.T == 0) {
          //   //Readparameters::get(pop + "_Magnetosphere.T", sP.T);
          // }

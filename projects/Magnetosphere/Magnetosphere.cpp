@@ -42,7 +42,7 @@ using namespace std;
 using namespace spatial_cell;
 
 namespace projects {
-   Magnetosphere::Magnetosphere(): TriAxisSearch() { }
+   Magnetosphere::Magnetosphere(): TriAxisSearch() { this->addParameters();}
    Magnetosphere::~Magnetosphere() { }
 
    void Magnetosphere::addParameters() {
