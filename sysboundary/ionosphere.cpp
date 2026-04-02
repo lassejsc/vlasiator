@@ -2199,18 +2199,19 @@ namespace SBC {
       std::function<void(const std::string)>lambda_fun = [this](std::string){
        if(VDFmodeString == "FixedMoments") {
          boundaryVDFmode = FixedMoments;
-      } else if(VDFmodeString == "AverageMoments") {
-         boundaryVDFmode = AverageMoments;
-      } else if(VDFmodeString == "AverageAllMoments") {
-         boundaryVDFmode = AverageAllMoments;
-      } else if(VDFmodeString == "CopyAndLosscone") {
-         boundaryVDFmode = CopyAndLosscone;
-      } else {
+        } else if(VDFmodeString == "AverageMoments") {
+          boundaryVDFmode = AverageMoments;
+        } else if(VDFmodeString == "AverageAllMoments") {
+           boundaryVDFmode = AverageAllMoments;
+        } else if(VDFmodeString == "CopyAndLosscone") {
+          boundaryVDFmode = CopyAndLosscone;
+        } else {
          cerr << "(IONOSPHERE) Unknown inner boundary VDF mode \"" << VDFmodeString << "\". Aborting." << endl;
          abort
+        }
       };
       Readparameters::add("ionosphere.centerX", "X coordinate of ionosphere center (m)",this->center[0]);
-      Readparameters::add("ionosphere.centerY", "Y coordinate of ionosphere center (m)",this->center[1]));
+      Readparameters::add("ionosphere.centerY", "Y coordinate of ionosphere center (m)",this->center[1]);
       Readparameters::add("ionosphere.centerZ", "Z coordinate of ionosphere center (m)",this->center[2]);
       Readparameters::add("ionosphere.radius", "Radius of the inner simulation boundary (unit is assumed to be R_E if value < 1000, otherwise m).", Ionosphere::radius);
       Readparameters::add("ionosphere.innerRadius", "Radius of the ionosphere model (m).", Ionosphere::innerRadius);

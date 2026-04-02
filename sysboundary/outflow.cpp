@@ -41,7 +41,6 @@
 #ifdef DEBUG_SYSBOUNDARY
    #define DEBUG_OUTFLOW
 #endif
-        const string& pop = getObjectWrapper().particleSpecies[i].name;
 
 using namespace std;
 
@@ -56,7 +55,7 @@ namespace SBC {
       Readparameters::add("outflow.reapplyUponRestart", "If 0 (default), keep going with the state existing in the restart file. If 1, calls again applyInitialState. Can be used to change boundary condition behaviour during a run.", this->applyUponRestart);
 
       // Per-population parameters
-      for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
+      for(uint i=0; i < getObjectWrapper().particleSpecies.size(); i++) {
         const string& pop = getObjectWrapper().particleSpecies[i].name;
         
         OutflowSpeciesParameters newsP;
