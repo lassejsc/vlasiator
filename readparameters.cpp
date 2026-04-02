@@ -32,7 +32,7 @@ bool Readparameters::versionRequested = false;
 
 CLI::App app{"Usage: main [options (options given on the command line override "
                                                  "options given everywhere else)], where options are:"};
-
+CLI::App *Readparameters::app=app;
 // PO::options_description* Readparameters::descriptions = NULL;
 // PO::variables_map* Readparameters::variables = NULL;
 
