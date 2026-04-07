@@ -87,7 +87,7 @@ LIB_MPI = -lgomp
 ROOT_FOLDER = $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 
 # The external libraries are located here
-LIBRARY_PREFIX = $(ROOT_FOLDER)external_libs
+LIBRARY_PREFIX = $(ROOT_FOLDER)libraries
 
 INC_ZOLTAN = -I$(LIBRARY_PREFIX)/Zoltan/build/include
 LIB_ZOLTAN = -L$(LIBRARY_PREFIX)/Zoltan/build/lib -lzoltan

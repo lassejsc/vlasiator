@@ -51,38 +51,45 @@ namespace projects {
 
    void MultiPeak::addParameters(){
       typedef Readparameters RP;
-
-      RP::add("MultiPeak.Bx", "Magnetic field x component (T)", 0.0);
-      RP::add("MultiPeak.By", "Magnetic field y component (T)", 0.0);
-      RP::add("MultiPeak.Bz", "Magnetic field z component (T)", 0.0);
-      RP::add("MultiPeak.dBx", "Magnetic field x component cosine perturbation amplitude (T)", 0.0);
-      RP::add("MultiPeak.dBy", "Magnetic field y component cosine perturbation amplitude (T)", 0.0);
-      RP::add("MultiPeak.dBz", "Magnetic field z component cosine perturbation amplitude (T)", 0.0);
-      RP::add("MultiPeak.magXPertAbsAmp", "Absolute amplitude of the random magnetic perturbation along x (T)", 1.0e-9);
-      RP::add("MultiPeak.magYPertAbsAmp", "Absolute amplitude of the random magnetic perturbation along y (T)", 1.0e-9);
-      RP::add("MultiPeak.magZPertAbsAmp", "Absolute amplitude of the random magnetic perturbation along z (T)", 1.0e-9);
-      RP::add("MultiPeak.lambda", "B cosine perturbation wavelength (m)", 1.0);
-      RP::add("MultiPeak.densityModel","Which spatial density model is used?",string("uniform"));
+        
+      std::function<void(const std::string)>lambda_fun=[this](std::string densModelString){
+      if (densModelString == "uniform") this->densityModel = Uniform;
+      else if (densModelString == "testcase") this->densityModel = TestCase;
+      };
+      RP::add("MultiPeak.Bx", "Magnetic field x component (T)",this->Bx);
+      RP::add("MultiPeak.By", "Magnetic field y component (T)",this->By);
+      RP::add("MultiPeak.Bz", "Magnetic field z component (T)",this->Bz);
+      RP::add("MultiPeak.dBx", "Magnetic field x component cosine perturbation amplitude (T)",this->dBx);
+      RP::add("MultiPeak.dBy", "Magnetic field y component cosine perturbation amplitude (T)",this->dBy);
+      RP::add("MultiPeak.dBz", "Magnetic field z component cosine perturbation amplitude (T)",this->dBz);
+      RP::add("MultiPeak.magXPertAbsAmp", "Absolute amplitude of the random magnetic perturbation along x (T)",this->magXPertAbsAmp);
+      RP::add("MultiPeak.magYPertAbsAmp", "Absolute amplitude of the random magnetic perturbation along y (T)",this->magYPertAbsAmp);
+      RP::add("MultiPeak.magZPertAbsAmp", "Absolute amplitude of the random magnetic perturbation along z (T)",this->magZPertAbsAmp);
+      RP::add("MultiPeak.lambda", "B cosine perturbation wavelength (m)",this->lambda);
+      RP::add_each_lambda("MultiPeak.densityModel","Which spatial density model is used?",this->densModelString,lambda_fun);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i].name;
-         RP::add(pop+"_MultiPeak.n", "Number of peaks to create", 0);
-         RP::add(pop+"_MultiPeak.rho", "Number density (m^-3)");
-         RP::add(pop+"_MultiPeak.Tx", "Temperature (K)");
-         RP::add(pop+"_MultiPeak.Ty", "Temperature");
-         RP::add(pop+"_MultiPeak.Tz", "Temperature");
-         RP::add(pop+"_MultiPeak.Vx", "Bulk velocity x component (m/s)");
-         RP::add(pop+"_MultiPeak.Vy", "Bulk velocity y component (m/s)");
-         RP::add(pop+"_MultiPeak.Vz", "Bulk velocity z component (m/s)");
-         RP::add(pop+"_MultiPeak.rhoPertAbsAmp", "Absolute amplitude of the density perturbation");
+         MultiPeakSpeciesParameters newsP;
+         this->speciesParams.push_back(newsP);
+         auto sP=this->speciesParams.at(i);
+         RP::add(pop+"_MultiPeak.n", "Number of peaks to create",sP->n);
+         RP::add(pop+"_MultiPeak.rho", "Number density (m^-3)",sP->rho);
+         RP::add(pop+"_MultiPeak.Tx", "Temperature (K)",sP->Tx);
+         RP::add(pop+"_MultiPeak.Ty", "Temperature",sP->Ty);
+         RP::add(pop+"_MultiPeak.Tz", "Temperature",sP->Tz);
+         RP::add(pop+"_MultiPeak.Vx", "Bulk velocity x component (m/s)",sP->Vx);
+         RP::add(pop+"_MultiPeak.Vy", "Bulk velocity y component (m/s)",sP->Vy);
+         RP::add(pop+"_MultiPeak.Vz", "Bulk velocity z component (m/s)",sP->Vz);
+         RP::add(pop+"_MultiPeak.rhoPertAbsAmp", "Absolute amplitude of the density perturbation",sP->rhoPertAbsAmp);
       }
    }
 
    void MultiPeak::getParameters(){
 
       typedef Readparameters RP;
-      Project::getParameters();
+      // Project::getParameters();
       //RP::get("MultiPeak.Bx", this->Bx);
       //RP::get("MultiPeak.By", this->By);
       //RP::get("MultiPeak.Bz", this->Bz);
@@ -95,10 +102,10 @@ namespace projects {
       //RP::get("MultiPeak.lambda", this->lambda);
 
       // Per-population parameters
-      for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
-
-         MultiPeakSpeciesParameters sP;
+      // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
+      //    const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+      //
+         // MultiPeakSpeciesParameters sP;
          //RP::get(pop + "_MultiPeak.n", sP.numberOfPeaks);
          //RP::get(pop + "_MultiPeak.rho",sP.rho);
          //RP::get(pop + "_MultiPeak.Tx", sP.Tx);
@@ -109,19 +116,19 @@ namespace projects {
          //RP::get(pop + "_MultiPeak.Vz", sP.Vz);
 
          //RP::get(pop + "_MultiPeak.rhoPertAbsAmp", sP.rhoPertAbsAmp);
-         if(!sP.isConsistent()) {
-            cerr << "You should define all parameters (MultiPeak.rho, MultiPeak.Tx, MultiPeak.Ty, MultiPeak.Tz, MultiPeak.Vx, MultiPeak.Vy, MultiPeak.Vz, MultiPeak.rhoPertAbsAmp) for all " << sP.numberOfPeaks << " peaks of population " << pop << "." << endl;
-            abort();
-         }
+         // if(!sP.isConsistent()) {
+         //    cerr << "You should define all parameters (MultiPeak.rho, MultiPeak.Tx, MultiPeak.Ty, MultiPeak.Tz, MultiPeak.Vx, MultiPeak.Vy, MultiPeak.Vz, MultiPeak.rhoPertAbsAmp) for all " << sP.numberOfPeaks << " peaks of population " << pop << "." << endl;
+         //    abort();
+         // }
 
-         speciesParams.push_back(sP);
-      }
+         // speciesParams.push_back(sP);
+      // }
 
-      string densModelString;
-      //RP::get("MultiPeak.densityModel",densModelString);
-
-      if (densModelString == "uniform") densityModel = Uniform;
-      else if (densModelString == "testcase") densityModel = TestCase;
+      // string densModelString;
+      // //RP::get("MultiPeak.densityModel",densModelString);
+      //
+      // if (densModelString == "uniform") densityModel = Uniform;
+      // else if (densModelString == "testcase") densityModel = TestCase;
    }
 
    Realf MultiPeak::fillPhaseSpace(spatial_cell::SpatialCell *cell,

@@ -46,34 +46,38 @@ namespace projects {
 
    void LossCone::addParameters() {
       typedef Readparameters RP;
-      RP::add("LossCone.BX0", "Background field value (T)", 1.0e-9);
-      RP::add("LossCone.BY0", "Background field value (T)", 2.0e-9);
-      RP::add("LossCone.BZ0", "Background field value (T)", 3.0e-9);
-      RP::add("LossCone.magXPertAbsAmp", "Amplitude of the magnetic perturbation along x", 1.0e-9);
-      RP::add("LossCone.magYPertAbsAmp", "Amplitude of the magnetic perturbation along y", 1.0e-9);
-      RP::add("LossCone.magZPertAbsAmp", "Amplitude of the magnetic perturbation along z", 1.0e-9);
+      RP::add("LossCone.BX0", "Background field value (T)",this->BX0);
+      RP::add("LossCone.BY0", "Background field value (T)",this->BY0);
+      RP::add("LossCone.BZ0", "Background field value (T)",this->BZ0);
+      RP::add("LossCone.magXPertAbsAmp", "Amplitude of the magnetic perturbation along x",this->magXPertAbsAmp);
+      RP::add("LossCone.magYPertAbsAmp", "Amplitude of the magnetic perturbation along y",this->magYPertAbsAmp);
+      RP::add("LossCone.magZPertAbsAmp", "Amplitude of the magnetic perturbation along z",this->magZPertAbsAmp);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i].name;
 
-         RP::add(pop + "_LossCone.rho", "Number density (m^-3)", 1.0e7);
-         RP::add(pop + "_LossCone.TemperatureX", "Temperature (K)", 2.0e6);
-         RP::add(pop + "_LossCone.TemperatureY", "Temperature (K)", 2.0e6);
-         RP::add(pop + "_LossCone.TemperatureZ", "Temperature (K)", 2.0e6);
-         RP::add(pop + "_LossCone.densityPertRelAmp", "Amplitude factor of the density perturbation", 0.1);
-         RP::add(pop + "_LossCone.VX0", "Initial bulk velocity in x-direction", 0.0);
-         RP::add(pop + "_LossCone.VY0", "Initial bulk velocity in y-direction", 0.0);
-         RP::add(pop + "_LossCone.VZ0", "Initial bulk velocity in z-direction", 0.0);
-         RP::add(pop + "_LossCone.velocityPertAbsAmp", "Amplitude of the velocity perturbation", 1.0e6);
-         RP::add(pop + "_LossCone.muLimit", "Cutoff value for pitch-cosine mu positive and negative)", 0.5);
+         LossConeSpeciesParameters newsP;
+    
+         speciesParams.push_back(newsP);
+         auto sP=&this->speciesParams.at(i);
+         RP::add(pop + "_LossCone.rho", "Number density (m^-3)",sP->rho);
+         RP::add(pop + "_LossCone.TemperatureX", "Temperature (K)",sP->TemperatureX);
+         RP::add(pop + "_LossCone.TemperatureY", "Temperature (K)",sP->TemperatureY);
+         RP::add(pop + "_LossCone.TemperatureZ", "Temperature (K)",sP->TemperatureZ);
+         RP::add(pop + "_LossCone.densityPertRelAmp", "Amplitude factor of the density perturbation",sP->densityPertRelAmp);
+         RP::add(pop + "_LossCone.VX0", "Initial bulk velocity in x-direction",sP->VX0);
+         RP::add(pop + "_LossCone.VY0", "Initial bulk velocity in y-direction",sP->VY0);
+         RP::add(pop + "_LossCone.VZ0", "Initial bulk velocity in z-direction",sP->VZ0);
+         RP::add(pop + "_LossCone.velocityPertAbsAmp", "Amplitude of the velocity perturbation",sP->velocityPertAbsAmp);
+         RP::add(pop + "_LossCone.muLimit", "Cutoff value for pitch-cosine mu positive and negative)",sP->muLimit);
       }
    }
 
    void LossCone::getParameters() {
-      Project::getParameters();
+      // Project::getParameters();
       typedef Readparameters RP;
-      Project::getParameters();
+      // Project::getParameters();
       //RP::get("LossCone.BX0", this->BX0);
       //RP::get("LossCone.BY0", this->BY0);
       //RP::get("LossCone.BZ0", this->BZ0);
@@ -82,21 +86,21 @@ namespace projects {
       //RP::get("LossCone.magZPertAbsAmp", this->magZPertAbsAmp);
 
       // Per-population parameters
-      for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
-         LossConeSpeciesParameters sP;
-         //RP::get(pop + "_LossCone.rho", sP.DENSITY);
-         //RP::get(pop + "_LossCone.VX0", sP.V0[0]);
-         //RP::get(pop + "_LossCone.VY0", sP.V0[1]);
-         //RP::get(pop + "_LossCone.VZ0", sP.V0[2]);
-         //RP::get(pop + "_LossCone.TemperatureX", sP.TEMPERATUREX);
-         //RP::get(pop + "_LossCone.TemperatureY", sP.TEMPERATUREY);
-         //RP::get(pop + "_LossCone.TemperatureZ", sP.TEMPERATUREZ);
-         //RP::get(pop + "_LossCone.densityPertRelAmp", sP.densityPertRelAmp);
-         //RP::get(pop + "_LossCone.velocityPertAbsAmp", sP.velocityPertAbsAmp);
-         //RP::get(pop + "_LossCone.muLimit", sP.muLimit);
-         speciesParams.push_back(sP);
-      }
+      // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
+      //    const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+      //    LossConeSpeciesParameters sP;
+      //    //RP::get(pop + "_LossCone.rho", sP.DENSITY);
+      //    //RP::get(pop + "_LossCone.VX0", sP.V0[0]);
+      //    //RP::get(pop + "_LossCone.VY0", sP.V0[1]);
+      //    //RP::get(pop + "_LossCone.VZ0", sP.V0[2]);
+      //    //RP::get(pop + "_LossCone.TemperatureX", sP.TEMPERATUREX);
+      //    //RP::get(pop + "_LossCone.TemperatureY", sP.TEMPERATUREY);
+      //    //RP::get(pop + "_LossCone.TemperatureZ", sP.TEMPERATUREZ);
+      //    //RP::get(pop + "_LossCone.densityPertRelAmp", sP.densityPertRelAmp);
+      //    //RP::get(pop + "_LossCone.velocityPertAbsAmp", sP.velocityPertAbsAmp);
+      //    //RP::get(pop + "_LossCone.muLimit", sP.muLimit);
+      //    speciesParams.push_back(sP);
+      // }
    }
 
    Realf LossCone::fillPhaseSpace(spatial_cell::SpatialCell *cell,
