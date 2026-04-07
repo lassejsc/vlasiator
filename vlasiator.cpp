@@ -277,9 +277,9 @@ int simulate(int argn,char* args[]) {
 
    getObjectWrapper().addPopulationParameters();
    sysBoundaryContainer.addParameters();
-   // projects::Project::addParameters();
-   project->addParameters();
-  
+   projects::Project::addParameters();
+   // project->addParameters();
+
    readparameters.parse(); // 2nd parsing for specific population parameters
    readparameters.helpMessage(); // Call after last parse, exits after printing help if help requested
    P::getParameters();
