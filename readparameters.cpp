@@ -29,7 +29,7 @@ using namespace std;
 // Initialize static member of class ReadParameters
 bool Readparameters::helpRequested = false;
 bool Readparameters::versionRequested = false;
-
+vector<string> Readparameters::populations={};
 CLI::App app{"Usage: main [options (options given on the command line override "
                                                  "options given everywhere else)], where options are:"};
 CLI::App *Readparameters::app=app;

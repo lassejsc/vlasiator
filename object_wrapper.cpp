@@ -8,9 +8,7 @@
 
 bool ObjectWrapper::addParameters() {
    typedef Readparameters RP;
-
    // Parameters needed to create particle populations
-
    if (RP::helpRequested) { // dummy name for the help message
      RP::populations.push_back("<population>");
    }
