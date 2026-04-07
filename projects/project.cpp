@@ -661,7 +661,8 @@ Project* createProject() {
    rvalue = project_temp[Parameters::projectName];
   for (auto project : project_temp){
     if (project.first != Parameters::projectName){
-      delete *project.second
+      delete project.second;
+      project.second=nullptr;
     }
   }
    // if(Parameters::projectName == "Alfven") {
