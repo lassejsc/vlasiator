@@ -41,7 +41,7 @@ namespace projects {
 
    void Template::addParameters() {
       typedef Readparameters RP;
-      RP::add("Template.param", "This is my project's parameter. Default is 0.0", 0.0);
+      RP::add("Template.param", "This is my project's parameter. Default is 0.0", this->param);
    }
 
    void Template::getParameters(){
