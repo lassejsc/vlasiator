@@ -52,15 +52,15 @@ void ObjectWrapper::initpop(std::string pop){
    RP::add(pop + "_sparse.dynamicBulkValue2", "Maximum value for the dynamic algorithm range, so for example if dynamicAlgorithm=1 then for sparse.dynamicBulkValue1 = 1e3, sparse.dynamicBulkValue2=1e5, we apply the algorithm to cells for which 1e3<cell.rho<1e5", newSpecies.sparseDynamicBulkValue2);
 
    // Grid parameters
-   RP::add(pop + "_vspace.vx_min","Minimum value for velocity mesh vx-coordinates.", newVMesh.meshLimits);
-   // RP::add(pop + "_vspace.vx_max","Maximum value for velocity mesh vx-coordinates.", newSpecies.vspacevx_max);
-   // RP::add(pop + "_vspace.vy_min","Minimum value for velocity mesh vy-coordinates.", newSpecies.vspacevy_min);
-   // RP::add(pop + "_vspace.vy_max","Maximum value for velocity mesh vx-coordinates.", newSpecies.vspacevy_max);
-   // RP::add(pop + "_vspace.vz_min","Minimum value for velocity mesh vz-coordinates.", newSpecies.vspacevz_min);
-   // RP::add(pop + "_vspace.vz_max","Maximum value for velocity mesh vx-coordinates.", newSpecies.vspacevz_max);
-   RP::add(pop + "_vspace.vx_length","Initial number of velocity blocks in vx-direction.", newVMesh.gridLength);
-   // RP::add(pop + "_vspace.vy_length","Initial number of velocity blocks in vy-direction.", newSpecies.vspacevy_length);
-   // RP::add(pop + "_vspace.vz_length","Initial number of velocity blocks in vz-direction.", newSpecies.vspacevz_length);
+   RP::add(pop + "_vspace.vx_min","Minimum value for velocity mesh vx-coordinates.", newVMesh.meshLimits[0]);
+   RP::add(pop + "_vspace.vx_max","Maximum value for velocity mesh vx-coordinates.", newVMesh.meshLimits[1]);
+   RP::add(pop + "_vspace.vy_min","Minimum value for velocity mesh vy-coordinates.", newVMesh.meshLimits[2]);
+   RP::add(pop + "_vspace.vy_max","Maximum value for velocity mesh vx-coordinates.", newVMesh.meshLimits[3]);
+   RP::add(pop + "_vspace.vz_min","Minimum value for velocity mesh vz-coordinates.", newVMesh.meshLimits[4]);
+   RP::add(pop + "_vspace.vz_max","Maximum value for velocity mesh vx-coordinates.", newVMesh.meshLimits[5]);
+   RP::add(pop + "_vspace.vx_length","Initial number of velocity blocks in vx-direction.", newVMesh.gridLength[0]);
+   RP::add(pop + "_vspace.vy_length","Initial number of velocity blocks in vy-direction.", newVMesh.gridLength[1]);
+   RP::add(pop + "_vspace.vz_length","Initial number of velocity blocks in vz-direction.", newVMesh.gridLength[2]);
    // RP::add(pop + "_vspace.max_refinement_level","Maximum allowed mesh refinement level.", newVMesh.meshMinLimits); //Was not even used?
 
    // Thermal / suprathermal parameters

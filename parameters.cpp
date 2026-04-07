@@ -151,6 +151,7 @@ string P::projectName = string("");
 
 bool P::vlasovAccelerateMaxwellianBoundaries = false;
 Real P::maxSlAccelerationRotation = 10.0;
+Real hallRho;
 Real P::hallMinimumRhom = physicalconstants::MASS_PROTON;
 Real P::hallMinimumRhoq = physicalconstants::CHARGE;
 
@@ -224,7 +225,7 @@ bool P::computeCurvature;
 bool P::addParameters() {
    typedef Readparameters RP;
    // the other default parameters we read through the add/get interface
-   RP::add("io.diagnostic_write_interval", "Write diagnostic output every arg time steps", numeric_limits<uint>::max());
+   RP::add("io.diagnostic_write_interval", "Write diagnostic output every arg time steps", P::diagnosticInterval);
 
    RP::add(
        "io.system_write_t_interval",
@@ -270,153 +271,152 @@ bool P::addParameters() {
    //     "MPI-IO hint value passed to the restart IO. Has to be matched by io.restart_read_mpiio_hint_key.");
 
    RP::add("io.write_initial_state",
-           "Write initial state, not even the 0.5 dt propagation is done. Do not use for restarting. ", false);
+           "Write initial state, not even the 0.5 dt propagation is done. Do not use for restarting. ", P::writeInitialState);
 
-   RP::add("io.write_full_bgb_data", "Write a dedicated file containing all BGB components and first derivatives, then exit.", false);
+   RP::add("io.write_full_bgb_data", "Write a dedicated file containing all BGB components and first derivatives, then exit.", P::writeFullBGB);
 
    RP::add("io.restart_walltime_interval",
-           "Save the complete simulation in given walltime intervals. Negative values disable writes.", -1.0);
-   RP::add("io.number_of_restarts", "Exit the simulation after certain number of walltime-based restarts.",
-           numeric_limits<uint>::max());
+           "Save the complete simulation in given walltime intervals. Negative values disable writes.", P::saveRestartWalltimeInterval);
+   RP::add("io.number_of_restarts", "Exit the simulation after certain number of walltime-based restarts.",P::exitAfterRestarts);
    RP::add("io.recover_tstep_interval",
-           "Save the complete simulation in given tstep intervals. 0 disables writes.", 0);
-   RP::add("io.number_of_recovers", "Overwrite recovers cyclically after this number of recovers written.", 2);
+           "Save the complete simulation in given tstep intervals. 0 disables writes.", P::saveRecoverTstepInterval);
+   RP::add("io.number_of_recovers", "Overwrite recovers cyclically after this number of recovers written.", P::recoverMaxFiles);
    RP::add("io.vlsv_buffer_size",
-           "Buffer size passed to VLSV writer (bytes, up to uint64_t), default 0 as this is sensible on sisu", 0);
-   RP::add("io.write_restart_stripe_factor", "Stripe factor for restart and initial grid writing. Default 0 to inherit.", 0);
-   RP::add("io.write_system_stripe_factor", "Stripe factor for bulk file writing. Default 0 to inherit.", 0);
-   RP::add("io.write_as_float", "If true, write in floats instead of doubles", false);
+           "Buffer size passed to VLSV writer (bytes, up to uint64_t), default 0 as this is sensible on sisu", P::vlsvBufferSize);
+   RP::add("io.write_restart_stripe_factor", "Stripe factor for restart and initial grid writing. Default 0 to inherit.", P::restartStripeFactor);
+   RP::add("io.write_system_stripe_factor", "Stripe factor for bulk file writing. Default 0 to inherit.", P::systemStripeFactor);
+   RP::add("io.write_as_float", "If true, write in floats instead of doubles", P::writeAsFloat);
    RP::add("io.restart_write_path",
            "Path to the location where restart files should be written. Defaults to the local directory, also if the "
            "specified destination is not writeable.",
-           string("./"));
+           P::restartWritePath);
    RP::add("io.recover_write_path",
            "Path to the location where recover files should be written. Defaults to the local directory, also if the "
            "specified destination is not writeable.",
-           string("./"));
+           P::recoverWritePath);
 
-   RP::add("propagate_field", "Propagate magnetic field during the simulation", true);
+   RP::add("propagate_field", "Propagate magnetic field during the simulation", P::propagateField);
    RP::add("propagate_vlasov_acceleration",
            "Propagate distribution functions during the simulation in velocity space. If false, it is propagated with "
            "zero length timesteps.",
-           true);
+           P::propagateVlasovAcceleration);
    RP::add("propagate_vlasov_translation",
            "Propagate distribution functions during the simulation in ordinary space. If false, it is propagated with "
            "zero length timesteps.",
-           true);
-   RP::add("dynamic_timestep", "If true,  timestep is set based on  CFL limits (default on)", true);
+           P::propagateVlasovTranslation);
+   RP::add("dynamic_timestep", "If true,  timestep is set based on  CFL limits (default on)", P::dynamicTimestep);
    RP::add("hallMinimumRho",
            "Minimum rho value used for the Hall and electron pressure gradient terms in the Lorentz force and in the "
            "field solver. Default is very low and has no effect in practice.",
-           1.0);
+           hallRho);
    RP::add("project",
            "Specify the name of the project to use. Supported to date (20150610): Alfven Diffusion Dispersion "
            "Distributions Firehose Flowthrough Fluctuations Harris KHB Larmor Magnetosphere Multipeak Riemann1 Shock "
            "Shocktest Template test_fp testHall test_trans verificationLarmor",
-           string(""));
+           P::projectName);
 
-   RP::add("restart.write_as_float", "If true, write restart fields in floats instead of doubles", false);
-   RP::add("restart.filename", "Restart from this vlsv file. No restart if empty file.", string(""));
+   RP::add("restart.write_as_float", "If true, write restart fields in floats instead of doubles", P::writeRestartAsFloat);
+   RP::add("restart.filename", "Restart from this vlsv file. No restart if empty file.", P::restartFileName);
 
    RP::add(
        "restart.overrideReadFsGridDecompositionX",
-       "Manual FsGridDecomposition for field solver grid stored in a restart file.", 0);
+       "Manual FsGridDecomposition for field solver grid stored in a restart file.", P::overrideReadFsGridDecomposition[0]);
    RP::add(
        "restart.overrideReadFsGridDecompositionY",
-       "Manual FsGridDecomposition for field solver grid stored in a restart file.", 0);
+       "Manual FsGridDecomposition for field solver grid stored in a restart file.", P::overrideReadFsGridDecomposition[1]);
    RP::add(
        "restart.overrideReadFsGridDecompositionZ",
-       "Manual FsGridDecomposition for field solver grid stored in a restart file.", 0);
+       "Manual FsGridDecomposition for field solver grid stored in a restart file.", P::overrideReadFsGridDecomposition[2]);
 
-   RP::add("gridbuilder.x_min", "Minimum value of the x-coordinate.", NAN);
-   RP::add("gridbuilder.x_max", "Maximum value of the x-coordinate.", NAN);
-   RP::add("gridbuilder.y_min", "Minimum value of the y-coordinate.", NAN);
-   RP::add("gridbuilder.y_max", "Maximum value of the y-coordinate.", NAN);
-   RP::add("gridbuilder.z_min", "Minimum value of the z-coordinate.", NAN);
-   RP::add("gridbuilder.z_max", "Maximum value of the z-coordinate.", NAN);
-   RP::add("gridbuilder.x_length", "Number of cells in x-direction in initial grid.", 0);
-   RP::add("gridbuilder.y_length", "Number of cells in y-direction in initial grid.", 0);
-   RP::add("gridbuilder.z_length", "Number of cells in z-direction in initial grid.", 0);
+   RP::add("gridbuilder.x_min", "Minimum value of the x-coordinate.", P::xmin);
+   RP::add("gridbuilder.x_max", "Maximum value of the x-coordinate.", P::xmax);
+   RP::add("gridbuilder.y_min", "Minimum value of the y-coordinate.", P::ymin);
+   RP::add("gridbuilder.y_max", "Maximum value of the y-coordinate.", P::ymax);
+   RP::add("gridbuilder.z_min", "Minimum value of the z-coordinate.", P::zmin);
+   RP::add("gridbuilder.z_max", "Maximum value of the z-coordinate.", P::zmax);
+   RP::add("gridbuilder.x_length", "Number of cells in x-direction in initial grid.", P::xcells_ini);
+   RP::add("gridbuilder.y_length", "Number of cells in y-direction in initial grid.", P::ycells_ini);
+   RP::add("gridbuilder.z_length", "Number of cells in z-direction in initial grid.", P::zcells_ini);
 
-   RP::add("gridbuilder.dt", "Initial timestep in seconds.", 0.0);
+   RP::add("gridbuilder.dt", "Initial timestep in seconds.", P::dt);
 
    RP::add("gridbuilder.t_max",
            "Maximum simulation time, in seconds. If timestep_max limit is hit first this time will never be reached",
-           LARGE_REAL);
+           P::t_max);
    RP::add("gridbuilder.timestep_max",
            "Max. value for timesteps. If t_max limit is hit first, this step will never be reached",
-           numeric_limits<uint>::max());
+           P::tstep_max);
    RP::add("gridbuilder.dt_ceil",
            "Maximum simulation dt in seconds.",
-           -1.0);
+           P::dt_ceil);
 
    // Field solver parameters
    RP::add("fieldsolver.maxWaveVelocity",
-           "Maximum wave velocity allowed in the fastest velocity determination in m/s, default unlimited", LARGE_REAL);
-   RP::add("fieldsolver.maxSubcycles", "Maximum allowed field solver subcycles", 1);
-   RP::add("fieldsolver.resistivity", "Resistivity for the eta*J term in Ohm's law.", 0.0);
-   RP::add("fieldsolver.diffusiveEterms", "Enable diffusive terms in the computation of E", true);
-   RP::add("fieldsolver.finiteDifferencingAtBoundaries", "Enable finite differencing at sysboundaries", false);
+           "Maximum wave velocity allowed in the fastest velocity determination in m/s, default unlimited", P::maxWaveVelocity);
+   RP::add("fieldsolver.maxSubcycles", "Maximum allowed field solver subcycles", P::maxFieldSolverSubcycles);
+   RP::add("fieldsolver.resistivity", "Resistivity for the eta*J term in Ohm's law.", P::resistivity);
+   RP::add("fieldsolver.diffusiveEterms", "Enable diffusive terms in the computation of E", P::fieldSolverDiffusiveEterms);
+   RP::add("fieldsolver.finiteDifferencingAtBoundaries", "Enable finite differencing at sysboundaries", P::fieldSolverFiniteDifferencingAtBoundaries);
    RP::add(
        "fieldsolver.ohmHallTerm",
        "Enable/choose spatial order of the Hall term in Ohm's law. 0: off, 1: 1st spatial order, 2: 2nd spatial order",
-       0);
+       P::ohmHallTerm);
    RP::add(
        "fieldsolver.ohmGradPeTerm",
        "Enable/choose spatial order of the electron pressure gradient term in Ohm's law. 0: off, 1: 1st spatial order.",
-       0);
+       P::ohmGradPeTerm);
    RP::add("fieldsolver.electronTemperature",
-           "Upstream (anchor point) electron temperature to be used for the electron pressure gradient term (K).", 0.0);
+           "Upstream (anchor point) electron temperature to be used for the electron pressure gradient term (K).", P::electronTemperature);
    RP::add("fieldsolver.electronDensity",
-           "Upstream (anchor point) electron density to be used for the electron pressure gradient term (m^-3).", 0.0);
+           "Upstream (anchor point) electron density to be used for the electron pressure gradient term (m^-3).", P::electronDensity);
    RP::add("fieldsolver.electronPTindex",
            "Polytropic index for the equation of state to solve the electron pressure gradient term. 0 is isobaric, 1 is isothermal, 1.667 is adiabatic "
            "electrons, ",
-           0.0);
+           P::electronPTindex);
    RP::add("fieldsolver.maxCFL",
-           "The maximum CFL limit for field propagation. Used to set timestep if dynamic_timestep is true.", 0.5);
+           "The maximum CFL limit for field propagation. Used to set timestep if dynamic_timestep is true.", P::fieldSolverMaxCFL);
    RP::add("fieldsolver.minCFL",
-           "The minimum CFL limit for field propagation. Used to set timestep if dynamic_timestep is true.", 0.4);
+           "The minimum CFL limit for field propagation. Used to set timestep if dynamic_timestep is true.", P::fieldSolverMinCFL);
 
    RP::add(
        "fieldsolver.manualFsGridDecompositionX",
-       "Manual FsGridDecomposition for field solver grid.", 0);
+       "Manual FsGridDecomposition for field solver grid.", P::manualFsGridDecomposition[0]);
    RP::add(
        "fieldsolver.manualFsGridDecompositionY",
-       "Manual FsGridDecomposition for field solver grid.", 0);
+       "Manual FsGridDecomposition for field solver grid.", P::manualFsGridDecomposition[1]);
    RP::add(
        "fieldsolver.manualFsGridDecompositionZ",
-       "Manual FsGridDecomposition for field solver grid.", 0);
+       "Manual FsGridDecomposition for field solver grid.", P::manualFsGridDecomposition[2]);
 
 
    // Vlasov solver parameters
    RP::add("vlasovsolver.maxSlAccelerationRotation",
-           "Maximum rotation angle (degrees) allowed by the Semi-Lagrangian solver (Use >25 values with care)", 25.0);
-   RP::add("vlasovsolver.maxSlAccelerationSubcycles", "Maximum number of subcycles for acceleration", 1);
+           "Maximum rotation angle (degrees) allowed by the Semi-Lagrangian solver (Use >25 values with care)", P::maxSlAccelerationRotation);
+   RP::add("vlasovsolver.maxSlAccelerationSubcycles", "Maximum number of subcycles for acceleration", P::maxSlAccelerationSubcycles);
    RP::add("vlasovsolver.maxCFL",
            "The maximum CFL limit for vlasov propagation in ordinary space. Used to set timestep if dynamic_timestep "
            "is true.",
-           0.99);
+           P::vlasovSolverMaxCFL);
    RP::add("vlasovsolver.minCFL",
            "The minimum CFL limit for vlasov propagation in ordinary space. Used to set timestep if dynamic_timestep "
            "is true.",
-           0.8);
+           P::vlasovSolverMinCFL);
    RP::add("vlasovsolver.accelerateMaxwellianBoundaries",
            "Propagate maxwellian boundary cell contents in velocity space. Default false.",
-           false);
-   RP::add("vlasovsolver.GhostTranslate","Boolean for activating all-local ghost translation",false);
-   RP::add("vlasovsolver.GhostTranslateExtent","Stencil size in all-local ghost translation (default: VLASOV_STENCIL_WIDTH+1",0);
+           P::vlasovAccelerateMaxwellianBoundaries);
+   RP::add("vlasovsolver.GhostTranslate","Boolean for activating all-local ghost translation",P::vlasovSolverGhostTranslate);
+   RP::add("vlasovsolver.GhostTranslateExtent","Stencil size in all-local ghost translation (default: VLASOV_STENCIL_WIDTH+1",P::vlasovSolverGhostTranslateExtent);
 
    // Load balancing parameters
-   RP::add("loadBalance.algorithm", "Load balancing algorithm to be used", string("RCB"));
-   RP::add("loadBalance.tolerance", "Load imbalance tolerance", string("1.05"));
-   RP::add("loadBalance.rebalanceInterval", "Load rebalance interval (steps)", 10);
+   RP::add("loadBalance.algorithm", "Load balancing algorithm to be used", P::loadBalanceAlgorithm);
+   RP::add("loadBalance.tolerance", "Load imbalance tolerance", loadBalanceOptions["IMBALANE_TOL"]);
+   RP::add("loadBalance.rebalanceInterval", "Load rebalance interval (steps)", P::rebalanceInterval);
 
    RP::add("loadBalance.optionKey", "Zoltan option key. Has to be matched by loadBalance.optionValue.",P::loadBalanceOptions);
    // RP::add("loadBalance.optionValue", "Zoltan option value. Has to be matched by loadBalance.optionKey.");
 
    // Output variable parameters
-   RP::add("io.system_write_all_data_reducers", "If 0 don't write all DROs, if 1 do write them.", false);
+   RP::add("io.system_write_all_data_reducers", "If 0 don't write all DROs, if 1 do write them.", P::systemWriteAllDROs);
    // NOTE Do not remove the : before the list of variable names as this is parsed by tools/check_vlasiator_cfg.sh
    RP::add("variables.output",
                     string() +
@@ -463,7 +463,7 @@ bool P::addParameters() {
            "BackgroundVolB PerturbedVolB " + "Pressure vg_Pressure fg_Pressure populations_PTensor " +
            "BVOLderivs b_vol_derivs",P::outputVariableList);
 
-   RP::add("io.diagnostic_write_all_data_reducers", "Write all available diagnostic reducers", false);
+   RP::add("io.diagnostic_write_all_data_reducers", "Write all available diagnostic reducers", P::diagnosticWriteAllDROs);
    // NOTE Do not remove the : before the list of variable names as this is parsed by tools/check_vlasiator_cfg.sh
    RP::add("variables.diagnostic",
                     string() +
@@ -487,49 +487,51 @@ bool P::addParameters() {
 
    // bailout parameters
    RP::add("bailout.write_restart",
-           "If 1, write a restart file on bailout. Gets reset when sending a STOP (1) or a KILL (0).", true);
-   RP::add("bailout.min_dt", "Minimum time step below which bailout occurs (s).", 1e-6);
-   RP::add("bailout.max_memory", "Maximum amount of memory used per node (in GiB) over which bailout occurs.",
-           1073741824.);
-   RP::add("bailout.velocity_space_wall_block_margin", "Distance from the velocity space limits in blocks, if the distribution function reaches that distance from the wall we bail out to avoid hitting the wall.", 1);
+           "If 1, write a restart file on bailout. Gets reset when sending a STOP (1) or a KILL (0).", P::bailout_write_restart);
+   RP::add("bailout.min_dt", "Minimum time step below which bailout occurs (s).", P::bailout_min_dt);
+   RP::add("bailout.max_memory", "Maximum amount of memory used per node (in GiB) over which bailout occurs.",P::bailout_max_memory);
+   RP::add("bailout.velocity_space_wall_block_margin", 
+           "Distance from the velocity space limits in blocks, if the distribution function reaches that distance from the wall we bail out to avoid hitting the wall.",
+           P::bailout_velocity_space_wall_margin);
 
    // Spatial Refinement parameters
-   RP::add("AMR.max_spatial_level", "Maximum absolute spatial mesh refinement level", (uint)0);
-   RP::add("AMR.max_allowed_spatial_level", "Maximum currently allowed spatial mesh refinement level", -1);
-   RP::add("AMR.should_refine","If false, do not refine Vlasov grid regardless of max spatial level",true);
-   RP::add("AMR.adapt_refinement","If true, re-refine vlasov grid every refine_cadence balance", false);
-   RP::add("AMR.refine_on_restart","If true, re-refine vlasov grid on restart. DEPRECATED, consider using the DOMR command", false);
-   RP::add("AMR.force_refinement","If true, refine/unrefine the vlasov grid to match the config on restart", false);
-   RP::add("AMR.should_filter","If true, filter vlasov grid with boxcar filter on restart",false);
-   RP::add("AMR.use_alpha1","Use the maximum of dimensionless gradients alpha_1 as a refinement index", true);
-   RP::add("AMR.alpha1_refine_threshold","Determines the minimum value of alpha_1 to refine cells", 0.5);
-   RP::add("AMR.alpha1_coarsen_threshold","Determines the maximum value of alpha_1 to unrefine cells, default half of the refine threshold", -1.0);
-   RP::add("AMR.use_alpha2","Use J/B_perp as a refinement index", true);
-   RP::add("AMR.alpha2_refine_threshold","Determines the minimum value of alpha_2 to refine cells", 0.5);
-   RP::add("AMR.alpha2_coarsen_threshold","Determines the maximum value of alpha_2 to unrefine cells, default half of the refine threshold", -1.0);
-   RP::add("AMR.use_vorticity","Use vorticity as a refinement index", false);
-   RP::add("AMR.vorticity_refine_threshold","Determines the minimum value of vorticity to refine cells", 0.5);
-   RP::add("AMR.vorticity_coarsen_threshold","Determines the maximum value of vorticity to unrefine cells, default half of the refine threshold", -1.0);
-   RP::add("AMR.use_anisotropy","Use pressure anisotropy as a refinement index", false);
-   RP::add("AMR.anisotropy_refine_threshold","Determines the maximum value of pressure anisotropy to refine cells", 0.5);
-   RP::add("AMR.anisotropy_coarsen_threshold","Determines the minimum value of pressure anisotropy to unrefine cells, default twice the refine threshold", -1.0);
-   RP::add("AMR.anisotropy_max_reflevel","When anisotropy is below the refine threshold, defines the maximum level to refine to", 2);
-   RP::add("AMR.refine_cadence","Refine every nth load balance", 5);
-   RP::add("AMR.refine_after","Start refinement after this many simulation seconds", 0.0);
-   RP::add("AMR.refine_radius","Maximum distance from origin to allow refinement within. Only induced refinement allowed outside this radius.", LARGE_REAL);
-   RP::add("AMR.number_of_refine_boxes", "How many boxes outside which to suppress refinement, that number of box edges have to then be defined as well. If more than 1 box is defined, refinement is suppressed outside the union of the volumes of all boxes.", 0);
+   RP::add("AMR.max_spatial_level", "Maximum absolute spatial mesh refinement level", P::amrMaxSpatialRefLevel);
+   RP::add("AMR.max_allowed_spatial_level", "Maximum currently allowed spatial mesh refinement level", P::amrMaxAllowedSpatialRefLevel);
+   // RP::add("AMR.should_refine","If false, do not refine Vlasov grid regardless of max spatial level",);//NOTE: never worked as this was never read
+   RP::add("AMR.adapt_refinement","If true, re-refine vlasov grid every refine_cadence balance", P::adaptRefinement);
+   RP::add("AMR.refine_on_restart","If true, re-refine vlasov grid on restart. DEPRECATED, consider using the DOMR command", P::refineOnRestart);
+   RP::add("AMR.force_refinement","If true, refine/unrefine the vlasov grid to match the config on restart", P::forceRefinement);
+   RP::add("AMR.should_filter","If true, filter vlasov grid with boxcar filter on restart",P::shouldFilter);
+   RP::add("AMR.use_alpha1","Use the maximum of dimensionless gradients alpha_1 as a refinement index", P::useAlpha1);
+   RP::add("AMR.alpha1_refine_threshold","Determines the minimum value of alpha_1 to refine cells", P::alpha1RefineThreshold);
+   RP::add("AMR.alpha1_coarsen_threshold","Determines the maximum value of alpha_1 to unrefine cells, default half of the refine threshold", P::alpha1CoarsenThreshold);
+   RP::add("AMR.use_alpha2","Use J/B_perp as a refinement index",P::useAlpha2);
+   RP::add("AMR.alpha2_refine_threshold","Determines the minimum value of alpha_2 to refine cells", P::alpha2RefineThreshold);
+   RP::add("AMR.alpha2_coarsen_threshold","Determines the maximum value of alpha_2 to unrefine cells, default half of the refine threshold", P::alpha2CoarsenThreshold);
+   RP::add("AMR.use_vorticity","Use vorticity as a refinement index", P::useVorticity);
+   RP::add("AMR.vorticity_refine_threshold","Determines the minimum value of vorticity to refine cells", P::vorticityRefineThreshold);
+   RP::add("AMR.vorticity_coarsen_threshold","Determines the maximum value of vorticity to unrefine cells, default half of the refine threshold", P::vorticityCoarsenThreshold);
+   RP::add("AMR.use_anisotropy","Use pressure anisotropy as a refinement index", P::useAnisotropy);
+   RP::add("AMR.anisotropy_refine_threshold","Determines the maximum value of pressure anisotropy to refine cells", P::anisotropyRefineThreshold);
+   RP::add("AMR.anisotropy_coarsen_threshold","Determines the minimum value of pressure anisotropy to unrefine cells, default twice the refine threshold", P::anisotropyCoarsenThreshold);
+   RP::add("AMR.anisotropy_max_reflevel","When anisotropy is below the refine threshold, defines the maximum level to refine to", P::anisotropyMaxReflevel);
+   RP::add("AMR.refine_cadence","Refine every nth load balance", P::refineCadence);
+   RP::add("AMR.refine_after","Start refinement after this many simulation seconds", P::refineAfter);
+   RP::add("AMR.refine_radius","Maximum distance from origin to allow refinement within. Only induced refinement allowed outside this radius.", P::refineRadius);
+   RP::add("AMR.number_of_refine_boxes", "How many boxes outside which to suppress refinement, that number of box edges have to then be defined as well. If more than 1 box is defined, refinement is suppressed outside the union of the volumes of all boxes.", 
+           P::refineBoxNumber);
    RP::add("AMR.refinement_min_x", "Refinement minimum X coordinate, no refinement at x < this value (m) except induced refinement.",P::refinementMinX);
    RP::add("AMR.refinement_min_y", "Refinement minimum Y coordinate, no refinement at y < this value (m) except induced refinement.",P::refinementMinY);
    RP::add("AMR.refinement_min_z", "Refinement minimum Z coordinate, no refinement at z < this value (m) except induced refinement.",P::refinementMinZ);
    RP::add("AMR.refinement_max_x", "Refinement maximum X coordinate, no refinement at x > this value (m) except induced refinement.",P::refinementMaxX);
    RP::add("AMR.refinement_max_y", "Refinement maximum Y coordinate, no refinement at y > this value (m) except induced refinement.",P::refinementMaxY);
    RP::add("AMR.refinement_max_z", "Refinement maximum Z coordinate, no refinement at z > this value (m) except induced refinement.",P::refinementMaxZ);
-   RP::add("AMR.alpha1_drho_weight","Multiplier for delta rho (plasma density) in alpha calculation", 1.0);
-   RP::add("AMR.alpha1_du_weight","Multiplier for delta U (total kinetic + field energy density) in alpha calculation", 1.0);
-   RP::add("AMR.alpha1_dpsq_weight","Multiplier for delta p squared (kinetic energy) in alpha calculation", 1.0);
-   RP::add("AMR.alpha1_dbsq_weight","Multiplier for delta B squared (field energy) in alpha calculation", 1.0);
-   RP::add("AMR.alpha1_db_weight","Multiplier for delta B (magnetic field strength) in alpha calculation", 1.0);
-   RP::add("AMR.number_of_boxes", "How many boxes to be refined, that number of centers and sizes have to then be defined as well.", 0);
+   RP::add("AMR.alpha1_drho_weight","Multiplier for delta rho (plasma density) in alpha calculation", P::alphaDRhoWeight);
+   RP::add("AMR.alpha1_du_weight","Multiplier for delta U (total kinetic + field energy density) in alpha calculation", P::alphaDUWeight);
+   RP::add("AMR.alpha1_dpsq_weight","Multiplier for delta p squared (kinetic energy) in alpha calculation", P::alphaDPSqWeight);
+   RP::add("AMR.alpha1_dbsq_weight","Multiplier for delta B squared (field energy) in alpha calculation", P::alphaDBSqWeight);
+   RP::add("AMR.alpha1_db_weight","Multiplier for delta B (magnetic field strength) in alpha calculation", P::alphaDBWeight);
+   RP::add("AMR.number_of_boxes", "How many boxes to be refined, that number of centers and sizes have to then be defined as well.", P::amrBoxNumber);
    RP::add("AMR.box_half_width_x", "Half width in x of the box that is refined",P::amrBoxHalfWidthX);
    RP::add("AMR.box_half_width_y", "Half width in y of the box that is refined",P::amrBoxHalfWidthY);
    RP::add("AMR.box_half_width_z", "Half width in z of the box that is refined",P::amrBoxHalfWidthZ);
@@ -537,37 +539,37 @@ bool P::addParameters() {
    RP::add("AMR.box_center_y", "y coordinate of the center of the box that is refined",P::amrBoxCenterY);
    RP::add("AMR.box_center_z", "z coordinate of the center of the box that is refined",P::amrBoxCenterZ);
    RP::add("AMR.box_max_level", "max refinement level of the box that is refined",P::amrBoxMaxLevel);
-   RP::add("AMR.transShortPencils", "if true, use one-cell pencils", false);
+   RP::add("AMR.transShortPencils", "if true, use one-cell pencils", P::amrTransShortPencils);
    RP::add("AMR.filterpasses", string("AMR filter passes for each individual refinement level"),P::numPasses);
-   RP::add("adaptGPUWID", "if true, will halve velocity block counts if GPU is in use and WID==8", true);
-   RP::add("GPUallocations", "How many parallel GPU vlasov allocations to make? (default 128)", 128);
+   RP::add("adaptGPUWID", "if true, will halve velocity block counts if GPU is in use and WID==8", P::adaptGPUWID);
+   RP::add("GPUallocations", "How many parallel GPU vlasov allocations to make? (default 128)", P::GPUallocations);
 
    // Diffusion parameters
-   RP::add("PAD.enable","Enable Artificial pitch-angle diffusion",0);
-   RP::add("PAD.coefficient","Set artificial pitch-angle diffusion coefficient (overriding .DAT file)",-1);
-   RP::add("PAD.CFL","Set CFL condition",0.1);
-   RP::add("PAD.vbins","number of bins for velocity",200);
-   RP::add("PAD.mubins","number of bins for mu",30);
-   RP::add("PAD.file","Path of txt file for nu0", string("NU0BOX.DAT"));
-   RP::add("PAD.fudge","Divide diffusion coefficient nu0 (read from file) by a fudge factor (see Dubart et al 2023)",4);
+   RP::add("PAD.enable","Enable Artificial pitch-angle diffusion",P::artificialPADiff);
+   RP::add("PAD.coefficient","Set artificial pitch-angle diffusion coefficient (overriding .DAT file)",P::PADcoefficient);
+   RP::add("PAD.CFL","Set CFL condition",P::PADCFL);
+   RP::add("PAD.vbins","number of bins for velocity",P::PADvbins);
+   RP::add("PAD.mubins","number of bins for mu",P::PADmubins);
+   RP::add("PAD.file","Path of txt file for nu0", P::PADnu0);
+   RP::add("PAD.fudge","Divide diffusion coefficient nu0 (read from file) by a fudge factor (see Dubart et al 2023)",P::PADfudge);
    
    // Fieldtracing
-   RP::add("fieldtracing.fieldLineTracer", "Field line tracing method to use for coupling ionosphere and magnetosphere (options are: Euler, BS)", std::string("Euler"));
-   RP::add("fieldtracing.tracer_max_allowed_error", "Maximum allowed error for the adaptive field line tracers ", 1000);
-   RP::add("fieldtracing.tracer_max_attempts", "Maximum allowed attempts for the adaptive field line tracers", 100);
-   RP::add("fieldtracing.tracer_min_dx", "Minimum allowed field line tracer step length for the adaptive field line tracers (m)", 100e3);
-   RP::add("fieldtracing.fullbox_and_fluxrope_max_absolute_distance_to_trace", "Maximum absolute distance in m to trace along the field line before ending. Defaults to the sum of the simulation box edge lengths LX+LY+LZ if set <= 0.", -1);
-   RP::add("fieldtracing.fullbox_max_incomplete_cells", "Maximum fraction of cells left incomplete when stopping tracing loop for full box tracing. Defaults to zero to process all, will be slow at scale! Both fluxrope_max_incomplete_cells and fullbox_max_incomplete_cells will be achieved.", 0);
-   RP::add("fieldtracing.fluxrope_max_incomplete_cells", "Maximum fraction of cells left incomplete when stopping loop for flux rope tracing. Defaults to zero to process all, will be slow at scale! Both fluxrope_max_incomplete_cells and fullbox_max_incomplete_cells will be achieved.", 0);
-   RP::add("fieldtracing.use_reconstruction_cache", "Use the cache to store reconstruction coefficients. (0: don't, 1: use)", 0);
-   RP::add("fieldtracing.fluxrope_max_curvature_radii_to_trace", "Maximum number of seedpoint curvature radii to trace forward and backward from each DCCRG cell to find flux ropes", 10);
-   RP::add("fieldtracing.fluxrope_max_curvature_radii_extent", "Maximum extent in seedpoint curvature radii from the seed a field line is allowed to extend to be counted as a flux rope", 2);
-   RP::add("fieldtracing.min_allowed_x", "Trace for x coordinates larger than this limit (in m).", -LARGE_REAL);
-   RP::add("fieldtracing.min_allowed_y", "Trace for y coordinates larger than this limit (in m).", -LARGE_REAL);
-   RP::add("fieldtracing.min_allowed_z", "Trace for z coordinates larger than this limit (in m).", -LARGE_REAL);
-   RP::add("fieldtracing.max_allowed_x", "Trace for x coordinates smaller than this limit (in m).", LARGE_REAL);
-   RP::add("fieldtracing.max_allowed_y", "Trace for y coordinates smaller than this limit (in m).", LARGE_REAL);
-   RP::add("fieldtracing.max_allowed_z", "Trace for z coordinates smaller than this limit (in m).", LARGE_REAL);
+   RP::add("fieldtracing.fieldLineTracer", "Field line tracing method to use for coupling ionosphere and magnetosphere (options are: Euler, BS)", tracerString);
+   RP::add("fieldtracing.tracer_max_allowed_error", "Maximum allowed error for the adaptive field line tracers ", FieldTracing::fieldTracingParameters.max_allowed_error);
+   RP::add("fieldtracing.tracer_max_attempts", "Maximum allowed attempts for the adaptive field line tracers", FieldTracing::fieldTracingParameters.max_field_tracer_attempts);
+   RP::add("fieldtracing.tracer_min_dx", "Minimum allowed field line tracer step length for the adaptive field line tracers (m)", FieldTracing::fieldTracingParameters.min_tracer_dx_full_box);
+   RP::add("fieldtracing.fullbox_and_fluxrope_max_absolute_distance_to_trace", "Maximum absolute distance in m to trace along the field line before ending. Defaults to the sum of the simulation box edge lengths LX+LY+LZ if set <= 0.", FieldTracing::fieldTracingParameters.fullbox_and_fluxrope_max_distance);
+   RP::add("fieldtracing.fullbox_max_incomplete_cells", "Maximum fraction of cells left incomplete when stopping tracing loop for full box tracing. Defaults to zero to process all, will be slow at scale! Both fluxrope_max_incomplete_cells and fullbox_max_incomplete_cells will be achieved.", FieldTracing::fieldTracingParameters.fullbox_max_incomplete_cells);
+   RP::add("fieldtracing.fluxrope_max_incomplete_cells", "Maximum fraction of cells left incomplete when stopping loop for flux rope tracing. Defaults to zero to process all, will be slow at scale! Both fluxrope_max_incomplete_cells and fullbox_max_incomplete_cells will be achieved.", FieldTracing::fieldTracingParameters.fluxrope_max_incomplete_cells);
+   RP::add("fieldtracing.use_reconstruction_cache", "Use the cache to store reconstruction coefficients. (0: don't, 1: use)", FieldTracing::fieldTracingParameters.useCache);
+   RP::add("fieldtracing.fluxrope_max_curvature_radii_to_trace", "Maximum number of seedpoint curvature radii to trace forward and backward from each DCCRG cell to find flux ropes",FieldTracing::fieldTracingParameters.fluxrope_max_curvature_radii_to_trace);
+   RP::add("fieldtracing.fluxrope_max_curvature_radii_extent", "Maximum extent in seedpoint curvature radii from the seed a field line is allowed to extend to be counted as a flux rope", FieldTracing::fieldTracingParameters.fluxrope_max_curvature_radii_extent);
+   RP::add("fieldtracing.min_allowed_x", "Trace for x coordinates larger than this limit (in m).", FieldTracing::fieldTracingParameters.x_min);
+   RP::add("fieldtracing.min_allowed_y", "Trace for y coordinates larger than this limit (in m).", FieldTracing::fieldTracingParameters.y_min);
+   RP::add("fieldtracing.min_allowed_z", "Trace for z coordinates larger than this limit (in m).", FieldTracing::fieldTracingParameters.z_min);
+   RP::add("fieldtracing.max_allowed_x", "Trace for x coordinates smaller than this limit (in m).", FieldTracing::fieldTracingParameters.x_max);
+   RP::add("fieldtracing.max_allowed_y", "Trace for y coordinates smaller than this limit (in m).",FieldTracing::fieldTracingParameters.y_max );
+   RP::add("fieldtracing.max_allowed_z", "Trace for z coordinates smaller than this limit (in m).", FieldTracing::fieldTracingParameters.z_max);
 
    return true;
 }
@@ -777,7 +779,6 @@ void Parameters::getParameters() {
    //RP::get("propagate_vlasov_acceleration", P::propagateVlasovAcceleration);
    //RP::get("propagate_vlasov_translation", P::propagateVlasovTranslation);
    //RP::get("dynamic_timestep", P::dynamicTimestep);
-   Real hallRho;
    //RP::get("hallMinimumRho", hallRho);
    P::hallMinimumRhom = hallRho * physicalconstants::MASS_PROTON;
    P::hallMinimumRhoq = hallRho * physicalconstants::CHARGE;
@@ -791,13 +792,13 @@ void Parameters::getParameters() {
       cerr << "ERROR all of restart.overrideReadFsGridDecompositionX,Y,Z should be defined." << endl;
       MPI_Abort(MPI_COMM_WORLD, 1);
    }
-   FsGridTools::Task_t temp_task_t;
-   //RP::get("restart.overrideReadFsGridDecompositionX", temp_task_t);
-   P::overrideReadFsGridDecomposition[0] = temp_task_t;
-   //RP::get("restart.overrideReadFsGridDecompositionY", temp_task_t);
-   P::overrideReadFsGridDecomposition[1] = temp_task_t;
-   //RP::get("restart.overrideReadFsGridDecompositionZ", temp_task_t);
-   P::overrideReadFsGridDecomposition[2] = temp_task_t;
+   // FsGridTools::Task_t temp_task_t;
+   // //RP::get("restart.overrideReadFsGridDecompositionX", temp_task_t);
+   // P::overrideReadFsGridDecomposition[0] = temp_task_t;
+   // //RP::get("restart.overrideReadFsGridDecompositionY", temp_task_t);
+   // P::overrideReadFsGridDecomposition[1] = temp_task_t;
+   // //RP::get("restart.overrideReadFsGridDecompositionZ", temp_task_t);
+   // P::overrideReadFsGridDecomposition[2] = temp_task_t;
 
    //RP::get("project", P::projectName);
    if (RP::helpRequested) {
