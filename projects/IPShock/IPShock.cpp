@@ -49,7 +49,6 @@ namespace projects {
    bool IPShock::initialize() {
       return Project::initialize();
    }
-  //:s/\("\w\+.\(\w\+\)".\+\),.\+/\1,\2);/gc 
    void IPShock::addParameters() {
       typedef Readparameters RP;
       // Common (field / etc.) parameters
@@ -74,17 +73,17 @@ namespace projects {
          this->speciesParams.push_back(newsP);
          auto sP=&this->speciesParams.at(i);
 
-         RP::add(pop + "_IPShock.VX0u", "Upstream Bulk velocity in x",sP->VX0u);
-         RP::add(pop + "_IPShock.VY0u", "Upstream Bulk velocity in y",sP->VY0u);
-         RP::add(pop + "_IPShock.VZ0u", "Upstream Bulk velocuty in z",sP->VZ0u);
-         RP::add(pop + "_IPShock.rhou", "Upstream Number density (m^-3)",sP->rhou);
-         RP::add(pop + "_IPShock.Temperatureu", "Upstream Temperature (K)",sP->Temperatureu);
+         RP::add(pop + "_IPShock.VX0u", "Upstream Bulk velocity in x",sP->V0u[0]);
+         RP::add(pop + "_IPShock.VY0u", "Upstream Bulk velocity in y",sP->V0u[1]);
+         RP::add(pop + "_IPShock.VZ0u", "Upstream Bulk velocuty in z",sP->V0u[2]);
+         RP::add(pop + "_IPShock.rhou", "Upstream Number density (m^-3)",sP->DENSITYu);
+         RP::add(pop + "_IPShock.Temperatureu", "Upstream Temperature (K)",sP->TEMPERATUREu);
 
-         RP::add(pop + "_IPShock.VX0d", "Downstream Bulk velocity in x",sP->VX0d);
-         RP::add(pop + "_IPShock.VY0d", "Downstream Bulk velocity in y",sP->VY0d);
-         RP::add(pop + "_IPShock.VZ0d", "Downstream Bulk velocuty in z",sP->VZ0d);
-         RP::add(pop + "_IPShock.rhod", "Downstream Number density (m^-3)",sP->rhod);
-         RP::add(pop + "_IPShock.Temperatured", "Downstream Temperature (K)",sP->Temperatured);
+         RP::add(pop + "_IPShock.VX0d", "Downstream Bulk velocity in x",sP->V0d[0]);
+         RP::add(pop + "_IPShock.VY0d", "Downstream Bulk velocity in y",sP->V0d[1]);
+         RP::add(pop + "_IPShock.VZ0d", "Downstream Bulk velocuty in z",sP->V0d[2]);
+         RP::add(pop + "_IPShock.rhod", "Downstream Number density (m^-3)",sP->DENSITYd);
+         RP::add(pop + "_IPShock.Temperatured", "Downstream Temperature (K)",sP->TEMPERATUREd);
 
          RP::add(pop + "_IPShock.maxwCutoff", "Cutoff for the maxwellian distribution",sP->maxwCutoff);
       }
