@@ -73,7 +73,7 @@ namespace projects {
          const std::string& pop = getObjectWrapper().particleSpecies[i].name;
          MultiPeakSpeciesParameters newsP;
          this->speciesParams.push_back(newsP);
-         auto sP=this->speciesParams.at(i);
+         auto sP=&this->speciesParams.at(i);
          RP::add(pop+"_MultiPeak.n", "Number of peaks to create",sP->n);
          RP::add(pop+"_MultiPeak.rho", "Number density (m^-3)",sP->rho);
          RP::add(pop+"_MultiPeak.Tx", "Temperature (K)",sP->Tx);

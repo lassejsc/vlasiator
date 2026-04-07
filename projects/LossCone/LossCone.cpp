@@ -61,14 +61,14 @@ namespace projects {
     
          speciesParams.push_back(newsP);
          auto sP=&this->speciesParams.at(i);
-         RP::add(pop + "_LossCone.rho", "Number density (m^-3)",sP->rho);
-         RP::add(pop + "_LossCone.TemperatureX", "Temperature (K)",sP->TemperatureX);
-         RP::add(pop + "_LossCone.TemperatureY", "Temperature (K)",sP->TemperatureY);
-         RP::add(pop + "_LossCone.TemperatureZ", "Temperature (K)",sP->TemperatureZ);
+         RP::add(pop + "_LossCone.rho", "Number density (m^-3)",sP->DENSITY);
+         RP::add(pop + "_LossCone.TemperatureX", "Temperature (K)",sP->TEMPERATUREX);
+         RP::add(pop + "_LossCone.TemperatureY", "Temperature (K)",sP->TEMPERATUREY);
+         RP::add(pop + "_LossCone.TemperatureZ", "Temperature (K)",sP->TEMPERATUREZ);
          RP::add(pop + "_LossCone.densityPertRelAmp", "Amplitude factor of the density perturbation",sP->densityPertRelAmp);
-         RP::add(pop + "_LossCone.VX0", "Initial bulk velocity in x-direction",sP->VX0);
-         RP::add(pop + "_LossCone.VY0", "Initial bulk velocity in y-direction",sP->VY0);
-         RP::add(pop + "_LossCone.VZ0", "Initial bulk velocity in z-direction",sP->VZ0);
+         RP::add(pop + "_LossCone.VX0", "Initial bulk velocity in x-direction",sP->V0[0]);
+         RP::add(pop + "_LossCone.VY0", "Initial bulk velocity in y-direction",sP->V0[1]);
+         RP::add(pop + "_LossCone.VZ0", "Initial bulk velocity in z-direction",sP->V0[2]);
          RP::add(pop + "_LossCone.velocityPertAbsAmp", "Amplitude of the velocity perturbation",sP->velocityPertAbsAmp);
          RP::add(pop + "_LossCone.muLimit", "Cutoff value for pitch-cosine mu positive and negative)",sP->muLimit);
       }
