@@ -1024,13 +1024,13 @@ void Parameters::getParameters() {
       cerr << "ERROR all of fieldsolver.manualFsGridDecompositionX,Y,Z should be defined." << endl;
       MPI_Abort(MPI_COMM_WORLD, 1);
    }
-   //RP::get("fieldsolver.manualFsGridDecompositionX", temp_task_t);
-   P::manualFsGridDecomposition[0] = temp_task_t;
-   //RP::get("fieldsolver.manualFsGridDecompositionY", temp_task_t);
-   P::manualFsGridDecomposition[1] = temp_task_t;
-   //RP::get("fieldsolver.manualFsGridDecompositionZ", temp_task_t);
-   P::manualFsGridDecomposition[2] = temp_task_t;
-
+   ////RP::get("fieldsolver.manualFsGridDecompositionX", temp_task_t);
+   //P::manualFsGridDecomposition[0] = temp_task_t;
+   ////RP::get("fieldsolver.manualFsGridDecompositionY", temp_task_t);
+   //P::manualFsGridDecomposition[1] = temp_task_t;
+   ////RP::get("fieldsolver.manualFsGridDecompositionZ", temp_task_t);
+   //P::manualFsGridDecomposition[2] = temp_task_t;
+   //
 
 
    // Get Vlasov solver parameters
