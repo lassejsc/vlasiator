@@ -77,9 +77,9 @@ namespace projects {
          RP::add(pop + "_Flowthrough.rho", "Number density (m^-3)", sP->rho);
          RP::add(pop + "_Flowthrough.rhoBase", "Background number density (m^-3)", sP->rhoBase);
          RP::add(pop + "_Flowthrough.T", "Temperature (K)", sP->T);
-         RP::add(pop + "_Flowthrough.VX0", "Initial bulk velocity in x-direction", sP->VX0);
-         RP::add(pop + "_Flowthrough.VY0", "Initial bulk velocity in y-direction", sP->VY0);
-         RP::add(pop + "_Flowthrough.VZ0", "Initial bulk velocity in z-direction", sP->VZ0);
+         RP::add(pop + "_Flowthrough.VX0", "Initial bulk velocity in x-direction", sP->V0[0]);
+         RP::add(pop + "_Flowthrough.VY0", "Initial bulk velocity in y-direction", sP->V0[1]);
+         RP::add(pop + "_Flowthrough.VZ0", "Initial bulk velocity in z-direction", sP->V0[2]);
       }
    }
 

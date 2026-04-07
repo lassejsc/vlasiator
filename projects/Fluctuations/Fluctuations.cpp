@@ -60,10 +60,10 @@ namespace projects {
          FluctuationsSpeciesParameters newsP;
          speciesParams.push_back(newsP);
          auto sP=&this->speciesParams.at(i);
-         RP::add(pop + "_Fluctuations.rho", "Number density (m^-3)", sP->rho);
-         RP::add(pop + "_Fluctuations.TemperatureX", "Temperature (K)", sP->TemperatureX);
-         RP::add(pop + "_Fluctuations.TemperatureY", "Temperature (K)", sP->TemperatureY);
-         RP::add(pop + "_Fluctuations.TemperatureZ", "Temperature (K)", sP->TemperatureZ);
+         RP::add(pop + "_Fluctuations.rho", "Number density (m^-3)", sP->DENSITY);
+         RP::add(pop + "_Fluctuations.TemperatureX", "Temperature (K)", sP->TEMPERATUREX);
+         RP::add(pop + "_Fluctuations.TemperatureY", "Temperature (K)", sP->TEMPERATUREY);
+         RP::add(pop + "_Fluctuations.TemperatureZ", "Temperature (K)", sP->TEMPERATUREZ);
          RP::add(pop + "_Fluctuations.densityPertRelAmp", "Amplitude factor of the density perturbation", sP->densityPertRelAmp);
          RP::add(pop + "_Fluctuations.velocityPertAbsAmp", "Amplitude of the velocity perturbation", sP->velocityPertAbsAmp);
          RP::add(pop + "_Fluctuations.maxwCutoff", "Cutoff for the maxwellian distribution", sP->maxwCutoff);
