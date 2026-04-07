@@ -280,7 +280,7 @@ int simulate(int argn,char* args[]) {
    getObjectWrapper().addPopulationParameters();
    sysBoundaryContainer.addParameters();
    // projects::Project::addParameters();
-
+   std::cout << "UHH 1" << std::endl;
    Project* project = projects::createProject();
    project->addParameters();
    getObjectWrapper().project = project;
