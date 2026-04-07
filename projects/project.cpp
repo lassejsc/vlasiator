@@ -70,7 +70,7 @@ namespace projects {
       baseClassInitialized = false;
    }
 
-   Project::~Project() {Project::addParameters(); }
+   Project::~Project() { }
 
    void Project::addParameters() {
       typedef Readparameters RP;
@@ -98,7 +98,7 @@ namespace projects {
       projects::verificationLarmor* _verificationLarmor=new verificationLarmor();_verificationLarmor->addParameters();project_temp["verificationLarmor"]=_verificationLarmor;
       projects::Shocktest* _Shocktest=new Shocktest();_Shocktest->addParameters();project_temp["Shocktest"]=_Shocktest;
       projects::LossCone* _LossCone=new LossCone();_LossCone->addParameters();project_temp["LossCone"]=_LossCone;
-      RP::add("Project_common.seed", "Seed for the RNG", this->seed);
+      // RP::add("Project_common.seed", "Seed for the RNG", this->seed);
 
    }
 
