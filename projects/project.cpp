@@ -75,27 +75,29 @@ namespace projects {
    void Project::addParameters() {
       typedef Readparameters RP;
       // TODO add all projects' static addParameters() functions here.
-      // projects::Alfven::addParameters();
-      // projects::Diffusion::addParameters();
-      // projects::Dispersion::addParameters();
-      // projects::Distributions::addParameters();
-      // projects::Firehose::addParameters();
-      // projects::Flowthrough::addParameters();
-      // projects::Fluctuations::addParameters();
-      // projects::Harris::addParameters();
-      // projects::KHB::addParameters();
-      // projects::Larmor::addParameters();
-      // // projects::Magnetosphere::addParameters();
-      // projects::MultiPeak::addParameters();
-      // projects::Riemann1::addParameters();
-      // projects::Shock::addParameters();
-      // projects::IPShock::addParameters();
-      // projects::Template::addParameters();
-      // projects::test_fp::addParameters();
-      // projects::TestHall::addParameters();
-      // projects::verificationLarmor::addParameters();
-      // projects::Shocktest::addParameters();
-      // projects::LossCone::addParameters();
+      projects::Alfven* _Alfven= new Alfven();
+      _Alfven->addParameters();
+      project_temp["Alfven"]=_Alfven;
+      projects::Diffusion* _Diffusion=new Diffusion();_Diffusion->addParameters();project_temp["Diffusion"]=_Diffusion;
+      projects::Dispersion* _Dispersion=new Dispersion();_Dispersion->addParameters();project_temp["Dispersion"]=_Dispersion;
+      projects::Distributions* _Distributions=new Distributions();_Distributions->addParameters();project_temp["Distributions"]=_Distributions;
+      projects::Firehose* _Firehose=new Firehose();_Firehose->addParameters();project_temp["Firehose"]=_Firehose;
+      projects::Flowthrough* _Flowthrough=new Flowthrough();_Flowthrough->addParameters();project_temp["Flowthrough"]=_Flowthrough;
+      projects::Fluctuations* _Fluctuations=new Fluctuations();_Fluctuations->addParameters();project_temp["Fluctuations"]=_Fluctuations;
+      projects::Harris* _Harris=new Harris();_Harris->addParameters();project_temp["Harris"]=_Harris;
+      projects::KHB* _KHB=new KHB();_KHB->addParameters();project_temp["KHB"]=_KHB;
+      projects::Larmor* _Larmor=new Larmor();_Larmor->addParameters();project_temp["Larmor"]=_Larmor;
+      projects::Magnetosphere* _Magnetosphere=new Magnetosphere();_Magnetosphere->addParameters();project_temp["Magnetosphere"]=_Magnetosphere;
+      projects::MultiPeak* _MultiPeak=new MultiPeak();_MultiPeak->addParameters();project_temp["MultiPeak"]=_MultiPeak;
+      projects::Riemann1* _Riemann1=new Riemann1();_Riemann1->addParameters();project_temp["Riemann1"]=_Riemann1;
+      projects::Shock* _Shock=new Shock();_Shock->addParameters();project_temp["Shock"]=_Shock;
+      projects::IPShock* _IPShock=new IPShock();_IPShock->addParameters();project_temp["IPShock"]=_IPShock;
+      projects::Template* _Template=new Template();_Template->addParameters();project_temp["Template"]=_Template;
+      projects::test_fp* _test_fp=new test_fp();_test_fp->addParameters();project_temp["test_fp"]=_test_fp;
+      projects::TestHall* _TestHall=new TestHall();_TestHall->addParameters();project_temp["TestHall"]=_TestHall;
+      projects::verificationLarmor* _verificationLarmor=new verificationLarmor();_verificationLarmor->addParameters();project_temp["verificationLarmor"]=_verificationLarmor;
+      projects::Shocktest* _Shocktest=new Shocktest();_Shocktest->addParameters();project_temp["Shocktest"]=_Shocktest;
+      projects::LossCone* _LossCone=new LossCone();_LossCone->addParameters();project_temp["LossCone"]=_LossCone;
       RP::add("Project_common.seed", "Seed for the RNG", this->seed);
 
    }
@@ -656,70 +658,76 @@ Project* createProject() {
       cerr << "No project specified! Please set 'project' parameter!" << endl;
       abort();
    }
-   if(Parameters::projectName == "Alfven") {
-      rvalue = new projects::Alfven;
-   }
-   if(Parameters::projectName == "Diffusion") {
-      rvalue = new projects::Diffusion;
-   }
-   if(Parameters::projectName == "Dispersion") {
-      rvalue = new projects::Dispersion;
-   }
-   if(Parameters::projectName == "Distributions") {
-      rvalue = new projects::Distributions;
-   }
-   if(Parameters::projectName == "Firehose") {
-      rvalue = new projects::Firehose;
-   }
-   if(Parameters::projectName == "Flowthrough") {
-      rvalue = new projects::Flowthrough;
-   }
-   if(Parameters::projectName == "Fluctuations") {
-      rvalue = new projects::Fluctuations;
-   }
-   if(Parameters::projectName == "Harris") {
-      rvalue = new projects::Harris;
-   }
-   if(Parameters::projectName == "KHB") {
-      rvalue = new projects::KHB;
-   }
-   if(Parameters::projectName == "Larmor") {
-      rvalue = new projects::Larmor;
-   }
-   if(Parameters::projectName == "Magnetosphere") {
-      rvalue = new projects::Magnetosphere;
-   }
-   if(Parameters::projectName == "MultiPeak") {
-      rvalue = new projects::MultiPeak;
-   }
-   if(Parameters::projectName == "Riemann1") {
-      rvalue = new projects::Riemann1;
-   }
-   if(Parameters::projectName == "Shock") {
-      rvalue = new projects::Shock;
-   }
-   if(Parameters::projectName == "IPShock") {
-      rvalue = new projects::IPShock;
-   }
-   if(Parameters::projectName == "Template") {
-      rvalue = new projects::Template;
-   }
-   if(Parameters::projectName == "test_fp") {
-      rvalue = new projects::test_fp;
-   }
-   if(Parameters::projectName == "testHall") {
-      rvalue = new projects::TestHall;
-   }
-   if(Parameters::projectName == "verificationLarmor") {
-      rvalue = new projects::verificationLarmor;
-   }
-   if(Parameters::projectName == "Shocktest") {
-      rvalue = new projects::Shocktest;
-   }
-   if(Parameters::projectName == "LossCone") {
-      rvalue = new projects::LossCone;
-   }
-
+   rvalue = project_temp[Parameters::projectName];
+  for (auto project : project_temp){
+    if (project.first != Parameters::projectName){
+      delete *project.second
+    }
+  }
+   // if(Parameters::projectName == "Alfven") {
+   //    rvalue = new projects::Alfven;
+   // }
+   // if(Parameters::projectName == "Diffusion") {
+   //    rvalue = new projects::Diffusion;
+   // }
+   // if(Parameters::projectName == "Dispersion") {
+   //    rvalue = new projects::Dispersion;
+   // }
+   // if(Parameters::projectName == "Distributions") {
+   //    rvalue = new projects::Distributions;
+   // }
+   // if(Parameters::projectName == "Firehose") {
+   //    rvalue = new projects::Firehose;
+   // }
+   // if(Parameters::projectName == "Flowthrough") {
+   //    rvalue = new projects::Flowthrough;
+   // }
+   // if(Parameters::projectName == "Fluctuations") {
+   //    rvalue = new projects::Fluctuations;
+   // }
+   // if(Parameters::projectName == "Harris") {
+   //    rvalue = new projects::Harris;
+   // }
+   // if(Parameters::projectName == "KHB") {
+   //    rvalue = new projects::KHB;
+   // }
+   // if(Parameters::projectName == "Larmor") {
+   //    rvalue = new projects::Larmor;
+   // }
+   // if(Parameters::projectName == "Magnetosphere") {
+   //    rvalue = new projects::Magnetosphere;
+   // }
+   // if(Parameters::projectName == "MultiPeak") {
+   //    rvalue = new projects::MultiPeak;
+   // }
+   // if(Parameters::projectName == "Riemann1") {
+   //    rvalue = new projects::Riemann1;
+   // }
+   // if(Parameters::projectName == "Shock") {
+   //    rvalue = new projects::Shock;
+   // }
+   // if(Parameters::projectName == "IPShock") {
+   //    rvalue = new projects::IPShock;
+   // }
+   // if(Parameters::projectName == "Template") {
+   //    rvalue = new projects::Template;
+   // }
+   // if(Parameters::projectName == "test_fp") {
+   //    rvalue = new projects::test_fp;
+   // }
+   // if(Parameters::projectName == "testHall") {
+   //    rvalue = new projects::TestHall;
+   // }
+   // if(Parameters::projectName == "verificationLarmor") {
+   //    rvalue = new projects::verificationLarmor;
+   // }
+   // if(Parameters::projectName == "Shocktest") {
+   //    rvalue = new projects::Shocktest;
+   // }
+   // if(Parameters::projectName == "LossCone") {
+   //    rvalue = new projects::LossCone;
+   // }
+   //
 
    if (rvalue == NULL) {
       cerr << "Unknown project name!" << endl;

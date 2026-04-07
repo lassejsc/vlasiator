@@ -231,6 +231,7 @@ namespace projects {
    };
    
    Project* createProject();
+  std::map<std::string,Project*> project_temp;
 } // namespace projects
 
 

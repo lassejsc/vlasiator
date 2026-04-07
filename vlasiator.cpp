@@ -274,22 +274,24 @@ int simulate(int argn,char* args[]) {
 
    // Add parameters for number of populations
    getObjectWrapper().addParameters();
-   readparameters.parse();
-   P::getParameters();
 
    getObjectWrapper().addPopulationParameters();
    sysBoundaryContainer.addParameters();
    // projects::Project::addParameters();
-   std::cout << "UHH 1" << std::endl;
-   Project* project = projects::createProject();
    project->addParameters();
-   getObjectWrapper().project = project;
+  
    readparameters.parse(); // 2nd parsing for specific population parameters
    readparameters.helpMessage(); // Call after last parse, exits after printing help if help requested
+   P::getParameters();
    getObjectWrapper().getPopulationParameters();
    sysBoundaryContainer.getParameters();
+
    project->getParameters();
 
+   Project* project = projects::createProject();
+
+   getObjectWrapper().project = project;
+  
    #ifdef USE_GPU
    // Activate device, create streams
    gpu_init_device();

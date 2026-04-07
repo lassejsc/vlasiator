@@ -81,8 +81,19 @@ public:
           auto indx = name.find('.');
           auto subcom = name.substr(0, indx);
           auto namein = name.substr(indx + 1, name.size());
-          auto sub = app->add_subcommand(subcom, "uhuhh");
-          sub->add_option(namein.c_str(), defValue, desc.c_str())->each(lambda);
+          CLI::App* sub = nullptr;
+          if (!app->got_subcommand(subcom)){
+            sub = app->add_subcommand(subcom, "uhuhh");
+          } else {
+            sub = app->get_subcommand(subcom);
+          };
+          if (sub!=nullptr)
+          {
+            sub->add_option(namein.c_str(), defValue, desc.c_str())->each(lambda);
+          } else {
+          std::cerr << "Something went wrong with adding subcommand "+subcom+"!" << std::endl;
+          abort();
+           };
         } else {
           app->add_option(name.c_str(), defValue, desc.c_str())->each(lambda);
         }  
@@ -134,8 +145,19 @@ public:
           auto indx = name.find('.');
           auto subcom = name.substr(0, indx);
           auto namein = name.substr(indx + 1, name.size());
-          auto sub = app->add_subcommand(subcom, "uhuhh");
-          sub->add_option(namein.c_str(), defValue, desc.c_str()); //->each(lambda);
+          CLI::App* sub = nullptr;
+          if (!app->got_subcommand(subcom)){
+            sub = app->add_subcommand(subcom, "uhuhh");
+          } else {
+            sub = app->get_subcommand(subcom);
+          };
+          if (sub!=nullptr)
+          {
+            sub->add_option(namein.c_str(), defValue, desc.c_str()); //->each(lambda);
+          } else {
+          std::cerr << "Something went wrong with adding subcommand "+subcom+"!" << std::endl;
+          abort();
+           };
         } else {
           app->add_option(name.c_str(), defValue, desc.c_str()); //->each(lambda);
         }
