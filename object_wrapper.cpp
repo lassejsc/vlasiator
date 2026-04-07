@@ -80,22 +80,22 @@ void ObjectWrapper::initpop(std::string pop){
    RP::add(pop + "_energydensity.solarwindenergy", "Incoming solar wind ram energy in eV. Used for calculating energy densities.", newSpecies.SolarWindEnergy);
 }
 
-// bool ObjectWrapper::addPopulationParameters() {
-//    typedef Readparameters RP;
-//
-//    std::vector<std::string> popNames=RP::populations;
-//    if (RP::helpRequested) {
-//       popNames.push_back(std::string("<population>"));
-//    } else {
-//       RP::add("", const std::string &desc, const T &defValue)
-//    }
-//
-//   // Create appropriate subparameters for each population
-//   for(auto& pop : popNames) {
-//  }
-//
-//   return true;
-// }
+bool ObjectWrapper::addPopulationParameters() {
+   typedef Readparameters RP;
+ //
+ //   std::vector<std::string> popNames=RP::populations;
+ //   if (RP::helpRequested) {
+ //      popNames.push_back(std::string("<population>"));
+ //   } else {
+ //      RP::add("", const std::string &desc, const T &defValue)
+ //   }
+ //
+ //  // Create appropriate subparameters for each population
+ //  for(auto& pop : popNames) {
+ // }
+ //
+  return true;
+}
 
 
 bool ObjectWrapper::getPopulationParameters() {
