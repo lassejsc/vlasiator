@@ -286,9 +286,10 @@ int simulate(int argn,char* args[]) {
    getObjectWrapper().getPopulationParameters();
    sysBoundaryContainer.getParameters();
 
-   project->getParameters();
 
    Project* project = projects::createProject();
+
+   project->getParameters();
 
    getObjectWrapper().project = project;
   
