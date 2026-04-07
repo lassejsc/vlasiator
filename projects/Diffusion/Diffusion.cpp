@@ -57,10 +57,10 @@ namespace projects {
     
          this->speciesParams.push_back(newsP);
          auto sP=&this->speciesParams.at(i); 
-         RP::add(pop + "_Diffusion.rho", "Number density (m^-3)",sP->rho );
-         RP::add(pop + "_Diffusion.Temperature", "Temperature (K)", sP->Temperature);
-         RP::add(pop + "_Diffusion.Scale_x", "Scale length in x (m)", sP->Scale_x);
-         RP::add(pop + "_Diffusion.Scale_y", "Scale length in y (m)", sP->Scale_y);
+         RP::add(pop + "_Diffusion.rho", "Number density (m^-3)",sP->DENSITY );
+         RP::add(pop + "_Diffusion.Temperature", "Temperature (K)", sP->TEMPERATURE);
+         RP::add(pop + "_Diffusion.Scale_x", "Scale length in x (m)", sP->SCA_X);
+         RP::add(pop + "_Diffusion.Scale_y", "Scale length in y (m)", sP->SCA_Y);
       }
    }
 
