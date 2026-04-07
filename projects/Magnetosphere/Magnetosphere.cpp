@@ -90,7 +90,7 @@ namespace projects {
          const std::string& pop = getObjectWrapper().particleSpecies[i].name;
 
          this->speciesParams.push_back(newsP);
-         auto sP=this->speciesParams.at(i);
+         auto sP=&this->speciesParams.at(i);
          RP::add(pop + "_Magnetosphere.rho", "Tail region number density (m^-3)", sP->rho);
          RP::add(pop + "_Magnetosphere.T", "Temperature (K)", sP->T);
          RP::add(pop + "_Magnetosphere.VX0", "Initial bulk velocity in x-direction", sP->V0);
