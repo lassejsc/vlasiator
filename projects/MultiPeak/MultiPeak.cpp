@@ -74,7 +74,7 @@ namespace projects {
          MultiPeakSpeciesParameters newsP;
          this->speciesParams.push_back(newsP);
          auto sP=&this->speciesParams.at(i);
-         RP::add(pop+"_MultiPeak.n", "Number of peaks to create",sP->n);
+         RP::add(pop+"_MultiPeak.n", "Number of peaks to create",sP->numberOfPeaks);
          RP::add(pop+"_MultiPeak.rho", "Number density (m^-3)",sP->rho);
          RP::add(pop+"_MultiPeak.Tx", "Temperature (K)",sP->Tx);
          RP::add(pop+"_MultiPeak.Ty", "Temperature",sP->Ty);

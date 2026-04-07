@@ -48,9 +48,9 @@ namespace projects {
    void Magnetosphere::addParameters() {
       typedef Readparameters RP;
       // Common (field / etc.) parameters
-      RP::add("Magnetosphere.constBgBX", "Constant flat Bx component in the whole simulation box. Default is none.", this->constBgB);
-      // RP::add("Magnetosphere.constBgBY", "Constant flat By component in the whole simulation box. Default is none.", this->constBgBY);
-      // RP::add("Magnetosphere.constBgBZ", "Constant flat Bz component in the whole simulation box. Default is none.", this->constBgBZ);
+      RP::add("Magnetosphere.constBgBX", "Constant flat Bx component in the whole simulation box. Default is none.", this->constBgB[0]);
+      RP::add("Magnetosphere.constBgBY", "Constant flat By component in the whole simulation box. Default is none.", this->constBgB[1]);
+      RP::add("Magnetosphere.constBgBZ", "Constant flat Bz component in the whole simulation box. Default is none.", this->constBgB[2]);
       RP::add("Magnetosphere.noDipoleInSW", "If set to 1, the dipole magnetic field is not set in the solar wind inflow cells. Default 0.", this->noDipoleInSW);
       RP::add("Magnetosphere.dipoleScalingFactor","Scales the field strength of the magnetic dipole compared to Earths.", this->dipoleScalingFactor);
       RP::add("Magnetosphere.dipoleType","0: Normal 3D dipole, 1: line-dipole for 2D polar simulations, 2: line-dipole with mirror, 3: 3D dipole with mirror", this->dipoleType);
@@ -75,13 +75,13 @@ namespace projects {
       RP::add("Magnetosphere.dipoleTiltTheta","Direction of dipole tilt from Sun-Earth-line, in degrees", this->dipoleTiltTheta);
       RP::add("Magnetosphere.dipoleXFull","X-coordinate up to which dipole is at full strength, in metres", this->dipoleXFull); // 15 RE
       RP::add("Magnetosphere.dipoleXZero","X-coordinate after which dipole is at zero strength, in metres", this->dipoleXZero); // 30 RE
-      RP::add("Magnetosphere.dipoleInflowBX","Inflow magnetic field Bx component to which the vector potential dipole converges. Default is none.", this->dipoleInflowB);
-      // RP::add("Magnetosphere.dipoleInflowBY","Inflow magnetic field By component to which the vector potential dipole converges. Default is none.", this->dipoleInflowBY);
-      // RP::add("Magnetosphere.dipoleInflowBZ","Inflow magnetic field Bz component to which the vector potential dipole converges. Default is none.", this->dipoleInflowBZ);
+      RP::add("Magnetosphere.dipoleInflowBX","Inflow magnetic field Bx component to which the vector potential dipole converges. Default is none.", this->dipoleInflowB[0]);
+      RP::add("Magnetosphere.dipoleInflowBY","Inflow magnetic field By component to which the vector potential dipole converges. Default is none.", this->dipoleInflowB[1]);
+      RP::add("Magnetosphere.dipoleInflowBZ","Inflow magnetic field Bz component to which the vector potential dipole converges. Default is none.", this->dipoleInflowB[2]);
       //New Parameter for zeroing out derivativeNew Parameter for zeroing out derivativess
-      RP::add("Magnetosphere.zeroOutDerivativesX","Zero Out Perpendicular components", this->zeroOutComponents);
-      // RP::add("Magnetosphere.zeroOutDerivativesY","Zero Out Perpendicular components", this->zeroOutDerivativesY);
-      // RP::add("Magnetosphere.zeroOutDerivativesZ","Zero Out Perpendicular components", this->zeroOutDerivativesZ);
+      RP::add("Magnetosphere.zeroOutDerivativesX","Zero Out Perpendicular components", this->zeroOutComponents[0]);
+      RP::add("Magnetosphere.zeroOutDerivativesY","Zero Out Perpendicular components", this->zeroOutComponents[1]);
+      RP::add("Magnetosphere.zeroOutDerivativesZ","Zero Out Perpendicular components", this->zeroOutComponents[2]);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
@@ -93,9 +93,9 @@ namespace projects {
          auto sP=&this->speciesParams.at(i);
          RP::add(pop + "_Magnetosphere.rho", "Tail region number density (m^-3)", sP->rho);
          RP::add(pop + "_Magnetosphere.T", "Temperature (K)", sP->T);
-         RP::add(pop + "_Magnetosphere.VX0", "Initial bulk velocity in x-direction", sP->V0);
-         // RP::add(pop + "_Magnetosphere.VY0", "Initial bulk velocity in y-direction", 0.0);
-         // RP::add(pop + "_Magnetosphere.VZ0", "Initial bulk velocity in z-direction", 0.0);
+         RP::add(pop + "_Magnetosphere.VX0", "Initial bulk velocity in x-direction", sP->V0[0]);
+         RP::add(pop + "_Magnetosphere.VY0", "Initial bulk velocity in y-direction", sP->V0[1]);
+         RP::add(pop + "_Magnetosphere.VZ0", "Initial bulk velocity in z-direction", sP->V0[2]);
          RP::add(pop + "_Magnetosphere.taperInnerRadius", "Inner radius of the zone with a density tapering from the ionospheric value to the background (m)", sP->taperInnerRadius);
          RP::add(pop + "_Magnetosphere.taperOuterRadius", "Outer radius of the zone with a density tapering from the ionospheric value to the background (m)", sP->taperOuterRadius);
 
