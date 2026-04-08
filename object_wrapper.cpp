@@ -36,19 +36,19 @@ void ObjectWrapper::initpop(std::string pop){
    vmesh::getMeshWrapper()->velocityMeshesCreation->push_back(newVMesh);
    auto newSpecies=&getObjectWrapper().particleSpecies.at(species_i-1);
 
-   RP::add(pop + "_properties.charge", "Particle charge, in units of elementary charges (int)", newSpecies.charge);
-   RP::add(pop + "_properties.mass_units", "Units in which particle mass is given, either 'PROTON' or 'ELECTRON' (string)", newSpecies.mass_units);
-   RP::add(pop + "_properties.mass","Particle mass in given units (float)", newSpecies.mass);
+   RP::add(pop + "_properties.charge", "Particle charge, in units of elementary charges (int)", newSpecies->charge);
+   RP::add(pop + "_properties.mass_units", "Units in which particle mass is given, either 'PROTON' or 'ELECTRON' (string)", newSpecies->mass_units);
+   RP::add(pop + "_properties.mass","Particle mass in given units (float)", newSpecies->mass);
 
    // Grid sparsity parameters
-   RP::add(pop + "_sparse.minValue", "Minimum value of distribution function in any cell of a velocity block for the block to be considered to have contents", newSpecies.sparseMinValue);
-   RP::add(pop + "_sparse.blockAddWidthV", "Number of layers of blocks that are kept in velocity space around the blocks with content", newSpecies.sparseBlockAddWidthV);
-   RP::add(pop + "_sparse.conserve_mass", "If true, then mass is conserved by scaling the dist. func. in the remaining blocks", newSpecies.sparse_conserve_mass);
-   RP::add(pop + "_sparse.dynamicAlgorithm", "Type of algorithm used for calculating the dynamic minValue; 0 = none, 1 = linear algorithm based on rho, 2 = linear algorithm based on Blocks, (Example linear algorithm: y = kx+b, where dynamicMinValue1=k*dynamicBulkValue1 + b, and dynamicMinValue2 = k*dynamicBulkValue2 + b", newSpecies.sparseDynamicAlgorithm);
-   RP::add(pop + "_sparse.dynamicMinValue1", "The minimum value for the dynamic minValue", newSpecies.sparseDynamicMinValue1);
-   RP::add(pop + "_sparse.dynamicMinValue2", "The maximum value (value 2) for the dynamic minValue", newSpecies.sparseDynamicMinValue2);
-   RP::add(pop + "_sparse.dynamicBulkValue1", "Minimum value for the dynamic algorithm range, so for example if dynamicAlgorithm=1 then for sparse.dynamicBulkValue1 = 1e3, sparse.dynamicBulkValue2=1e5, we apply the algorithm to cells for which 1e3<cell.rho<1e5", newSpecies.sparseDynamicBulkValue1);
-   RP::add(pop + "_sparse.dynamicBulkValue2", "Maximum value for the dynamic algorithm range, so for example if dynamicAlgorithm=1 then for sparse.dynamicBulkValue1 = 1e3, sparse.dynamicBulkValue2=1e5, we apply the algorithm to cells for which 1e3<cell.rho<1e5", newSpecies.sparseDynamicBulkValue2);
+   RP::add(pop + "_sparse.minValue", "Minimum value of distribution function in any cell of a velocity block for the block to be considered to have contents", newSpecies->sparseMinValue);
+   RP::add(pop + "_sparse.blockAddWidthV", "Number of layers of blocks that are kept in velocity space around the blocks with content", newSpecies->sparseBlockAddWidthV);
+   RP::add(pop + "_sparse.conserve_mass", "If true, then mass is conserved by scaling the dist. func. in the remaining blocks", newSpecies->sparse_conserve_mass);
+   RP::add(pop + "_sparse.dynamicAlgorithm", "Type of algorithm used for calculating the dynamic minValue; 0 = none, 1 = linear algorithm based on rho, 2 = linear algorithm based on Blocks, (Example linear algorithm: y = kx+b, where dynamicMinValue1=k*dynamicBulkValue1 + b, and dynamicMinValue2 = k*dynamicBulkValue2 + b", newSpecies->sparseDynamicAlgorithm);
+   RP::add(pop + "_sparse.dynamicMinValue1", "The minimum value for the dynamic minValue", newSpecies->sparseDynamicMinValue1);
+   RP::add(pop + "_sparse.dynamicMinValue2", "The maximum value (value 2) for the dynamic minValue", newSpecies->sparseDynamicMinValue2);
+   RP::add(pop + "_sparse.dynamicBulkValue1", "Minimum value for the dynamic algorithm range, so for example if dynamicAlgorithm=1 then for sparse.dynamicBulkValue1 = 1e3, sparse.dynamicBulkValue2=1e5, we apply the algorithm to cells for which 1e3<cell.rho<1e5", newSpecies->sparseDynamicBulkValue1);
+   RP::add(pop + "_sparse.dynamicBulkValue2", "Maximum value for the dynamic algorithm range, so for example if dynamicAlgorithm=1 then for sparse.dynamicBulkValue1 = 1e3, sparse.dynamicBulkValue2=1e5, we apply the algorithm to cells for which 1e3<cell.rho<1e5", newSpecies->sparseDynamicBulkValue2);
 
    // Grid parameters
    RP::add(pop + "_vspace.vx_min","Minimum value for velocity mesh vx-coordinates.", newVMesh.meshLimits[0]);
@@ -63,20 +63,20 @@ void ObjectWrapper::initpop(std::string pop){
    // RP::add(pop + "_vspace.max_refinement_level","Maximum allowed mesh refinement level.", newVMesh.meshMinLimits); //Was not even used?
 
    // Thermal / suprathermal parameters
-   RP::add(pop + "_thermal.vx", "Center coordinate for the maxwellian distribution. Used for calculating the suprathermal moments.", newSpecies.thermalV);
-   RP::add(pop + "_thermal.radius", "Radius of the maxwellian distribution. Used for calculating the suprathermal moments. If set to 0 (default), the thermal/suprathermal DROs are skipped.", newSpecies.thermalRadius);
+   RP::add(pop + "_thermal.vx", "Center coordinate for the maxwellian distribution. Used for calculating the suprathermal moments.", newSpecies->thermalV);
+   RP::add(pop + "_thermal.radius", "Radius of the maxwellian distribution. Used for calculating the suprathermal moments. If set to 0 (default), the thermal/suprathermal DROs are skipped.", newSpecies->thermalRadius);
 
    // Precipitation parameters
-   RP::add(pop + "_precipitation.nChannels", "Number of energy channels for precipitation differential flux evaluation", newSpecies.precipitationNChannels);
-   RP::add(pop + "_precipitation.emin", "Lowest energy channel (in eV) for precipitation differential flux evaluation", newSpecies.precipitationEmin);
-   RP::add(pop + "_precipitation.emax", "Highest energy channel (in eV) for precipitation differential flux evaluation", newSpecies.precipitationEmax);
-   RP::add(pop + "_precipitation.lossConeAngle", "Fixed loss cone opening angle (in deg) for precipitation differential flux evaluation", newSpecies.precipitationLossConeAngle);
+   RP::add(pop + "_precipitation.nChannels", "Number of energy channels for precipitation differential flux evaluation", newSpecies->precipitationNChannels);
+   RP::add(pop + "_precipitation.emin", "Lowest energy channel (in eV) for precipitation differential flux evaluation", newSpecies->precipitationEmin);
+   RP::add(pop + "_precipitation.emax", "Highest energy channel (in eV) for precipitation differential flux evaluation", newSpecies->precipitationEmax);
+   RP::add(pop + "_precipitation.lossConeAngle", "Fixed loss cone opening angle (in deg) for precipitation differential flux evaluation", newSpecies->precipitationLossConeAngle);
 
    // Energy density parameters
-   RP::add(pop + "_energydensity.limit1", "Lower limit of second bin for energy density, given in units of solar wind ram energy.", newSpecies.EnergyDensityLimit1);
-   RP::add(pop + "_energydensity.limit2", "Lower limit of third bin for energy density, given in units of solar wind ram energy.", newSpecies.EnergyDensityLimit2);
-   RP::add(pop + "_energydensity.solarwindspeed", "Incoming solar wind velocity magnitude in m/s. Used for calculating energy densities.", newSpecies.SolarWindSpeed);
-   RP::add(pop + "_energydensity.solarwindenergy", "Incoming solar wind ram energy in eV. Used for calculating energy densities.", newSpecies.SolarWindEnergy);
+   RP::add(pop + "_energydensity.limit1", "Lower limit of second bin for energy density, given in units of solar wind ram energy.", newSpecies->EnergyDensityLimit1);
+   RP::add(pop + "_energydensity.limit2", "Lower limit of third bin for energy density, given in units of solar wind ram energy.", newSpecies->EnergyDensityLimit2);
+   RP::add(pop + "_energydensity.solarwindspeed", "Incoming solar wind velocity magnitude in m/s. Used for calculating energy densities.", newSpecies->SolarWindSpeed);
+   RP::add(pop + "_energydensity.solarwindenergy", "Incoming solar wind ram energy in eV. Used for calculating energy densities.", newSpecies->SolarWindEnergy);
 }
 
 bool ObjectWrapper::addPopulationParameters() {
