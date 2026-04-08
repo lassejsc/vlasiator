@@ -14,7 +14,7 @@ bool ObjectWrapper::addParameters() {
    }
    //WE NEED A SOLUTION SO WE DONT GET POINTER STUPIDITY
   //DOES IT GO OUT OF SCOPE???? (solution; i think it does not og out of scope, seems smart enough)
-   std::function<void(const std::string)> lambda_fun=[this](std::string s){initpop(s); std::cout << "inside addParam" << std::endl;};
+   std::function<void(const std::string)> lambda_fun=[this](std::string s){initpop(s); std::cout << "inside addParam " << s << std::endl;};
    RP::add_each_lambda("ParticlePopulations","Name of the simulated particle populations (string)", RP::populations,lambda_fun);
    // RP::get_option("ParticlePopulations")->each(lambda_fun); 
 
