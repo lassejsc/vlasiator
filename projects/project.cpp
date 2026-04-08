@@ -64,7 +64,7 @@ using namespace std;
 extern Logger logFile;
 
 char projects::Project::rngStateBuffer[256];
-
+map<string,projects::Project*> projects::Project::project_temp;
 namespace projects {
    Project::Project() {
       baseClassInitialized = false;
@@ -75,9 +75,11 @@ namespace projects {
    void Project::addParameters() {
       typedef Readparameters RP;
       // TODO add all projects' static addParameters() functions here.
-      projects::Alfven* _Alfven= new Alfven();
+      projects::Alfven* _Alfven= new projects::Alfven();
       _Alfven->addParameters();
+      projects::Project* test=_Alfven;
       project_temp["Alfven"]=_Alfven;
+    
       projects::Diffusion* _Diffusion=new Diffusion();_Diffusion->addParameters();project_temp["Diffusion"]=_Diffusion;
       projects::Dispersion* _Dispersion=new Dispersion();_Dispersion->addParameters();project_temp["Dispersion"]=_Dispersion;
       projects::Distributions* _Distributions=new Distributions();_Distributions->addParameters();project_temp["Distributions"]=_Distributions;
@@ -658,8 +660,8 @@ Project* createProject() {
       cerr << "No project specified! Please set 'project' parameter!" << endl;
       abort();
    }
-   rvalue = project_temp[Parameters::projectName];
-  for (auto project : project_temp){
+   rvalue = projects::Project::project_temp[Parameters::projectName];
+  for (auto project : projects::Project::project_temp){
     if (project.first != Parameters::projectName){
       delete project.second;
       project.second=nullptr;
