@@ -219,7 +219,7 @@ Realf P::PADfudge;
 std::array<FsGridTools::Task_t,3> P::manualFsGridDecomposition = {0,0,0};
 std::array<FsGridTools::Task_t,3> P::overrideReadFsGridDecomposition = {0,0,0};
 
-std::string tracerString; /*!< Fieldline tracer to use for coupling ionosphere and magnetosphere */
+std::string tracerString= std::string("Euler"); /*!< Fieldline tracer to use for coupling ionosphere and magnetosphere */
 bool P::computeCurvature;
 
 bool P::addParameters() {

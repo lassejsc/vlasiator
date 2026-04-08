@@ -118,7 +118,7 @@ bool Readparameters::versionMessage() {
    int rank;
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
    if (rank == MASTER_RANK) {
-      if (&Readparameters::versionRequested) {
+      if (Readparameters::versionRequested) {
          printVersion();
          return true;
       }
