@@ -801,7 +801,9 @@ void Parameters::getParameters() {
    // P::overrideReadFsGridDecomposition[2] = temp_task_t;
 
    //RP::get("project", P::projectName);
+    std::cout << "pre proj name set" << std::endl;
    if (RP::helpRequested) {
+      std::cout << "proj name set" << std::endl;
       P::projectName = string("Magnetosphere");
    }
 
