@@ -227,11 +227,11 @@ namespace projects {
       uint seed;
       static char rngStateBuffer[256];
 
+      static std::map<std::string,Project*> project_temp;
       bool baseClassInitialized;                      /**< If true, base class has been initialized.*/
    };
    
    Project* createProject();
-  std::map<std::string,Project*> project_temp;
 } // namespace projects
 
 
