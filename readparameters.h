@@ -146,7 +146,8 @@ public:
           auto subcom = name.substr(0, indx);
           auto namein = name.substr(indx + 1, name.size());
           CLI::App* sub = nullptr;
-          if (!app->got_subcommand(subcom)){
+          
+          if (!isOptionParsed[subcom]){
             sub = app->add_subcommand(subcom, "uhuhh");
           } else {
             sub = app->get_subcommand(subcom);
@@ -154,6 +155,7 @@ public:
           if (sub!=nullptr)
           {
             sub->add_option(namein.c_str(), defValue, desc.c_str()); //->each(lambda);
+            isOptionParsed[subcom]=true;
           } else {
           std::cerr << "Something went wrong with adding subcommand "+subcom+"!" << std::endl;
           abort();
