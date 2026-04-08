@@ -143,7 +143,7 @@ int P::writeRestartAsFloat = false;
 string P::loadBalanceAlgorithm = string("RCB");
 vector<std::string> P::loadBalanceKeys;
 vector<std::string> P::loadBalanceValues;
-std::map<std::string, std::string> P::loadBalanceOptions;
+std::map<std::string, std::string> P::loadBalanceOptions {{"IMBALANCE_TOL","1.05"}};
 uint P::rebalanceInterval = numeric_limits<uint>::max();
 
 vector<string> P::outputVariableList;
