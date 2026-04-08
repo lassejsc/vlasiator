@@ -411,7 +411,7 @@ bool P::addParameters() {
 
    // Load balancing parameters
    RP::add("loadBalance.algorithm", "Load balancing algorithm to be used", P::loadBalanceAlgorithm);
-   RP::add("loadBalance.tolerance", "Load imbalance tolerance", loadBalanceOptions["IMBALANE_TOL"]);
+   RP::add("loadBalance.tolerance", "Load imbalance tolerance", P::loadBalanceOptions["IMBALANE_TOL"]);
    RP::add("loadBalance.rebalanceInterval", "Load rebalance interval (steps)", P::rebalanceInterval);
 
    RP::add("loadBalance.optionKey", "Zoltan option key. Has to be matched by loadBalance.optionValue.",P::loadBalanceKeys);
