@@ -31,6 +31,7 @@ void ObjectWrapper::initpop(std::string pop){
    size_t meshsize=vmesh::getMeshWrapper()->velocityMeshesCreation->size();
    std::array<Real, 3> thermv={-500000.0,0,0};
    species::Species initnewSpecies(pop,std::string("PROTON"),1,1,1e-15,meshsize,1,false,0,0,0,1,1,0.0,thermv,5.0,10.0,0.0,0.0,16,0.1,100.0,10.0);
+   std::cout << initnewSpecies.mass_units << std::endl;
    getObjectWrapper().particleSpecies.push_back(initnewSpecies);
    auto species_i = getObjectWrapper().particleSpecies.size();
    vmesh::getMeshWrapper()->velocityMeshesCreation->push_back(newVMesh);
