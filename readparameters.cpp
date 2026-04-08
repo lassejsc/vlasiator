@@ -60,7 +60,6 @@ Readparameters::Readparameters(int cmdargc, char* cmdargv[]) {
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
    if (rank == MASTER_RANK) {
-      app=app;
       // variables = new PO::variables_map;
       addDefaultParameters();
       app->set_config("--config");
@@ -336,6 +335,7 @@ void Readparameters::addDefaultParameters() {
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
    if (rank == MASTER_RANK) {
       // Readparameters::add("help", "print this help message",Readparameters::helpRequested);
+      std::cout << "INSIDE DEFAULT PARAM ADD" << std::endl;
       Readparameters::app->get_help_ptr()->each([](const string){
         std::cout << "test" << std::endl;
         PR:helpRequested=true;
