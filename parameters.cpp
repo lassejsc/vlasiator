@@ -140,7 +140,7 @@ string P::restartFileName = string("");
 bool P::isRestart = false;
 int P::writeAsFloat = false;
 int P::writeRestartAsFloat = false;
-string P::loadBalanceAlgorithm = string("");
+string P::loadBalanceAlgorithm = string("RCB");
 std::map<std::string, std::string> P::loadBalanceOptions;
 uint P::rebalanceInterval = numeric_limits<uint>::max();
 
