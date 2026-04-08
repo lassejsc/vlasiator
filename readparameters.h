@@ -163,7 +163,7 @@ public:
           abort();
            };
         } else {
-          app->add_option(name.c_str(), defValue, desc.c_str())->expected(0); //->each(lambda);
+          app->add_option(("--"+name).c_str(), defValue, desc.c_str())->expected(0); //->each(lambda);
         }
          // app->add_option(
          //     name.c_str(), defValue,
