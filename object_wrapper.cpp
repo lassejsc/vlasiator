@@ -118,11 +118,10 @@ bool ObjectWrapper::getPopulationParameters() {
       species.charge *= physicalconstants::CHARGE;
 
       //RP::get(pop + "_properties.mass", species.mass);
-      std::string massUnit;
       //RP::get(pop + "_properties.mass_units", massUnit);
-      if(massUnit == "PROTON") {
+      if(species.mass_units == "PROTON") {
          species.mass *= physicalconstants::MASS_PROTON;
-      } else if(massUnit == "ELECTRON") {
+      } else if(species.mass_units == "ELECTRON") {
          species.mass *= physicalconstants::MASS_ELECTRON;
       } else {
          std::cerr << "Invalid mass unit for species " << pop << ": '" << massUnit << "'" << std::endl;

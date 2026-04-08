@@ -738,7 +738,6 @@ Project* createProject() {
    }
 
    getObjectWrapper().project = rvalue;
-   rvalue->addParameters();
    return rvalue;
 }
 
