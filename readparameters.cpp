@@ -336,7 +336,7 @@ void Readparameters::addDefaultParameters() {
    if (rank == MASTER_RANK) {
       // Readparameters::add("help", "print this help message",Readparameters::helpRequested);
       std::cout << "INSIDE DEFAULT PARAM ADD" << std::endl;
-      Readparameters::app->get_help_ptr()->each([](const string){
+      Readparameters::app->get_option("--help")->each([](const string){
         std::cout << "test" << std::endl;
         PR:helpRequested=true;
       });
