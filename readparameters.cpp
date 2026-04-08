@@ -338,7 +338,7 @@ void Readparameters::addDefaultParameters() {
       std::cout << "INSIDE DEFAULT PARAM ADD" << std::endl;
       Readparameters::app->get_option("--help")->each([](const string){
         std::cout << "test" << std::endl;
-        PR:helpRequested=true;
+        Readparameters::helpRequested=true;
       });
       Readparameters::add("version", "print version information",Readparameters::versionRequested);
 
