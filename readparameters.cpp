@@ -336,6 +336,7 @@ void Readparameters::addDefaultParameters() {
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
    if (rank == MASTER_RANK) {
       // Readparameters::add("help", "print this help message",Readparameters::helpRequested);
+      Readparameters::app->get_help_ptr()->each([](const string){PR:helpRequested=true;});
       Readparameters::add("version", "print version information",Readparameters::versionRequested);
 
       // // Parameters which set the names of the configuration file(s):
