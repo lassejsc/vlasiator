@@ -30,10 +30,11 @@ void ObjectWrapper::initpop(std::string pop){
    newVMesh.name = pop;
    size_t meshsize=vmesh::getMeshWrapper()->velocityMeshesCreation->size();
    std::array<Real, 3> thermv={-500000.0,0,0};
-   species::Species newSpecies(pop,std::string("PROTON"),1,1,1e-15,meshsize,1,false,0,0,0,1,1,0.0,thermv,5.0,10.0,0.0,0.0,16,0.1,100.0,10.0);
-
-   getObjectWrapper().particleSpecies.push_back(newSpecies);
+   species::Species initnewSpecies(pop,std::string("PROTON"),1,1,1e-15,meshsize,1,false,0,0,0,1,1,0.0,thermv,5.0,10.0,0.0,0.0,16,0.1,100.0,10.0);
+   auto species_i = getObjectWrapper().particleSpecies.len();
+   getObjectWrapper().particleSpecies.push_back(initnewSpecies);
    vmesh::getMeshWrapper()->velocityMeshesCreation->push_back(newVMesh);
+   auto newSpecies=&getObjectWrapper().particleSpecies.at(species_i-1);
 
    RP::add(pop + "_properties.charge", "Particle charge, in units of elementary charges (int)", newSpecies.charge);
    RP::add(pop + "_properties.mass_units", "Units in which particle mass is given, either 'PROTON' or 'ELECTRON' (string)", newSpecies.mass_units);
