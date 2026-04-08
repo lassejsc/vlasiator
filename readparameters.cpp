@@ -342,6 +342,7 @@ void Readparameters::addDefaultParameters() {
       //   Readparameters::helpRequested=true;
       // });
       Readparameters::add("version", "print version information",Readparameters::versionRequested);
+      std::cout << "version added" << std::endl;
 
       // // Parameters which set the names of the configuration file(s):
       // descriptions->add_options()(

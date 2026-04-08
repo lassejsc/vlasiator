@@ -282,6 +282,12 @@ int simulate(int argn,char* args[]) {
 
    readparameters.parse(); // 2nd parsing for specific population parameters
    readparameters.helpMessage(); // Call after last parse, exits after printing help if help requested
+   bool hasVersionOption = readparameters.versionMessage();
+   MPI_Bcast(&hasVersionOption, sizeof(bool), MPI_BYTE, 0, MPI_COMM_WORLD);
+   if (hasVersionOption) {
+     MPI_Finalize();
+     exit(0);
+   }
    P::getParameters();
    getObjectWrapper().getPopulationParameters();
    sysBoundaryContainer.getParameters();
