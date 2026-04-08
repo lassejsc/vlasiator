@@ -156,14 +156,14 @@ public:
           };
           if (sub!=nullptr)
           {
-            sub->add_option(namein.c_str(), defValue, desc.c_str()); //->each(lambda);
+            sub->add_flag(namein.c_str(), defValue, desc.c_str()); //->each(lambda);
             isOptionParsed[subcom]=true;
           } else {
           std::cerr << "Something went wrong with adding subcommand "+subcom+"!" << std::endl;
           abort();
            };
         } else {
-          app->add_option(name.c_str(), defValue, desc.c_str()); //->each(lambda);
+          app->add_flag(name.c_str(), defValue, desc.c_str()); //->each(lambda);
         }
          // app->add_option(
          //     name.c_str(), defValue,
