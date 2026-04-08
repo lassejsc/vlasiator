@@ -124,7 +124,7 @@ bool ObjectWrapper::getPopulationParameters() {
       } else if(species.mass_units == "ELECTRON") {
          species.mass *= physicalconstants::MASS_ELECTRON;
       } else {
-         std::cerr << "Invalid mass unit for species " << pop << ": '" << massUnit << "'" << std::endl;
+         std::cerr << "Invalid mass unit for species " << pop << ": '" << species.mass_units  << "'" << std::endl;
          return false;
       }
 
