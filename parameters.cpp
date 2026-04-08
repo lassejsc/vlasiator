@@ -141,6 +141,8 @@ bool P::isRestart = false;
 int P::writeAsFloat = false;
 int P::writeRestartAsFloat = false;
 string P::loadBalanceAlgorithm = string("RCB");
+std::string P::loadBalanceKeys;
+std::string P::loadBalanceValues;
 std::map<std::string, std::string> P::loadBalanceOptions;
 uint P::rebalanceInterval = numeric_limits<uint>::max();
 
@@ -412,8 +414,8 @@ bool P::addParameters() {
    RP::add("loadBalance.tolerance", "Load imbalance tolerance", loadBalanceOptions["IMBALANE_TOL"]);
    RP::add("loadBalance.rebalanceInterval", "Load rebalance interval (steps)", P::rebalanceInterval);
 
-   RP::add("loadBalance.optionKey", "Zoltan option key. Has to be matched by loadBalance.optionValue.",P::loadBalanceOptions);
-   // RP::add("loadBalance.optionValue", "Zoltan option value. Has to be matched by loadBalance.optionKey.");
+   RP::add("loadBalance.optionKey", "Zoltan option key. Has to be matched by loadBalance.optionValue.",P::loadBalanceKeys);
+   RP::add("loadBalance.optionValue", "Zoltan option value. Has to be matched by loadBalance.optionKey.",P::loadBalanceValues);
 
    // Output variable parameters
    RP::add("io.system_write_all_data_reducers", "If 0 don't write all DROs, if 1 do write them.", P::systemWriteAllDROs);
@@ -1068,21 +1070,19 @@ void Parameters::getParameters() {
    }
    // Get load balance parameters
    //RP::get("loadBalance.algorithm", P::loadBalanceAlgorithm);
-   loadBalanceOptions["IMBALANCE_TOL"] = "";
+   // loadBalanceOptions["IMBALANCE_TOL"] = "";
    //RP::get("loadBalance.tolerance", loadBalanceOptions["IMBALANCE_TOL"]);
    //RP::get("loadBalance.rebalanceInterval", P::rebalanceInterval);
 
-   std::vector<std::string> loadBalanceKeys;
-   std::vector<std::string> loadBalanceValues;
    //RP::get("loadBalance.optionKey", loadBalanceKeys);
    //RP::get("loadBalance.optionValue", loadBalanceValues);
-   if (loadBalanceKeys.size() != loadBalanceValues.size()) {
+   if (P::loadBalanceKeys.size() != P::loadBalanceValues.size()) {
       if (myRank == MASTER_RANK) {
          cerr << "WARNING the number of load balance keys and values do not match. Disregarding these options." << endl;
       }
    } else {
-      for (size_t i = 0; i < loadBalanceKeys.size(); ++i) {
-         loadBalanceOptions[loadBalanceKeys[i]] = loadBalanceValues[i];
+      for (size_t i = 0; i < P::loadBalanceKeys.size(); ++i) {
+      P::loadBalanceOptions[P::loadBalanceKeys[i]] = P::loadBalanceValues[i];
       }
    }
 
