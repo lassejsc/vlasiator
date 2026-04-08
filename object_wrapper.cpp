@@ -24,7 +24,7 @@ void ObjectWrapper::initpop(std::string pop){
 
    typedef Readparameters RP;
    vmesh::MeshParameters newVMesh;
-
+   std::cout << "init pop " << pop << std::endl;
    // Originally, there was support for species and velocity meshes to be separate.
    // This was abandoned, since there wasn't really any use for it.
    newVMesh.name = pop;
@@ -35,7 +35,7 @@ void ObjectWrapper::initpop(std::string pop){
    auto species_i = getObjectWrapper().particleSpecies.size();
    vmesh::getMeshWrapper()->velocityMeshesCreation->push_back(newVMesh);
    auto newSpecies=&getObjectWrapper().particleSpecies.at(species_i-1);
-
+   std::cout << newSpecies->mass_units << std::endl;
    RP::add(pop + "_properties.charge", "Particle charge, in units of elementary charges (int)", newSpecies->charge);
    RP::add(pop + "_properties.mass_units", "Units in which particle mass is given, either 'PROTON' or 'ELECTRON' (string)", newSpecies->mass_units);
    RP::add(pop + "_properties.mass","Particle mass in given units (float)", newSpecies->mass);
