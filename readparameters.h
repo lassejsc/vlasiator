@@ -90,14 +90,14 @@ public:
           };
           if (sub!=nullptr)
           {
-            sub->add_option(("--"+namein).c_str(), defValue, desc.c_str())->each(lambda)->expected(0);
+            sub->add_option(("--"+namein).c_str(), defValue, desc.c_str())->each(lambda)->expected(0,-1);
             isOptionParsed[subcom]=true;
           } else {
           std::cerr << "Something went wrong with adding subcommand "+subcom+"!" << std::endl;
           abort();
            };
         } else {
-          app->add_option(("--"+name).c_str(), defValue, desc.c_str())->each(lambda)->expected(0);
+          app->add_option(("--"+name).c_str(), defValue, desc.c_str())->each(lambda)->expected(0,-1);
         }  
          // options[name] = "";
          // isOptionParsed[name] = false;
@@ -156,14 +156,14 @@ public:
           };
           if (sub!=nullptr)
           {
-            sub->add_option(("--"+namein).c_str(), defValue, desc.c_str())->expected(0)->capture_default_str(); //->each(lambda);
+            sub->add_option(("--"+namein).c_str(), defValue, desc.c_str())->expected(0,-1)->capture_default_str(); //->each(lambda);
             isOptionParsed[subcom]=true;
           } else {
           std::cerr << "Something went wrong with adding subcommand "+subcom+"!" << std::endl;
           abort();
            };
         } else {
-          app->add_option(("--"+name).c_str(), defValue, desc.c_str())->expected(0)->capture_default_str(); //->each(lambda);
+          app->add_option(("--"+name).c_str(), defValue, desc.c_str())->expected(0,-1)->capture_default_str(); //->each(lambda);
         }
          // app->add_option(
          //     name.c_str(), defValue,
