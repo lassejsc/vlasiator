@@ -269,10 +269,10 @@ public:
 
    static void parse();
 
-   static std::vector<std::string> populations;
    static bool helpRequested;
    static bool versionRequested;
 
+   static std::vector<std::string> populations;
 
 private:
    static int argc;    /**< How many entries argv contains.*/
