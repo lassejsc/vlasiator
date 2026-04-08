@@ -114,8 +114,8 @@ uint P::recoverMaxFiles = 0;
 uint64_t P::vlsvBufferSize = 0;
 int P::restartStripeFactor = 0;
 int P::systemStripeFactor = 0;
-string P::restartWritePath = string("");
-string P::recoverWritePath = string("");
+string P::restartWritePath = string("./");
+string P::recoverWritePath = string("./");
 
 bool P::recalculateStencils = true;
 bool P::propagateVlasovAcceleration = true;
