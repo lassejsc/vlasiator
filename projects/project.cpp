@@ -64,7 +64,7 @@ using namespace std;
 extern Logger logFile;
 
 char projects::Project::rngStateBuffer[256];
-map<string,projects::Project*> projects::Project::project_temp;
+map<string,projects::Project*> projects::Project::project_temp {};
 namespace projects {
    Project::Project() {
       baseClassInitialized = false;
