@@ -78,7 +78,7 @@ uint P::fieldSolverSubcycles = 1;
 
 uint P::tstep = 0;
 uint P::tstep_min = 0;
-uint P::tstep_max = 0;
+uint P::tstep_max = numeric_limits<uint>::max();
 uint P::diagnosticInterval = numeric_limits<uint>::max();
 bool P::writeInitialState = true;
 bool P::writeFullBGB = false;
@@ -803,7 +803,7 @@ void Parameters::getParameters() {
    // P::overrideReadFsGridDecomposition[2] = temp_task_t;
 
    //RP::get("project", P::projectName);
-    std::cout << "pre proj name set" << std::endl;
+    std::cout << "pre proj name set="<<P::projectName << std::endl;
    if (RP::helpRequested) {
       std::cout << "proj name set" << std::endl;
       P::projectName = string("Magnetosphere");
