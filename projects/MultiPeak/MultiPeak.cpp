@@ -75,22 +75,21 @@ void MultiPeak::addParameters() {
    for (uint i = 0; i < getObjectWrapper().particleSpecies.size(); i++) {
       const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
       // MultiPeakSpeciesParameters* newsP=new MultiPeakSpeciesParameters();
-      MultiPeakSpeciesParameters newsP;
-      this->speciesParams.push_back(newsP);
-      auto sP = &(this->speciesParams.at(i));
+      MultiPeakSpeciesParameters* sP=new MultiPeakSpeciesParameters();
+      this->speciesParams.push_back(sP);
       // std::cout << "POP NAME " << pop << " " << newsP.numberOfPeaks << std::endl;
       std::function<void(const std::string)> lambda_fun1 = [this](std::string s) {
          std::cout << "inside MULTIPEAK AD THINGY AOJF" << s << std::endl;
       };
-      RP::add(pop + "_MultiPeak.n", "Number of peaks to create", (*sP).numberOfPeaks);
-      RP::add(pop + "_MultiPeak.rho", "Number density (m^-3)", (*sP).rho);
-      RP::add(pop + "_MultiPeak.Tx", "Temperature (K)", (*sP).Tx);
-      RP::add(pop + "_MultiPeak.Ty", "Temperature", (*sP).Ty);
-      RP::add(pop + "_MultiPeak.Tz", "Temperature", (*sP).Tz);
-      RP::add(pop + "_MultiPeak.Vx", "Bulk velocity x component (m/s)", (*sP).Vx);
-      RP::add(pop + "_MultiPeak.Vy", "Bulk velocity y component (m/s)", (*sP).Vy);
-      RP::add(pop + "_MultiPeak.Vz", "Bulk velocity z component (m/s)", (*sP).Vz);
-      RP::add(pop + "_MultiPeak.rhoPertAbsAmp", "Absolute amplitude of the density perturbation", (*sP).rhoPertAbsAmp);
+      RP::add(pop + "_MultiPeak.n", "Number of peaks to create", sP->numberOfPeaks);
+      RP::add(pop + "_MultiPeak.rho", "Number density (m^-3)", sP->rho);
+      RP::add(pop + "_MultiPeak.Tx", "Temperature (K)", sP->Tx);
+      RP::add(pop + "_MultiPeak.Ty", "Temperature", sP->Ty);
+      RP::add(pop + "_MultiPeak.Tz", "Temperature", sP->Tz);
+      RP::add(pop + "_MultiPeak.Vx", "Bulk velocity x component (m/s)", sP->Vx);
+      RP::add(pop + "_MultiPeak.Vy", "Bulk velocity y component (m/s)", sP->Vy);
+      RP::add(pop + "_MultiPeak.Vz", "Bulk velocity z component (m/s)", sP->Vz);
+      RP::add(pop + "_MultiPeak.rhoPertAbsAmp", "Absolute amplitude of the density perturbation", sP->rhoPertAbsAmp);
    }
 }
 
@@ -109,16 +108,25 @@ void MultiPeak::getParameters() {
 
    
    for (uint i = 0; i < getObjectWrapper().particleSpecies.size(); i++) {
-      auto sP = &(this->speciesParams.at(i));
+      auto sP = this->speciesParams.at(i);
+      std::cout << "N=" << sP->numberOfPeaks << std::endl; 
       std::cout <<"DENSMODEL"<< densModelString << std::endl;
-      std::cout <<"MULTIPEAK:"<<  (*sP).rho[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< (*sP).Tx[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< (*sP).Ty[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< (*sP).Tz[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< (*sP).Vx[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< (*sP).Vy[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< (*sP).Vz[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< (*sP).rhoPertAbsAmp[0]<<std::endl;
+      std::cout <<"MULTIPEAK:"<<  sP->rho[0]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Tx[0]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Ty[0]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Tz[0]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Vx[0]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Vy[0]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Vz[0]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->rhoPertAbsAmp[0]<<std::endl;
+      std::cout << "INDX" << std::endl;
+      std::cout <<"MULTIPEAK:"<<  sP->rho[1]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Tx[1]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Ty[1]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Tz[1]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Vx[1]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Vy[1]<<std::endl;
+      std::cout <<"MULTIPEAK:"<< sP->Vz[1]<<std::endl;
    }
 
    // Project::getParameters();
@@ -165,7 +173,7 @@ void MultiPeak::getParameters() {
 }
 
 Realf MultiPeak::fillPhaseSpace(spatial_cell::SpatialCell* cell, const uint popID, const uint nRequested) const {
-   const MultiPeakSpeciesParameters& sP = speciesParams[popID];
+   const MultiPeakSpeciesParameters& sP = *speciesParams[popID];
    // Fetch spatial cell center coordinates
    const Real x = cell->parameters[CellParams::XCRD] + 0.5 * cell->parameters[CellParams::DX];
    const Real y = cell->parameters[CellParams::YCRD] + 0.5 * cell->parameters[CellParams::DY];
@@ -262,7 +270,7 @@ Realf MultiPeak::fillPhaseSpace(spatial_cell::SpatialCell* cell, const uint popI
 */
 Realf MultiPeak::probePhaseSpace(spatial_cell::SpatialCell* cell, const uint popID, Real vx_in, Real vy_in,
                                  Real vz_in) const {
-   const MultiPeakSpeciesParameters& sP = speciesParams[popID];
+   const MultiPeakSpeciesParameters& sP = *speciesParams[popID];
    // Fetch spatial cell center coordinates
    const Real x = cell->parameters[CellParams::XCRD] + 0.5 * cell->parameters[CellParams::DX];
    const Real y = cell->parameters[CellParams::YCRD] + 0.5 * cell->parameters[CellParams::DY];
@@ -341,7 +349,7 @@ void MultiPeak::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFIE
 
 std::vector<std::array<Real, 3>> MultiPeak::getV0(creal x, creal y, creal z, const uint popID) const {
    std::cout << "within getV0 " << popID << std::endl;
-   const MultiPeakSpeciesParameters& sP = speciesParams[popID];
+   const MultiPeakSpeciesParameters& sP = *speciesParams[popID];
    std::cout << "within getV0" << std::endl;
    vector<std::array<Real, 3>> centerPoints;
    std::cout << "PEAKS" << sP.numberOfPeaks << std::endl;

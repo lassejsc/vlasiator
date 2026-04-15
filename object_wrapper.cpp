@@ -46,11 +46,11 @@ bool ObjectWrapper::addHelp() {
 void ObjectWrapper::initpop(std::string pop) {
 
    typedef Readparameters RP;
-   vmesh::MeshParameters newVMeshinit;
+   vmesh::MeshParameters* newVMeshinit = new vmesh::MeshParameters();
    std::cout << "init pop " << pop << std::endl;
    // Originally, there was support for species and velocity meshes to be separate.
    // This was abandoned, since there wasn't really any use for it.
-   newVMeshinit.name = pop;
+   newVMeshinit->name = pop;
    size_t meshsize = vmesh::getMeshWrapper()->velocityMeshesCreation->size();
    std::array<Real, 3> thermv = {-500000.0, 0, 0};
    // species::Species initnewSpecies(pop, "PROTON", 1.0, 1.0, 1e-15, meshsize, 1, false, 0, 0, 0, 1, 1, 0.0, thermv, 5.0,
@@ -65,7 +65,7 @@ void ObjectWrapper::initpop(std::string pop) {
    vmesh::getMeshWrapper()->velocityMeshesCreation->push_back(newVMeshinit);
 // std::cout << "TEST2" << std::endl;
 
-   auto newVMesh = &(vmesh::getMeshWrapper()->velocityMeshesCreation->at(species_i - 1));
+   auto newVMesh = vmesh::getMeshWrapper()->velocityMeshesCreation->at(species_i - 1);
    // std::cout << "VELMESH SIZE!!=" << newSpecies->velocityMesh << std::endl;
    // std::cout << (*newSpecies).name << " and " << (*newSpecies).mass_units << " " << species_i - 1 << std::endl;
 
@@ -116,16 +116,16 @@ void ObjectWrapper::initpop(std::string pop) {
    // (*newVMesh).meshLimits[5]=0;
    // (*newVMesh).gridLength[0]=1;
    // (*newVMesh).gridLength[1]=1;
-   // (*newVMesh).gridLength[2]=1;
-   RP::add(pop + "_vspace.vx_min", "Minimum value for velocity mesh vx-coordinates.", (*newVMesh).meshLimits[0]);
-   RP::add(pop + "_vspace.vx_max", "Maximum value for velocity mesh vx-coordinates.", (*newVMesh).meshLimits[1]);
-   RP::add(pop + "_vspace.vy_min", "Minimum value for velocity mesh vy-coordinates.", (*newVMesh).meshLimits[2]);
-   RP::add(pop + "_vspace.vy_max", "Maximum value for velocity mesh vx-coordinates.", (*newVMesh).meshLimits[3]);
-   RP::add(pop + "_vspace.vz_min", "Minimum value for velocity mesh vz-coordinates.", (*newVMesh).meshLimits[4]);
-   RP::add(pop + "_vspace.vz_max", "Maximum value for velocity mesh vx-coordinates.", (*newVMesh).meshLimits[5]);
-   RP::add(pop + "_vspace.vx_length", "Initial number of velocity blocks in vx-direction.", (*newVMesh).gridLength[0]);
-   RP::add(pop + "_vspace.vy_length", "Initial number of velocity blocks in vy-direction.", (*newVMesh).gridLength[1]);
-   RP::add(pop + "_vspace.vz_length", "Initial number of velocity blocks in vz-direction.", (*newVMesh).gridLength[2]);
+   // newVMesh->gridLength[2]=1;
+   RP::add(pop + "_vspace.vx_min", "Minimum value for velocity mesh vx-coordinates.", newVMesh->meshLimits[0]);
+   RP::add(pop + "_vspace.vx_max", "Maximum value for velocity mesh vx-coordinates.", newVMesh->meshLimits[1]);
+   RP::add(pop + "_vspace.vy_min", "Minimum value for velocity mesh vy-coordinates.", newVMesh->meshLimits[2]);
+   RP::add(pop + "_vspace.vy_max", "Maximum value for velocity mesh vx-coordinates.", newVMesh->meshLimits[3]);
+   RP::add(pop + "_vspace.vz_min", "Minimum value for velocity mesh vz-coordinates.", newVMesh->meshLimits[4]);
+   RP::add(pop + "_vspace.vz_max", "Maximum value for velocity mesh vx-coordinates.", newVMesh->meshLimits[5]);
+   RP::add(pop + "_vspace.vx_length", "Initial number of velocity blocks in vx-direction.", newVMesh->gridLength[0]);
+   RP::add(pop + "_vspace.vy_length", "Initial number of velocity blocks in vy-direction.", newVMesh->gridLength[1]);
+   RP::add(pop + "_vspace.vz_length", "Initial number of velocity blocks in vz-direction.", newVMesh->gridLength[2]);
    // RP::add(pop + "_vspace.max_refinement_level","Maximum allowed mesh refinement level.", (*newVMesh).meshMinLimits);
    // //Was not even used?
 
@@ -188,7 +188,7 @@ bool ObjectWrapper::getPopulationParameters() {
    for (unsigned int i = 0; i < getObjectWrapper().particleSpecies.size(); i++) {
 
       species::Species& species =*getObjectWrapper().particleSpecies[i];
-      vmesh::MeshParameters& vMesh = vmesh::getMeshWrapper()->velocityMeshesCreation->at(i);
+      vmesh::MeshParameters& vMesh = *vmesh::getMeshWrapper()->velocityMeshesCreation->at(i);
       const std::string& pop = species.name;
 
       // Sanity check name
