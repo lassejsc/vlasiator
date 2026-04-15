@@ -49,7 +49,7 @@ namespace projects {
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+         const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
          HarrisSpeciesParameters newsP;
          speciesParams.push_back(newsP);
          auto sP=&this->speciesParams.at(i);
@@ -70,7 +70,7 @@ namespace projects {
 
       // Per-population parameters
       // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-      //    const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+      //    const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
       //    HarrisSpeciesParameters sP;
       //
       //    //RP::get(pop + "_Harris.Temperature", sP.TEMPERATURE);
@@ -90,7 +90,7 @@ namespace projects {
       // const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
       // const Real z  = cell->parameters[CellParams::ZCRD] + 0.5*cell->parameters[CellParams::DZ];
 
-      const Real mass = getObjectWrapper().particleSpecies[popID].mass;
+      const Real mass = getObjectWrapper().particleSpecies[popID]->mass;
       Real initRho = sP.DENSITY;
       Real initT = sP.TEMPERATURE;
       // Note: bulk V is zero, according to this and getV0().
@@ -150,7 +150,7 @@ namespace projects {
       // const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
       // const Real z  = cell->parameters[CellParams::ZCRD] + 0.5*cell->parameters[CellParams::DZ];
 
-      const Real mass = getObjectWrapper().particleSpecies[popID].mass;
+      const Real mass = getObjectWrapper().particleSpecies[popID]->mass;
       Real initRho = sP.DENSITY;
       Real initT = sP.TEMPERATURE;
       // Note: bulk V is zero, according to this and getV0().

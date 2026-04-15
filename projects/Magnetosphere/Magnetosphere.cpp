@@ -87,7 +87,7 @@ namespace projects {
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
         
          MagnetosphereSpeciesParameters newsP;
-         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+         const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
 
          this->speciesParams.push_back(newsP);
          auto sP=&this->speciesParams.at(i);
@@ -183,7 +183,7 @@ namespace projects {
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+         const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
          MagnetosphereSpeciesParameters sP;
 
          //RP::get(pop + "_Magnetosphere.rho", sP.rho);
@@ -500,7 +500,7 @@ namespace projects {
       const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
       const Real z  = cell->parameters[CellParams::ZCRD] + 0.5*cell->parameters[CellParams::DZ];
 
-      const Real mass = getObjectWrapper().particleSpecies[popID].mass;
+      const Real mass = getObjectWrapper().particleSpecies[popID]->mass;
       Real initRho = sP.rho;
       Real initT = sP.T;
       // getV0() includes tapering
@@ -571,7 +571,7 @@ namespace projects {
       const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
       const Real z  = cell->parameters[CellParams::ZCRD] + 0.5*cell->parameters[CellParams::DZ];
 
-      const Real mass = getObjectWrapper().particleSpecies[popID].mass;
+      const Real mass = getObjectWrapper().particleSpecies[popID]->mass;
       Real initRho = sP.rho;
       Real initT = sP.T;
       // getV0() includes tapering

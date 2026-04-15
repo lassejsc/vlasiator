@@ -62,7 +62,7 @@ namespace projects {
         
         speciesParams.push_back(newsP);
         auto sP = &this->speciesParams.at(i);
-        const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+        const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
         RP::add(pop + "_Dispersion.VX0", "Bulk velocity (m/s)", sP->VX0);
         RP::add(pop + "_Dispersion.VY0", "Bulk velocity (m/s)",sP->VY0);
         RP::add(pop + "_Dispersion.VZ0", "Bulk velocity (m/s)",sP->VZ0);
@@ -85,7 +85,7 @@ namespace projects {
       //
       // // Per-population parameters
       // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-      //   const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+      //   const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
       //   DispersionSpeciesParameters sP;
       //   //RP::get(pop + "_Dispersion.VX0", sP.VX0);
       //   //RP::get(pop + "_Dispersion.VY0", sP.VY0);
@@ -163,7 +163,7 @@ namespace projects {
                                        const uint nRequested
       ) const {
       const DispersionSpeciesParameters& sP = speciesParams[popID];
-      const Real mass = getObjectWrapper().particleSpecies[popID].mass;
+      const Real mass = getObjectWrapper().particleSpecies[popID]->mass;
       Real initT = sP.TEMPERATURE;
       Real initRho = sP.DENSITY * (1.0 + sP.densityPertRelAmp * (0.5 - this->rndRho));
       const Real initV0X = sP.VX0 + sP.velocityPertAbsAmp * (0.5 - this->rndVel[0]);

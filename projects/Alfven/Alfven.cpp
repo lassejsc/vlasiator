@@ -60,7 +60,7 @@ namespace projects {
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+         const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
 
          AlfvenSpeciesParameters newsP;
          
@@ -85,7 +85,7 @@ namespace projects {
 
       // Per-population parameters
       // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-      //    const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+      //    const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
       //
       //    AlfvenSpeciesParameters sP;
       //
@@ -108,7 +108,7 @@ namespace projects {
       const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
       // const Real z  = cell->parameters[CellParams::ZCRD] + 0.5*cell->parameters[CellParams::DZ];
 
-      creal mass = getObjectWrapper().particleSpecies[popID].mass;
+      creal mass = getObjectWrapper().particleSpecies[popID]->mass;
       creal mu0 = physicalconstants::MU_0;
       creal ALFVEN_VEL = this->B0 / sqrt(mu0 * sP.rho * mass);
 

@@ -56,7 +56,7 @@ namespace SBC {
 
       // Per-population parameters
       for(uint i=0; i < getObjectWrapper().particleSpecies.size(); i++) {
-        const string& pop = getObjectWrapper().particleSpecies[i].name;
+        const string& pop = getObjectWrapper().particleSpecies[i]->name;
         
         OutflowSpeciesParameters newsP = OutflowSpeciesParameters {{true,true,true,true,true,true},{0,0,0,0,0,0},std::vector<std::string>{""},0.0};
 
@@ -96,7 +96,7 @@ namespace SBC {
 
       // Per-species parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-        // const string& pop = getObjectWrapper().particleSpecies[i].name;
+        // const string& pop = getObjectWrapper().particleSpecies[i]->name;
         OutflowSpeciesParameters* sP=&this->speciesParams.at(i);
 
         // Unless we find out otherwise, we assume that this species will not be treated at any boundary

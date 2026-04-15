@@ -73,7 +73,7 @@ void MultiPeak::addParameters() {
 
    // Per-population parameters
    for (uint i = 0; i < getObjectWrapper().particleSpecies.size(); i++) {
-      const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+      const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
       // MultiPeakSpeciesParameters* newsP=new MultiPeakSpeciesParameters();
       MultiPeakSpeciesParameters newsP;
       this->speciesParams.push_back(newsP);
@@ -135,7 +135,7 @@ void MultiPeak::getParameters() {
 
    // Per-population parameters
    // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-   //    const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+   //    const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
    //
    // MultiPeakSpeciesParameters sP;
    // RP::get(pop + "_MultiPeak.n", sP.numberOfPeaks);
@@ -171,7 +171,7 @@ Realf MultiPeak::fillPhaseSpace(spatial_cell::SpatialCell* cell, const uint popI
    const Real y = cell->parameters[CellParams::YCRD] + 0.5 * cell->parameters[CellParams::DY];
    const Real z = cell->parameters[CellParams::ZCRD] + 0.5 * cell->parameters[CellParams::DZ];
 
-   const Real mass = getObjectWrapper().particleSpecies[popID].mass;
+   const Real mass = getObjectWrapper().particleSpecies[popID]->mass;
 
    Real rhoFactor = 1.0;
    switch (densityModel) {
@@ -268,7 +268,7 @@ Realf MultiPeak::probePhaseSpace(spatial_cell::SpatialCell* cell, const uint pop
    const Real y = cell->parameters[CellParams::YCRD] + 0.5 * cell->parameters[CellParams::DY];
    const Real z = cell->parameters[CellParams::ZCRD] + 0.5 * cell->parameters[CellParams::DZ];
 
-   const Real mass = getObjectWrapper().particleSpecies[popID].mass;
+   const Real mass = getObjectWrapper().particleSpecies[popID]->mass;
 
    Real rhoFactor = 1.0;
    switch (densityModel) {

@@ -50,7 +50,7 @@ namespace projects {
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
 
-         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+         const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
         
 
          DiffusionSpeciesParameters newsP;
@@ -72,7 +72,7 @@ namespace projects {
       //
       // // Per-population parameters
       // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-      //   const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+      //   const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
       //   DiffusionSpeciesParameters sP;
       //
       //   //RP::get(pop + "_Diffusion.rho", sP.DENSITY);
@@ -89,7 +89,7 @@ namespace projects {
                                        const uint nRequested
       ) const {
       const DiffusionSpeciesParameters& sP = speciesParams[popID];
-      creal mass = getObjectWrapper().particleSpecies[popID].mass;
+      creal mass = getObjectWrapper().particleSpecies[popID]->mass;
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
       const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
