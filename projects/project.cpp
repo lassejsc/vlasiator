@@ -21,6 +21,7 @@
  */
 
 #include "project.h"
+#include <complex>
 #include <cstdlib>
 #include "../common.h"
 #include "../parameters.h"
@@ -64,30 +65,30 @@ using namespace std;
 extern Logger logFile;
 
 char projects::Project::rngStateBuffer[256];
-// static map<string,projects::Project*> projects::project_temp;
+
 namespace projects {
    Project::Project() {
       baseClassInitialized = false;
    }
 
-   Project::~Project() { }
+   Project::~Project() {}
 
    void Project::addParameters() {
       typedef Readparameters RP;
       // TODO add all projects' static addParameters() functions here.
-      projects::Alfven* _Alfven= new projects::Alfven();
+      projects::Alfven* _Alfven= new Alfven();
       _Alfven->addParameters();
-      projects::Project* test=_Alfven;
-      projects::project_temp["Alfven"]=_Alfven;
-    
-      projects::Diffusion* _Diffusion=new Diffusion();_Diffusion->addParameters();projects::project_temp["Diffusion"]=_Diffusion;
-      projects::Dispersion* _Dispersion=new Dispersion();_Dispersion->addParameters();projects::project_temp["Dispersion"]=_Dispersion;
-      projects::Distributions* _Distributions=new Distributions();_Distributions->addParameters();projects::project_temp["Distributions"]=_Distributions;
-      projects::Firehose* _Firehose=new Firehose();_Firehose->addParameters();projects::project_temp["Firehose"]=_Firehose;
-      projects::Flowthrough* _Flowthrough=new Flowthrough();_Flowthrough->addParameters();projects::project_temp["Flowthrough"]=_Flowthrough;
-      projects::Fluctuations* _Fluctuations=new Fluctuations();_Fluctuations->addParameters();projects::project_temp["Fluctuations"]=_Fluctuations;
-      projects::Harris* _Harris=new Harris();_Harris->addParameters();projects::project_temp["Harris"]=_Harris;
-      projects::KHB* _KHB=new KHB();_KHB->addParameters();projects::project_temp["KHB"]=_KHB;
+      project_temp["Alfven"]=_Alfven;
+      projects::Diffusion* _Diffusion=new Diffusion();_Diffusion->addParameters();project_temp["Diffusion"]=_Diffusion;
+      projects::Dispersion* _Dispersion=new Dispersion();_Dispersion->addParameters();project_temp["Dispersion"]=_Dispersion;
+      projects::Distributions* _Distributions=new Distributions();_Distributions->addParameters();project_temp["Distributions"]=_Distributions;
+      projects::Firehose* _Firehose=new Firehose();_Firehose->addParameters();project_temp["Firehose"]=_Firehose;
+      projects::Flowthrough* _Flowthrough=new Flowthrough();_Flowthrough->addParameters();project_temp["Flowthrough"]=_Flowthrough;
+      projects::Fluctuations* _Fluctuations=new Fluctuations();_Fluctuations->addParameters();project_temp["Fluctuations"]=_Fluctuations;
+      projects::Harris* _Harris=new Harris();_Harris->addParameters();project_temp["Harris"]=_Harris;
+      projects::KHB* _KHB=new KHB();_KHB->addParameters();project_temp["KHB"]=_KHB;
+      // projects::Larmor* _Larmor=new Larmor();_Larmor->addParameters();project_temp["Larmor"]=_Larmor;
+      // projects::KHB* _KHB=new KHB();_KHB->addParameters();projects::project_temp["KHB"]=_KHB;
       projects::Larmor* _Larmor=new Larmor();_Larmor->addParameters();projects::project_temp["Larmor"]=_Larmor;
       projects::Magnetosphere* _Magnetosphere=new Magnetosphere();_Magnetosphere->addParameters();projects::project_temp["Magnetosphere"]=_Magnetosphere;
       projects::MultiPeak* _MultiPeak=new MultiPeak();_MultiPeak->addParameters();projects::project_temp["MultiPeak"]=_MultiPeak;
@@ -655,90 +656,39 @@ namespace projects {
    }
 
 Project* createProject() {
-   Project* rvalue = NULL;
-   if(Parameters::projectName == "") {
-      cerr << "No project specified! Please set 'project' parameter!" << endl;
-      abort();
-   }
-   rvalue = projects::project_temp[Parameters::projectName];
-  for (auto project : projects::project_temp){
-    if (project.first != Parameters::projectName){
-      delete project.second;
-      project.second=nullptr;
-    }
-  }
-   // if(Parameters::projectName == "Alfven") {
-   //    rvalue = new projects::Alfven;
-   // }
-   // if(Parameters::projectName == "Diffusion") {
-   //    rvalue = new projects::Diffusion;
-   // }
-   // if(Parameters::projectName == "Dispersion") {
-   //    rvalue = new projects::Dispersion;
-   // }
-   // if(Parameters::projectName == "Distributions") {
-   //    rvalue = new projects::Distributions;
-   // }
-   // if(Parameters::projectName == "Firehose") {
-   //    rvalue = new projects::Firehose;
-   // }
-   // if(Parameters::projectName == "Flowthrough") {
-   //    rvalue = new projects::Flowthrough;
-   // }
-   // if(Parameters::projectName == "Fluctuations") {
-   //    rvalue = new projects::Fluctuations;
-   // }
-   // if(Parameters::projectName == "Harris") {
-   //    rvalue = new projects::Harris;
-   // }
-   // if(Parameters::projectName == "KHB") {
-   //    rvalue = new projects::KHB;
-   // }
-   // if(Parameters::projectName == "Larmor") {
-   //    rvalue = new projects::Larmor;
-   // }
-   // if(Parameters::projectName == "Magnetosphere") {
-   //    rvalue = new projects::Magnetosphere;
-   // }
-   // if(Parameters::projectName == "MultiPeak") {
-   //    rvalue = new projects::MultiPeak;
-   // }
-   // if(Parameters::projectName == "Riemann1") {
-   //    rvalue = new projects::Riemann1;
-   // }
-   // if(Parameters::projectName == "Shock") {
-   //    rvalue = new projects::Shock;
-   // }
-   // if(Parameters::projectName == "IPShock") {
-   //    rvalue = new projects::IPShock;
-   // }
-   // if(Parameters::projectName == "Template") {
-   //    rvalue = new projects::Template;
-   // }
-   // if(Parameters::projectName == "test_fp") {
-   //    rvalue = new projects::test_fp;
-   // }
-   // if(Parameters::projectName == "testHall") {
-   //    rvalue = new projects::TestHall;
-   // }
-   // if(Parameters::projectName == "verificationLarmor") {
-   //    rvalue = new projects::verificationLarmor;
-   // }
-   // if(Parameters::projectName == "Shocktest") {
-   //    rvalue = new projects::Shocktest;
-   // }
-   // if(Parameters::projectName == "LossCone") {
-   //    rvalue = new projects::LossCone;
-   // }
-   //
+   int rank;
 
+   MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+     
+    std::cout << rank << "PROJNAME THREAD = " << Parameters::projectName << std::endl;
+
+    Project* rvalue = project_temp[Parameters::projectName];
+   if (rank==MASTER_RANK) { 
+    if(Parameters::projectName == "") {
+        cerr << "No project specified! Please set 'project' parameter!" << endl;
+        abort();
+    }
+
+    for (auto project : project_temp){
+      if (project.first != Parameters::projectName){
+        std::cout << "DELETED: " << project.first<< std::endl;
+        delete project.second;
+        project.second=nullptr;
+      }
+    }
+   
    if (rvalue == NULL) {
       cerr << "Unknown project name!" << endl;
       abort();
-   }
+    } 
+   
 
    getObjectWrapper().project = rvalue;
+
+   }
+  
    return rvalue;
-}
+   // rvalue->addParameters();
+  }
 
 } // namespace projects

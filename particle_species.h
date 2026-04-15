@@ -73,7 +73,8 @@ namespace species {
     
       Species();
       /* Constructor for setting everything at once*/
-      Species(std::string name,std::string mass_units,
+      Species(std::string name,
+              std::string mass_units,
               Real charge,
               Real mass,                  
               Real sparseMinValue,       

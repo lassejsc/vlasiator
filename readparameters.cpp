@@ -22,6 +22,8 @@
 
 #include "readparameters.h"
 #include "CLI11.hpp"
+#include "common.h"
+#include "projects/project.h"
 
 using namespace std;
 // namespace PO = boost::program_options;
@@ -152,10 +154,17 @@ std::string Readparameters::configInfo() {
  * @return True if input file(s) were parsed successfully.
  */
 void Readparameters::parse() {
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+  if (rank == MASTER_RANK){
   try {                                                                                                              \
+
+      app->allow_config_extras();
       app->parse(argc,argv);
+
   } catch(const CLI::ParseError &e) {                                                                                \
       app->exit(e);
+  }
   }
 }
 // bool Readparameters::parse(const bool needsRunConfig, const bool allowUnknown) {
@@ -335,13 +344,13 @@ void Readparameters::addDefaultParameters() {
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
    if (rank == MASTER_RANK) {
       app->remove_option(app->get_help_ptr());
-      Readparameters::add("help", "print this help message",Readparameters::helpRequested);
+      Readparameters::add_flag("--help", "print this help message",Readparameters::helpRequested);
       // std::cout << "INSIDE DEFAULT PARAM ADD" << std::endl;
       // Readparameters::app->get_option("--help")->each([](const string){
       //   std::cout << "test" << std::endl;
       //   Readparameters::helpRequested=true;
       // });
-      Readparameters::add("version", "print version information",Readparameters::versionRequested);
+      Readparameters::add_flag("--version", "print version information",Readparameters::versionRequested);
       std::cout << "version added" << std::endl;
 
       // // Parameters which set the names of the configuration file(s):

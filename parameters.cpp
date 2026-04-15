@@ -54,9 +54,9 @@ Real P::ymin = NAN;
 Real P::ymax = NAN;
 Real P::zmin = NAN;
 Real P::zmax = NAN;
-Real P::dx_ini = NAN;
-Real P::dy_ini = NAN;
-Real P::dz_ini = NAN;
+Real P::dx_ini = 0;
+Real P::dy_ini = 0;
+Real P::dz_ini = 0;
 
 uint P::xcells_ini = numeric_limits<uint>::max();
 uint P::ycells_ini = numeric_limits<uint>::max();
@@ -66,13 +66,13 @@ Real P::t = 0;
 Real P::t_min = 0;
 Real P::t_max = LARGE_REAL;
 Real P::dt_ceil = -1.0; 
-Real P::dt = NAN;
-Real P::vlasovSolverMaxCFL = NAN;
-Real P::vlasovSolverMinCFL = NAN;
+Real P::dt = 0;
+Real P::vlasovSolverMaxCFL = 0.99;
+Real P::vlasovSolverMinCFL = 0.8;
 bool P::vlasovSolverGhostTranslate = false;
 uint P::vlasovSolverGhostTranslateExtent = 0;
-Real P::fieldSolverMaxCFL = NAN;
-Real P::fieldSolverMinCFL = NAN;
+Real P::fieldSolverMaxCFL = 0.5;
+Real P::fieldSolverMinCFL = 0.4;
 uint P::fieldSolverSubcycles = 1;
 
 
@@ -80,7 +80,7 @@ uint P::tstep = 0;
 uint P::tstep_min = 0;
 uint P::tstep_max = numeric_limits<uint>::max();
 uint P::diagnosticInterval = numeric_limits<uint>::max();
-bool P::writeInitialState = true;
+bool P::writeInitialState = false;
 bool P::writeFullBGB = false;
 
 bool P::meshRepartitioned = true;
@@ -100,8 +100,8 @@ vector<int> P::systemWriteDistributionWriteZlineStride;
 vector<Real> P::systemWriteDistributionWriteShellRadius;
 vector<int> P::systemWriteDistributionWriteShellStride;
 vector<bool> P::systemWriteFsGrid;
-bool P::systemWriteAllDROs;
-bool P::diagnosticWriteAllDROs;
+bool P::systemWriteAllDROs=false;
+bool P::diagnosticWriteAllDROs=false;
 vector<int> P::systemWrites;
 vector<pair<string, string>> P::systemWriteHints;
 vector<pair<string, string>> P::restartWriteHints;
@@ -110,7 +110,7 @@ vector<pair<string, string>> P::restartReadHints;
 Real P::saveRestartWalltimeInterval = -1.0;
 uint P::saveRecoverTstepInterval = 0;
 uint P::exitAfterRestarts = numeric_limits<uint>::max();
-uint P::recoverMaxFiles = 0;
+uint P::recoverMaxFiles = 2;
 uint64_t P::vlsvBufferSize = 0;
 int P::restartStripeFactor = 0;
 int P::systemStripeFactor = 0;
@@ -124,17 +124,17 @@ bool P::propagateField = true;
 
 bool P::dynamicTimestep = true;
 
-Real P::maxWaveVelocity = 0.0;
-uint P::maxFieldSolverSubcycles = 0.0;
-int P::maxSlAccelerationSubcycles = 0.0;
-Real P::resistivity = NAN;
+Real P::maxWaveVelocity = LARGE_REAL;
+uint P::maxFieldSolverSubcycles = 1;
+int P::maxSlAccelerationSubcycles = 1;
+Real P::resistivity = 0.0;
 bool P::fieldSolverDiffusiveEterms = true;
 bool P::fieldSolverFiniteDifferencingAtBoundaries = false;
 uint P::ohmHallTerm = 0;
 uint P::ohmGradPeTerm = 0;
 Real P::electronTemperature = 0.0;
 Real P::electronDensity = 0.0;
-Real P::electronPTindex = 1.0;
+Real P::electronPTindex = 0.0;
 
 string P::restartFileName = string("");
 bool P::isRestart = false;
@@ -144,7 +144,7 @@ string P::loadBalanceAlgorithm = string("RCB");
 vector<std::string> P::loadBalanceKeys;
 vector<std::string> P::loadBalanceValues;
 std::map<std::string, std::string> P::loadBalanceOptions {{"IMBALANCE_TOL","1.05"}};
-uint P::rebalanceInterval = numeric_limits<uint>::max();
+uint P::rebalanceInterval = 10;
 
 vector<string> P::outputVariableList;
 vector<string> P::diagnosticVariableList;
@@ -152,15 +152,15 @@ vector<string> P::diagnosticVariableList;
 string P::projectName = string("");
 
 bool P::vlasovAccelerateMaxwellianBoundaries = false;
-Real P::maxSlAccelerationRotation = 10.0;
-Real hallRho;
+Real P::maxSlAccelerationRotation = 25.0;
+Real hallRho=1.0;
 Real P::hallMinimumRhom = physicalconstants::MASS_PROTON;
 Real P::hallMinimumRhoq = physicalconstants::CHARGE;
 
-bool P::bailout_write_restart = false;
-Real P::bailout_min_dt = NAN;
+bool P::bailout_write_restart = true;
+Real P::bailout_min_dt = 1e-6;
 Real P::bailout_max_memory = 1073741824.;
-uint P::bailout_velocity_space_wall_margin = 0;
+uint P::bailout_velocity_space_wall_margin = 1;
 
 bool P::amrTransShortPencils = false;
 int P::amrMaxSpatialRefLevel = 0;
@@ -210,13 +210,13 @@ std::vector<int> P::amrBoxMaxLevel;
 vector<string> P::blurPassString;
 vector<int> P::numPasses;
 
-bool P::artificialPADiff;
-Realf P::PADcoefficient;
-Realf P::PADCFL;
-int P::PADvbins;
-int P::PADmubins;
-string P::PADnu0 = string("");
-Realf P::PADfudge;
+bool P::artificialPADiff=false;
+Realf P::PADcoefficient=-1;
+Realf P::PADCFL=0.1;
+int P::PADvbins=200;
+int P::PADmubins=30;
+string P::PADnu0 = string("NU0BOX.DAT");
+Realf P::PADfudge=4;
 
 std::array<FsGridTools::Task_t,3> P::manualFsGridDecomposition = {0,0,0};
 std::array<FsGridTools::Task_t,3> P::overrideReadFsGridDecomposition = {0,0,0};
@@ -249,7 +249,7 @@ bool P::addParameters() {
                     "[Define for all groups.]",P::systemWriteDistributionWriteZlineStride);
    RP::add("io.system_write_distribution_shell_radius",
                     "At cells intersecting spheres with those radii centred at the origin write out their velocity "
-                    "space. 0 is none.",systemWriteDistributionWriteShellRadius);
+                    "space. 0 is none.",P::systemWriteDistributionWriteShellRadius);
    RP::add("io.system_write_distribution_shell_stride",
                     "Every this many cells for those on selected shells write out their velocity space. 0 is none.",P::systemWriteDistributionWriteShellStride);
    RP::add("io.system_write_fsgrid_variables", "If 0 don't write fsgrid DROs, if 1 do write them.",P::systemWriteFsGrid);
@@ -306,19 +306,21 @@ bool P::addParameters() {
            "Propagate distribution functions during the simulation in ordinary space. If false, it is propagated with "
            "zero length timesteps.",
            P::propagateVlasovTranslation);
+
    RP::add("dynamic_timestep", "If true,  timestep is set based on  CFL limits (default on)", P::dynamicTimestep);
    RP::add("hallMinimumRho",
            "Minimum rho value used for the Hall and electron pressure gradient terms in the Lorentz force and in the "
            "field solver. Default is very low and has no effect in practice.",
            hallRho);
-   RP::add("project",
+   std::function<void(std::string)> lambda_fun=[](const std::string s){std::cout << "PROJNAME SET TO=" << s << std::endl;};
+   RP::add_each_lambda("project",
            "Specify the name of the project to use. Supported to date (20150610): Alfven Diffusion Dispersion "
            "Distributions Firehose Flowthrough Fluctuations Harris KHB Larmor Magnetosphere Multipeak Riemann1 Shock "
            "Shocktest Template test_fp testHall test_trans verificationLarmor",
-           P::projectName);
+           P::projectName,lambda_fun);
 
    RP::add("restart.write_as_float", "If true, write restart fields in floats instead of doubles", P::writeRestartAsFloat);
-   RP::add("restart.filename", "Restart from this vlsv file. No restart if empty file.", P::restartFileName);
+   RP::add_each_lambda("restart.filename", "Restart from this vlsv file. No restart if empty file.", P::restartFileName,lambda_fun);
 
    RP::add(
        "restart.overrideReadFsGridDecompositionX",
@@ -1162,6 +1164,172 @@ void Parameters::getParameters() {
       cerr << __FILE__ << ":" << __LINE__ << " ERROR: Unknown value for fieldtracing.fieldLineTracer: " << tracerString << endl;
       abort();
    }
+std::cout << P::xmin <<std::endl;
+std::cout << P::xmax <<std::endl;
+std::cout << P::ymin <<std::endl;
+std::cout << P::ymax <<std::endl;
+std::cout << P::zmin <<std::endl;
+std::cout << P::zmax <<std::endl;
+std::cout << P::dx_ini <<std::endl;
+std::cout << P::dy_ini <<std::endl;
+std::cout << P::dz_ini <<std::endl;
+
+std::cout << P::xcells_ini <<std::endl;
+std::cout << P::ycells_ini <<std::endl;
+std::cout << P::zcells_ini <<std::endl;
+
+std::cout << P::t <<std::endl;
+std::cout << P::t_min <<std::endl;
+std::cout << P::t_max <<std::endl;
+std::cout << P::dt_ceil <<std::endl;
+std::cout << P::dt <<std::endl;
+std::cout << P::vlasovSolverMaxCFL <<std::endl;
+std::cout << P::vlasovSolverMinCFL <<std::endl;
+std::cout << P::vlasovSolverGhostTranslate <<std::endl;
+std::cout << P::vlasovSolverGhostTranslateExtent <<std::endl;
+std::cout << P::fieldSolverMaxCFL <<std::endl;
+std::cout << P::fieldSolverMinCFL <<std::endl;
+std::cout << P::fieldSolverSubcycles <<std::endl;
+
+
+std::cout << P::tstep <<std::endl;
+std::cout << P::tstep_min <<std::endl;
+std::cout << P::tstep_max <<std::endl;
+std::cout << P::diagnosticInterval <<std::endl;
+std::cout << P::writeInitialState <<std::endl;
+std::cout << P::writeFullBGB <<std::endl;
+
+std::cout << P::meshRepartitioned <<std::endl;
+std::cout << P::prepareForRebalance <<std::endl;
+std::cout << "TEST" << std::endl; 
+// std::cout << P::localCells[0]<<std::endl;
+
+std::cout << P::adaptGPUWID <<std::endl;
+std::cout << P::GPUallocations <<std::endl;
+
+// std::cout << P::systemWriteName[0]<<std::endl;
+// std::cout << P::systemWritePath[0]<<std::endl;
+// std::cout << P::systemWriteTimeInterval[0]<<std::endl;
+// std::cout << P::systemWriteDistributionWriteStride[0]<<std::endl;
+// std::cout << P::systemWriteDistributionWriteXlineStride[0]<<std::endl;
+// std::cout << P::systemWriteDistributionWriteYlineStride[0]<<std::endl;
+// std::cout << P::systemWriteDistributionWriteZlineStride[0]<<std::endl;
+// // std::cout <<"sheelrad"<< P::systemWriteDistributionWriteShellRadius[0]<<std::endl;
+// // std::cout << P::systemWriteDistributionWriteShellStride[0]<<std::endl;
+// std::cout << P::systemWriteFsGrid[0]<<std::endl;
+// std::cout << P::systemWriteAllDROs<<std::endl;
+// std::cout << P::diagnosticWriteAllDROs<<std::endl;
+// std::cout << P::systemWrites[0]<<std::endl;
+//
+std::cout << P::saveRestartWalltimeInterval <<std::endl;
+std::cout << P::saveRecoverTstepInterval <<std::endl;
+std::cout << P::exitAfterRestarts <<std::endl;
+std::cout << P::recoverMaxFiles <<std::endl;
+std::cout << P::vlsvBufferSize <<std::endl;
+std::cout << P::restartStripeFactor <<std::endl;
+std::cout << P::systemStripeFactor <<std::endl;
+std::cout << P::restartWritePath <<std::endl;
+std::cout << P::recoverWritePath <<std::endl;
+
+std::cout << P::recalculateStencils <<std::endl;
+std::cout << P::propagateVlasovAcceleration <<std::endl;
+std::cout << P::propagateVlasovTranslation <<std::endl;
+std::cout << P::propagateField <<std::endl;
+
+std::cout << P::dynamicTimestep <<std::endl;
+
+std::cout << P::maxWaveVelocity <<std::endl;
+std::cout << P::maxFieldSolverSubcycles <<std::endl;
+std::cout << P::maxSlAccelerationSubcycles <<std::endl;
+std::cout << P::resistivity <<std::endl;
+std::cout << P::fieldSolverDiffusiveEterms <<std::endl;
+std::cout << P::fieldSolverFiniteDifferencingAtBoundaries <<std::endl;
+std::cout << P::ohmHallTerm <<std::endl;
+std::cout << P::ohmGradPeTerm <<std::endl;
+std::cout << P::electronTemperature <<std::endl;
+std::cout << P::electronDensity <<std::endl;
+std::cout << P::electronPTindex <<std::endl;
+
+// std::cout << P::restartFileName <<std::endl;
+std::cout << P::isRestart <<std::endl;
+std::cout << P::writeAsFloat <<std::endl;
+std::cout << P::writeRestartAsFloat <<std::endl;
+std::cout << P::loadBalanceAlgorithm <<std::endl;
+// std::cout << P::loadBalanceKeys[0]<<std::endl;
+// std::cout << P::loadBalanceValues[0]<<std::endl;
+std::cout << P::rebalanceInterval <<std::endl;
+
+std::cout << P::outputVariableList[0]<<std::endl;
+std::cout << P::diagnosticVariableList[0]<<std::endl;
+
+std::cout << P::projectName <<std::endl;
+
+std::cout << P::vlasovAccelerateMaxwellianBoundaries <<std::endl;
+std::cout << P::maxSlAccelerationRotation <<std::endl;
+std::cout <<  hallRho<<std::endl;
+std::cout << P::hallMinimumRhom <<std::endl;
+std::cout << P::hallMinimumRhoq <<std::endl;
+
+std::cout << P::bailout_write_restart <<std::endl;
+std::cout << P::bailout_min_dt <<std::endl;
+std::cout << P::bailout_max_memory <<std::endl;
+std::cout << P::bailout_velocity_space_wall_margin <<std::endl;
+
+std::cout << P::amrTransShortPencils <<std::endl;
+std::cout << P::amrMaxSpatialRefLevel <<std::endl;
+std::cout << P::amrMaxAllowedSpatialRefLevel <<std::endl;
+std::cout << P::adaptRefinement <<std::endl;
+std::cout << P::refineOnRestart <<std::endl;
+std::cout << P::forceRefinement <<std::endl;
+std::cout << P::shouldFilter <<std::endl;
+std::cout << P::useAlpha1 <<std::endl;
+std::cout << P::alpha1RefineThreshold <<std::endl;
+std::cout << P::alpha1CoarsenThreshold <<std::endl;
+std::cout << P::useAlpha2 <<std::endl;
+std::cout << P::alpha2RefineThreshold <<std::endl;
+std::cout << P::alpha2CoarsenThreshold <<std::endl;
+std::cout << P::useVorticity <<std::endl;
+std::cout << P::vorticityRefineThreshold <<std::endl;
+std::cout << P::vorticityCoarsenThreshold <<std::endl;
+std::cout << P::useAnisotropy <<std::endl;
+std::cout << P::anisotropyRefineThreshold <<std::endl;
+std::cout << P::anisotropyCoarsenThreshold <<std::endl;
+std::cout << P::anisotropyMaxReflevel <<std::endl;
+std::cout << P::alphaDRhoWeight <<std::endl;
+std::cout << P::alphaDUWeight <<std::endl;
+std::cout << P::alphaDPSqWeight <<std::endl;
+std::cout << P::alphaDBSqWeight <<std::endl;
+std::cout << P::alphaDBWeight <<std::endl;
+
+std::cout << P::refineCadence <<std::endl;
+std::cout << P::refineAfter <<std::endl;
+std::cout << P::refineRadius <<std::endl;
+std::cout << P::refineBoxNumber <<std::endl;
+// std::cout << P::refinementMinX[0]<<std::endl;
+// std::cout << P::refinementMinY[0]<<std::endl;
+// std::cout << P::refinementMinZ[0]<<std::endl;
+// std::cout << P::refinementMaxX[0]<<std::endl;
+// std::cout << P::refinementMaxY[0]<<std::endl;
+// std::cout << P::refinementMaxZ[0]<<std::endl;
+std::cout << P::maxFilteringPasses <<std::endl;
+std::cout << P::amrBoxNumber <<std::endl;
+// std::cout << P::amrBoxHalfWidthX[0]<<std::endl;
+// std::cout << P::amrBoxHalfWidthY[0]<<std::endl;
+// std::cout << P::amrBoxHalfWidthZ[0]<<std::endl;
+// std::cout << P::amrBoxCenterX[0]<<std::endl;
+// std::cout << P::amrBoxCenterY[0]<<std::endl;
+// std::cout << P::amrBoxCenterZ[0]<<std::endl;
+// std::cout << P::amrBoxMaxLevel[0]<<std::endl;
+// std::cout << P::blurPassString[0]<<std::endl;
+// std::cout << P::numPasses[0]<<std::endl;
+
+std::cout << P::artificialPADiff<<std::endl;
+std::cout << P::PADcoefficient<<std::endl;
+std::cout << P::PADCFL<<std::endl;
+std::cout << P::PADvbins<<std::endl;
+std::cout << P::PADmubins<<std::endl;
+std::cout << P::PADnu0 <<std::endl;
+std::cout << P::PADfudge<<std::endl;
 }
 
 

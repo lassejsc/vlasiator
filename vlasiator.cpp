@@ -20,6 +20,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+#include "CLI11.hpp"
 #include "common.h"
 #include <cstdlib>
 #include <iostream>
@@ -270,43 +271,77 @@ int simulate(int argn,char* args[]) {
    // init parameter file reader
    Readparameters readparameters(argn,args);
 
-   P::addParameters();
+   if (myRank==MASTER_RANK)  { 
+      std::cout << "INISDE VLASIATOR.CPP IF STATMEENT" << std::endl;
+      getObjectWrapper().addParameters();
+      auto app = readparameters.get_app();
 
+      readparameters.parse();
+      if (!Readparameters::helpRequested){
+        app->remove_option(app->get_option("--ParticlePopulations"));
+      } else {
+        getObjectWrapper().addHelp();
+      }
+      
+      projects::Project::addParameters();
+
+      // P::addParameters();
    // Add parameters for number of populations
-   getObjectWrapper().addParameters();
 
-   getObjectWrapper().addPopulationParameters();
+   // getObjectWrapper().addPopulationParameters();
    sysBoundaryContainer.addParameters();
-   projects::Project::addParameters();
+   // projects::Project::addParameters();
    // project->addParameters();
+   }
+   std::cout << "test1" << std::endl;
 
+ 
+   P::addParameters();
    readparameters.parse(); // 2nd parsing for specific population parameters
+                           // 
+   std::cout << "PROJ NAME="<<P::projectName << std::endl;
+   P::getParameters();
+   std::cout << "HELP REQUESTED STATUS=" << Readparameters::helpRequested << std::endl;
    readparameters.helpMessage(); // Call after last parse, exits after printing help if help requested
+   // CLI::Option* opt=readparameters.get_app()->get_subcommand("proton_properties")->get_option("mass");
+   // cout << opt->get_description() << endl;
+   // cout << "force "<< opt->get_force_callback() << endl;
+   // opt->run_callback();
+   // cout << "call back run? = "<< opt->get_callback_run() << endl;
+   std::cout << "test2" << std::endl;
    bool hasVersionOption = readparameters.versionMessage();
    MPI_Bcast(&hasVersionOption, sizeof(bool), MPI_BYTE, 0, MPI_COMM_WORLD);
    if (hasVersionOption) {
      MPI_Finalize();
      exit(0);
    }
-   P::getParameters();
+   
+
+   std::cout << "tes3" << std::endl;
+   std::cout << "test4" << std::endl;
+
+   std::cout << "test5" << std::endl;
+   Project* project = projects::createProject();
+   // getObjectWrapper().project = project;
+   std::cout << "test6" << std::endl;
+
    getObjectWrapper().getPopulationParameters();
    sysBoundaryContainer.getParameters();
-
-
-   Project* project = projects::createProject();
-
    project->getParameters();
 
-   getObjectWrapper().project = project;
-  
+   std::cout << "test7" << std::endl;
+   // project->printPopulations();
+   std::cout << "test8" << std::endl;
    #ifdef USE_GPU
    // Activate device, create streams
    gpu_init_device();
    #endif
    // Fill in rest of velocity meshes data, upload GPU version
+   std::cout <<"SPECIESSIZE="<<getObjectWrapper().particleSpecies.size() << std::endl;
    vmesh::getMeshWrapper()->initVelocityMeshes(getObjectWrapper().particleSpecies.size());
    readParamsTimer.stop();
 
+   std::cout << "test9" << std::endl;
    // Check for correct application of vectorclass values:
    if ( (VECL<WID) ||
         (VECL*VEC_PER_PLANE != WID2) ||
@@ -323,6 +358,7 @@ int simulate(int argn,char* args[]) {
       exit(1);
    }
 
+   std::cout << "test9" << std::endl;
    // Verify correct handling of floating point exceptions
    // see https://github.com/fmihpc/vlasiator/pull/845
    {
