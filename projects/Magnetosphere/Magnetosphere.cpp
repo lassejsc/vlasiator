@@ -213,9 +213,9 @@ namespace projects {
                   if (pop_get==pop) {
                     sP->ionosphereT=speciesParams[i]->T;
                     sP->ionosphereRho=speciesParams[i]->rho;
-                    sP->V0[0]=speciesParams[i]->V0[0];
-                    sP->V0[1]=speciesParams[i]->V0[1];
-                    sP->V0[2]=speciesParams[i]->V0[2];
+                    sP->ionosphereV0[0]=speciesParams[i]->V0[0];
+                    sP->ionosphereV0[1]=speciesParams[i]->V0[1];
+                    sP->ionosphereV0[2]=speciesParams[i]->V0[2];
 
                   }
             //RP::get(pop + "_copysphere.rho", sP.ionosphereRho);
@@ -226,16 +226,16 @@ namespace projects {
          } else if (sysBoundaryContainer.existSysBoundary("Ionosphere")) {
               // SBC::Ionosphere* ionosphere=(SBC::Ionosphere*)sysBoundaryContainer.getSysBoundary(sysboundarytype::IONOSPHERE);
               //
-              std::vector<SBC::IonosphereSpeciesParameters>& speciesParams = SBC::Ionosphere::speciesParams;
+              std::vector<SBC::IonosphereSpeciesParameters*>& speciesParams = SBC::Ionosphere::speciesParams;
 
               // for(uint i=0; i < getObjectWrapper().particleSpecies.size(); i++) {
                   const string& pop_get = getObjectWrapper().particleSpecies[i]->name;
                   if (pop_get==pop) {
-                    sP->ionosphereT=speciesParams[i].T;
-                    sP->ionosphereRho=speciesParams[i].rho;
-                    sP->V0[0]=speciesParams[i].V0[0];
-                    sP->V0[1]=speciesParams[i].V0[1];
-                    sP->V0[2]=speciesParams[i].V0[2];
+                    sP->ionosphereT=speciesParams[i]->T;
+                    sP->ionosphereRho=speciesParams[i]->rho;
+                    sP->ionosphereV0[0]=speciesParams[i]->V0[0];
+                    sP->ionosphereV0[1]=speciesParams[i]->V0[1];
+                    sP->ionosphereV0[2]=speciesParams[i]->V0[2];
 
                   }
               // }

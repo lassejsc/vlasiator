@@ -77,7 +77,7 @@ namespace projects {
       Real magYPertAbsAmp;
       Real magZPertAbsAmp;
       uint seed;
-      std::vector<LossConeSpeciesParameters> speciesParams;
+      std::vector<LossConeSpeciesParameters*> speciesParams;
 
       static Real rndRho, rndVel[3];
       #pragma omp threadprivate(rndRho,rndVel)

@@ -564,21 +564,21 @@ bool P::addParameters() {
    
    // Fieldtracing
    RP::add("fieldtracing.fieldLineTracer", "Field line tracing method to use for coupling ionosphere and magnetosphere (options are: Euler, BS)", tracerString);
-   RP::add("fieldtracing.tracer_max_allowed_error", "Maximum allowed error for the adaptive field line tracers ", FieldTracing::fieldTracingParameters.max_allowed_error);
-   RP::add("fieldtracing.tracer_max_attempts", "Maximum allowed attempts for the adaptive field line tracers", FieldTracing::fieldTracingParameters.max_field_tracer_attempts);
-   RP::add("fieldtracing.tracer_min_dx", "Minimum allowed field line tracer step length for the adaptive field line tracers (m)", FieldTracing::fieldTracingParameters.min_tracer_dx_full_box);
-   RP::add("fieldtracing.fullbox_and_fluxrope_max_absolute_distance_to_trace", "Maximum absolute distance in m to trace along the field line before ending. Defaults to the sum of the simulation box edge lengths LX+LY+LZ if set <= 0.", FieldTracing::fieldTracingParameters.fullbox_and_fluxrope_max_distance);
-   RP::add("fieldtracing.fullbox_max_incomplete_cells", "Maximum fraction of cells left incomplete when stopping tracing loop for full box tracing. Defaults to zero to process all, will be slow at scale! Both fluxrope_max_incomplete_cells and fullbox_max_incomplete_cells will be achieved.", FieldTracing::fieldTracingParameters.fullbox_max_incomplete_cells);
-   RP::add("fieldtracing.fluxrope_max_incomplete_cells", "Maximum fraction of cells left incomplete when stopping loop for flux rope tracing. Defaults to zero to process all, will be slow at scale! Both fluxrope_max_incomplete_cells and fullbox_max_incomplete_cells will be achieved.", FieldTracing::fieldTracingParameters.fluxrope_max_incomplete_cells);
-   RP::add("fieldtracing.use_reconstruction_cache", "Use the cache to store reconstruction coefficients. (0: don't, 1: use)", FieldTracing::fieldTracingParameters.useCache);
-   RP::add("fieldtracing.fluxrope_max_curvature_radii_to_trace", "Maximum number of seedpoint curvature radii to trace forward and backward from each DCCRG cell to find flux ropes",FieldTracing::fieldTracingParameters.fluxrope_max_curvature_radii_to_trace);
-   RP::add("fieldtracing.fluxrope_max_curvature_radii_extent", "Maximum extent in seedpoint curvature radii from the seed a field line is allowed to extend to be counted as a flux rope", FieldTracing::fieldTracingParameters.fluxrope_max_curvature_radii_extent);
-   RP::add("fieldtracing.min_allowed_x", "Trace for x coordinates larger than this limit (in m).", FieldTracing::fieldTracingParameters.x_min);
-   RP::add("fieldtracing.min_allowed_y", "Trace for y coordinates larger than this limit (in m).", FieldTracing::fieldTracingParameters.y_min);
-   RP::add("fieldtracing.min_allowed_z", "Trace for z coordinates larger than this limit (in m).", FieldTracing::fieldTracingParameters.z_min);
-   RP::add("fieldtracing.max_allowed_x", "Trace for x coordinates smaller than this limit (in m).", FieldTracing::fieldTracingParameters.x_max);
-   RP::add("fieldtracing.max_allowed_y", "Trace for y coordinates smaller than this limit (in m).",FieldTracing::fieldTracingParameters.y_max );
-   RP::add("fieldtracing.max_allowed_z", "Trace for z coordinates smaller than this limit (in m).", FieldTracing::fieldTracingParameters.z_max);
+   RP::add<Real>("fieldtracing.tracer_max_allowed_error", "Maximum allowed error for the adaptive field line tracers ", FieldTracing::fieldTracingParameters.max_allowed_error,1000);
+   RP::add<uint32_t>("fieldtracing.tracer_max_attempts", "Maximum allowed attempts for the adaptive field line tracers", FieldTracing::fieldTracingParameters.max_field_tracer_attempts,100);
+   RP::add<Real>("fieldtracing.tracer_min_dx", "Minimum allowed field line tracer step length for the adaptive field line tracers (m)", FieldTracing::fieldTracingParameters.min_tracer_dx_full_box,100e3);
+   RP::add<Real>("fieldtracing.fullbox_and_fluxrope_max_absolute_distance_to_trace", "Maximum absolute distance in m to trace along the field line before ending. Defaults to the sum of the simulation box edge lengths LX+LY+LZ if set <= 0.", FieldTracing::fieldTracingParameters.fullbox_and_fluxrope_max_distance,-1);
+   RP::add<Real>("fieldtracing.fullbox_max_incomplete_cells", "Maximum fraction of cells left incomplete when stopping tracing loop for full box tracing. Defaults to zero to process all, will be slow at scale! Both fluxrope_max_incomplete_cells and fullbox_max_incomplete_cells will be achieved.", FieldTracing::fieldTracingParameters.fullbox_max_incomplete_cells,0);
+   RP::add<Real>("fieldtracing.fluxrope_max_incomplete_cells", "Maximum fraction of cells left incomplete when stopping loop for flux rope tracing. Defaults to zero to process all, will be slow at scale! Both fluxrope_max_incomplete_cells and fullbox_max_incomplete_cells will be achieved.", FieldTracing::fieldTracingParameters.fluxrope_max_incomplete_cells,0);
+   RP::add<bool>("fieldtracing.use_reconstruction_cache", "Use the cache to store reconstruction coefficients. (0: don't, 1: use)", FieldTracing::fieldTracingParameters.useCache,false);
+   RP::add<Real>("fieldtracing.fluxrope_max_curvature_radii_to_trace", "Maximum number of seedpoint curvature radii to trace forward and backward from each DCCRG cell to find flux ropes",FieldTracing::fieldTracingParameters.fluxrope_max_curvature_radii_to_trace,10);
+   RP::add<Real>("fieldtracing.fluxrope_max_curvature_radii_extent", "Maximum extent in seedpoint curvature radii from the seed a field line is allowed to extend to be counted as a flux rope", FieldTracing::fieldTracingParameters.fluxrope_max_curvature_radii_extent,2);
+   RP::add<Real>("fieldtracing.min_allowed_x", "Trace for x coordinates larger than this limit (in m).", FieldTracing::fieldTracingParameters.x_min,-LARGE_REAL);
+   RP::add<Real>("fieldtracing.min_allowed_y", "Trace for y coordinates larger than this limit (in m).", FieldTracing::fieldTracingParameters.y_min,-LARGE_REAL);
+   RP::add<Real>("fieldtracing.min_allowed_z", "Trace for z coordinates larger than this limit (in m).", FieldTracing::fieldTracingParameters.z_min,-LARGE_REAL);
+   RP::add<Real>("fieldtracing.max_allowed_x", "Trace for x coordinates smaller than this limit (in m).", FieldTracing::fieldTracingParameters.x_max,LARGE_REAL);
+   RP::add<Real>("fieldtracing.max_allowed_y", "Trace for y coordinates smaller than this limit (in m).",FieldTracing::fieldTracingParameters.y_max,LARGE_REAL);
+   RP::add<Real>("fieldtracing.max_allowed_z", "Trace for z coordinates smaller than this limit (in m).", FieldTracing::fieldTracingParameters.z_max,LARGE_REAL);
 
    return true;
 }

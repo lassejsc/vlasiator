@@ -46,31 +46,30 @@ namespace projects {
 
    void LossCone::addParameters() {
       typedef Readparameters RP;
-      RP::add("LossCone.BX0", "Background field value (T)",this->BX0);
-      RP::add("LossCone.BY0", "Background field value (T)",this->BY0);
-      RP::add("LossCone.BZ0", "Background field value (T)",this->BZ0);
-      RP::add("LossCone.magXPertAbsAmp", "Amplitude of the magnetic perturbation along x",this->magXPertAbsAmp);
-      RP::add("LossCone.magYPertAbsAmp", "Amplitude of the magnetic perturbation along y",this->magYPertAbsAmp);
-      RP::add("LossCone.magZPertAbsAmp", "Amplitude of the magnetic perturbation along z",this->magZPertAbsAmp);
+      RP::add<Real>("LossCone.BX0", "Background field value (T)",this->BX0,1.0e-9);
+      RP::add<Real>("LossCone.BY0", "Background field value (T)",this->BY0,2.0e-9);
+      RP::add<Real>("LossCone.BZ0", "Background field value (T)",this->BZ0,3.0e-9);
+      RP::add<Real>("LossCone.magXPertAbsAmp", "Amplitude of the magnetic perturbation along x",this->magXPertAbsAmp,1.0e-9);
+      RP::add<Real>("LossCone.magYPertAbsAmp", "Amplitude of the magnetic perturbation along y",this->magYPertAbsAmp,1.0e-9);
+      RP::add<Real>("LossCone.magZPertAbsAmp", "Amplitude of the magnetic perturbation along z",this->magZPertAbsAmp,1.0e-9);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
 
-         LossConeSpeciesParameters newsP;
+         LossConeSpeciesParameters* sP=new LossConeSpeciesParameters();
     
-         speciesParams.push_back(newsP);
-         auto sP=&this->speciesParams.at(i);
-         RP::add(pop + "_LossCone.rho", "Number density (m^-3)",sP->DENSITY);
-         RP::add(pop + "_LossCone.TemperatureX", "Temperature (K)",sP->TEMPERATUREX);
-         RP::add(pop + "_LossCone.TemperatureY", "Temperature (K)",sP->TEMPERATUREY);
-         RP::add(pop + "_LossCone.TemperatureZ", "Temperature (K)",sP->TEMPERATUREZ);
-         RP::add(pop + "_LossCone.densityPertRelAmp", "Amplitude factor of the density perturbation",sP->densityPertRelAmp);
-         RP::add(pop + "_LossCone.VX0", "Initial bulk velocity in x-direction",sP->V0[0]);
-         RP::add(pop + "_LossCone.VY0", "Initial bulk velocity in y-direction",sP->V0[1]);
-         RP::add(pop + "_LossCone.VZ0", "Initial bulk velocity in z-direction",sP->V0[2]);
-         RP::add(pop + "_LossCone.velocityPertAbsAmp", "Amplitude of the velocity perturbation",sP->velocityPertAbsAmp);
-         RP::add(pop + "_LossCone.muLimit", "Cutoff value for pitch-cosine mu positive and negative)",sP->muLimit);
+         speciesParams.push_back(sP);
+         RP::add<Real>(pop + "_LossCone.rho", "Number density (m^-3)",sP->DENSITY,1.0e7);
+         RP::add<Real>(pop + "_LossCone.TemperatureX", "Temperature (K)",sP->TEMPERATUREX,2.0e6);
+         RP::add<Real>(pop + "_LossCone.TemperatureY", "Temperature (K)",sP->TEMPERATUREY,2.0e6);
+         RP::add<Real>(pop + "_LossCone.TemperatureZ", "Temperature (K)",sP->TEMPERATUREZ,2.0e6);
+         RP::add<Real>(pop + "_LossCone.densityPertRelAmp", "Amplitude factor of the density perturbation",sP->densityPertRelAmp,0.1);
+         RP::add<Real>(pop + "_LossCone.VX0", "Initial bulk velocity in x-direction",sP->V0[0],0.0);
+         RP::add<Real>(pop + "_LossCone.VY0", "Initial bulk velocity in y-direction",sP->V0[1],0.0);
+         RP::add<Real>(pop + "_LossCone.VZ0", "Initial bulk velocity in z-direction",sP->V0[2],0.0);
+         RP::add<Real>(pop + "_LossCone.velocityPertAbsAmp", "Amplitude of the velocity perturbation",sP->velocityPertAbsAmp,1.0e6);
+         RP::add<Real>(pop + "_LossCone.muLimit", "Cutoff value for pitch-cosine mu positive and negative)",sP->muLimit,0.5);
       }
    }
 
@@ -107,7 +106,7 @@ namespace projects {
                                        const uint popID,
                                        const uint nRequested
       ) const {
-      const LossConeSpeciesParameters& sP = speciesParams[popID];
+      const LossConeSpeciesParameters& sP = *speciesParams[popID];
       // Fetch spatial cell center coordinates
       // const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
       // const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
@@ -178,7 +177,7 @@ namespace projects {
                                         const uint popID,
                                         Real vx_in, Real vy_in, Real vz_in
       ) const {
-      const LossConeSpeciesParameters& sP = speciesParams[popID];
+      const LossConeSpeciesParameters& sP = *speciesParams[popID];
       // Fetch spatial cell center coordinates
       // const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
       // const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];

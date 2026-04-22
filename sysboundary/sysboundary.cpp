@@ -118,28 +118,34 @@ void SysBoundary::getParameters() {
    vector<string>::const_iterator it;
    for (it = sysBoundaryCondList.begin(); it != sysBoundaryCondList.end(); it++) {
       if (*it == "Outflow" || *it == "outflow") {
-        std::cout << "I ADDED SYSBOUNDARY" << std::endl;
-         SBC::Outflow* bc= new SBC::Outflow();
+         std::cout << "I ADDED SYSBOUNDARY" << std::endl;
+         SBC::Outflow* bc = new SBC::Outflow();
          bc->addParameters();
-        sysBoundaries.push_back(bc);
-        indexToSysBoundary[bc->getIndex()] = bc;
-   }
+         sysBoundaries.push_back(bc);
+         indexToSysBoundary[bc->getIndex()] = bc;
+      }
       if (*it == "Maxwellian" || *it == "maxwellian") {
-        std::cout << "I ADDED SYSBOUNDARY MAXWELLIAN" << std::endl;
-        SBC::Maxwellian* bc= new SBC::Maxwellian();
-        bc->addParameters();
-        sysBoundaries.push_back(bc);
-        indexToSysBoundary[bc->getIndex()] = bc;
+         std::cout << "I ADDED SYSBOUNDARY MAXWELLIAN" << std::endl;
+         SBC::Maxwellian* bc = new SBC::Maxwellian();
+         bc->addParameters();
+         sysBoundaries.push_back(bc);
+         indexToSysBoundary[bc->getIndex()] = bc;
+      }
+      if (*it == "Copysphere" || *it == "copysphere") {
+         std::cout << "I ADDED SYSBOUNDARY COPYSPHERE" << std::endl;
+         SBC::Copysphere* bc = new SBC::Copysphere();
+         bc->addParameters();
+         sysBoundaries.push_back(bc);
+         indexToSysBoundary[bc->getIndex()] = bc;
+      }
+      if (*it == "Ionosphere" || *it == "ionosphere") {
+         std::cout << "I ADDED SYSBOUNDARY ionosphere" << std::endl;
+         SBC::Ionosphere* bc = new SBC::Ionosphere();
+         bc->addParameters();
+         sysBoundaries.push_back(bc);
+         indexToSysBoundary[bc->getIndex()] = bc;
+      }
    }
-       if (*it == "Copysphere" || *it == "copysphere") {
-        std::cout << "I ADDED SYSBOUNDARY COPYSPHERE" << std::endl;
-        SBC::Copysphere* bc= new SBC::Copysphere();
-        bc->addParameters();
-        sysBoundaries.push_back(bc);
-        indexToSysBoundary[bc->getIndex()] = bc;
-   }
-      
-  }
 }
 
 /*! Add a new SBC::SysBoundaryCondition which has been created with new sysBoundary.
@@ -188,8 +194,7 @@ void SysBoundary::initSysBoundaries(Project& project, creal& t) {
    for (auto& b : sysBoundaries)  {
      std::cout << "LOOP INIT=" <<b->getName()<< std::endl;
      this->addSysBoundary(b, project, t);
-
-      b->setPeriodicity(periodic);
+     b->setPeriodicity(periodic);
    }
    if (sysBoundaryCondList.size() == 0) {
       if (!periodic[0] && !Readparameters::helpRequested) {

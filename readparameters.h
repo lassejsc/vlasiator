@@ -215,7 +215,7 @@ public:
       }
       // std::cerr << "Something went wrong with adding option " << name << std::endl;
       // abort();
-      return nullptr;
+      // return nullptr;
    }
    static string getPops(int i){
      return populations.at(i);

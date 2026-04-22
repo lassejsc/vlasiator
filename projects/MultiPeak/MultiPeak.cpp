@@ -80,9 +80,6 @@ void MultiPeak::addParameters() {
       MultiPeakSpeciesParameters* sP = new MultiPeakSpeciesParameters();
       this->speciesParams.push_back(sP);
       // std::cout << "POP NAME " << pop << " " << newsP.numberOfPeaks << std::endl;
-      std::function<void(const std::string)> lambda_fun1 = [this](std::string s) {
-         std::cout << "inside MULTIPEAK AD THINGY AOJF" << s << std::endl;
-      };
       RP::add<uint>(pop + "_MultiPeak.n", "Number of peaks to create", sP->numberOfPeaks);
       RP::add(pop + "_MultiPeak.rho", "Number density (m^-3)", sP->rho);
       RP::add(pop + "_MultiPeak.Tx", "Temperature (K)", sP->Tx);
@@ -364,19 +361,19 @@ void MultiPeak::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFIE
 }
 
 std::vector<std::array<Real, 3>> MultiPeak::getV0(creal x, creal y, creal z, const uint popID) const {
-   std::cout << "within getV0 " << popID << std::endl;
+   // std::cout << "within getV0 " << popID << std::endl;
    const MultiPeakSpeciesParameters& sP = *speciesParams[popID];
-   std::cout << "within getV0" << std::endl;
+   // std::cout << "within getV0" << std::endl;
    vector<std::array<Real, 3>> centerPoints;
-   std::cout << "PEAKS" << sP.numberOfPeaks << std::endl;
+   // std::cout << "PEAKS" << sP.numberOfPeaks << std::endl;
    for (uint i = 0; i < sP.numberOfPeaks; i++) {
 
-      std::cout << "within loop" << std::endl;
+      // std::cout << "within loop" << std::endl;
       array<Real, 3> point{{sP.Vx[i], sP.Vy[i], sP.Vz[i]}};
-      std::cout << "within loop" << std::endl;
+      // std::cout << "within loop" << std::endl;
       centerPoints.push_back(point);
    }
-   std::cout << "within getV0" << std::endl;
+   // std::cout << "within getV0" << std::endl;
    return centerPoints;
 }
 

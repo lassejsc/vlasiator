@@ -67,7 +67,7 @@ namespace SBC {
 
    SphericalTriGrid ionosphereGrid; /*!< Ionosphere finite element grid */
 
-   std::vector<IonosphereSpeciesParameters> Ionosphere::speciesParams;
+   std::vector<IonosphereSpeciesParameters*> Ionosphere::speciesParams;
 
    // Static ionosphere member variables
    Real Ionosphere::innerRadius;
@@ -2191,75 +2191,61 @@ namespace SBC {
 
    // Actual ionosphere object implementation
 
-   Ionosphere::Ionosphere(): SysBoundaryCondition() { this->addParameters();}
+   Ionosphere::Ionosphere(): SysBoundaryCondition() { }
 
    Ionosphere::~Ionosphere() { }
 
    void Ionosphere::addParameters() {
-      std::function<void(const std::string)>lambda_fun = [this](std::string VDFmodeString){
-       if(VDFmodeString == "FixedMoments") {
-         boundaryVDFmode = FixedMoments;
-        } else if(VDFmodeString == "AverageMoments") {
-          boundaryVDFmode = AverageMoments;
-        } else if(VDFmodeString == "AverageAllMoments") {
-           boundaryVDFmode = AverageAllMoments;
-        } else if(VDFmodeString == "CopyAndLosscone") {
-          boundaryVDFmode = CopyAndLosscone;
-        } else {
-          cerr << "(IONOSPHERE) Unknown inner boundary VDF mode \"" << VDFmodeString << "\". Aborting." << endl;
-          abort();
-        }
-      };
-      Readparameters::add("ionosphere.centerX", "X coordinate of ionosphere center (m)",this->center[0]);
-      Readparameters::add("ionosphere.centerY", "Y coordinate of ionosphere center (m)",this->center[1]);
-      Readparameters::add("ionosphere.centerZ", "Z coordinate of ionosphere center (m)",this->center[2]);
-      Readparameters::add("ionosphere.radius", "Radius of the inner simulation boundary (unit is assumed to be R_E if value < 1000, otherwise m).", Ionosphere::radius);
-      Readparameters::add("ionosphere.innerRadius", "Radius of the ionosphere model (m).", Ionosphere::innerRadius);
-      Readparameters::add("ionosphere.geometry", "Select the geometry of the ionosphere, 0: inf-norm (diamond), 1: 1-norm (square), 2: 2-norm (circle, DEFAULT), 3: 2-norm cylinder aligned with y-axis, use with polar plane/line dipole.", this->geometry);
-      Readparameters::add("ionosphere.precedence", "Precedence value of the ionosphere system boundary condition (integer), the higher the stronger.",this->precedence);
-      Readparameters::add("ionosphere.reapplyUponRestart", "If 0 (default), keep going with the state existing in the restart file. If 1, calls again applyInitialState. Can be used to change boundary condition behaviour during a run.", this->applyUponRestart);
-      Readparameters::add("ionosphere.baseShape", "Select the seed mesh geometry for the spherical ionosphere grid. Options are: sphericalFibonacci, tetrahedron, icosahedron.", this->baseShape);
-      Readparameters::add("ionosphere.conductivityModel", "Select ionosphere conductivity tensor construction model. Options are: 0=GUMICS style (Vertical B, only SigmaH and SigmaP), 1=Ridley et al 2004 (1000 mho longitudinal conductivity), 2=Koskinen 2011 full conductivity tensor.", Ionosphere::conductivityModel);
-      Readparameters::add("ionosphere.ridleyParallelConductivity", "Constant parallel conductivity value. 1000 mho is given without justification by Ridley et al 2004.", Ionosphere::ridleyParallelConductivity);
-      Readparameters::add("ionosphere.fibonacciNodeNum", "Number of nodes in the spherical fibonacci mesh.", this->fibonacciNodeNum);
-      Readparameters::add("ionosphere.refineMinLatitude", "Refine the grid polewards of the given latitude. Multiple of these lines can be given for successive refinement, paired up with refineMaxLatitude lines.",this->refineMinLatitudes);
-      Readparameters::add("ionosphere.refineMaxLatitude", "Refine the grid equatorwards of the given latitude. Multiple of these lines can be given for successive refinement, paired up with refineMinLatitude lines.",this->refineMaxLatitudes);
-      Readparameters::add("ionosphere.atmosphericModelFile", "Filename to read the MSIS atmosphere data from (default: NRLMSIS.dat)", this->atmosphericModelFile);
-      Readparameters::add("ionosphere.recombAlpha", "Ionospheric recombination parameter (m^3/s)", Ionosphere::recombAlpha);
-      Readparameters::add("ionosphere.ionizationModel", "Ionospheric electron production rate model. Options are: Rees1963, Rees1989, SergienkoIvanov (default).", ionosphereGrid.ionizationModel);
-      Readparameters::add_each_lambda("ionosphere.innerBoundaryVDFmode", "Inner boundary VDF construction method. Options ar: FixedMoments, AverageMoments, AverageAllMoments, CopyAndLosscone.", this->VDFmodeString,lambda_fun);
-      Readparameters::add("ionosphere.F10_7", "Solar 10.7 cm radio flux (sfu = 10^{-22} W/m^2)", Ionosphere::F10_7);
-      Readparameters::add("ionosphere.backgroundIonisation", "Background ionoisation due to cosmic rays (mho)", Ionosphere::backgroundIonisation);
-      Readparameters::add("ionosphere.solverMaxIterations", "Maximum number of iterations for the conjugate gradient solver", Ionosphere::solverMaxIterations);
-      Readparameters::add("ionosphere.solverRelativeL2ConvergenceThreshold", "Convergence threshold for the relative L2 metric", Ionosphere::solverRelativeL2ConvergenceThreshold);
-      Readparameters::add("ionosphere.solverMaxFailureCount", "Maximum number of iterations allowed to diverge before restarting the ionosphere solver", Ionosphere::solverMaxFailureCount);
-      Readparameters::add("ionosphere.solverMaxErrorGrowthFactor", "Maximum allowed factor of growth with respect to the minimum error before restarting the ionosphere solver", Ionosphere::solverMaxErrorGrowthFactor);
-      Readparameters::add("ionosphere.solverGaugeFixing", "Gauge fixing method of the ionosphere solver. Options are: pole, integral, equator",ionosphereGrid.gaugeFixing);
-      Readparameters::add("ionosphere.shieldingLatitude", "Latitude below which the potential is set to zero in the equator gauge fixing scheme (degree)", Ionosphere::shieldingLatitude);
-      Readparameters::add("ionosphere.solverPreconditioning", "Use preconditioning for the solver? (0/1)", Ionosphere::solverPreconditioning);
-      Readparameters::add("ionosphere.solverUseMinimumResidualVariant", "Use minimum residual variant", Ionosphere::solverUseMinimumResidualVariant);
-      Readparameters::add("ionosphere.solverToggleMinimumResidualVariant", "Toggle use of minimum residual variant at every solver restart", Ionosphere::solverToggleMinimumResidualVariant);
-      Readparameters::add("ionosphere.earthAngularVelocity", "Angular velocity of inner boundary convection, in rad/s", this->Ionosphere::earthAngularVelocity);
-      Readparameters::add("ionosphere.plasmapauseL", "L-shell at which the plasmapause resides (for corotation)", this->Ionosphere::plasmapauseL);
-      Readparameters::add("ionosphere.downmapRadius", "Radius from which FACs are coupled down into the ionosphere. Units are assumed to be RE if value < 1000, otherwise m. If -1: use inner boundary cells.", Ionosphere::downmapRadius);
-      Readparameters::add("ionosphere.unmappedNodeRho", "Electron density of ionosphere nodes that do not connect to the magnetosphere domain.", Ionosphere::unmappedNodeRho);
-      Readparameters::add("ionosphere.unmappedNodeTe", "Electron temperature of ionosphere nodes that do not connect to the magnetosphere domain.", Ionosphere::unmappedNodeTe);
-      Readparameters::add("ionosphere.couplingTimescale", "Magnetosphere->Ionosphere coupling timescale (seconds, 0=immediate coupling", Ionosphere::couplingTimescale);
-      Readparameters::add("ionosphere.couplingInterval", "Time interval at which the ionosphere is solved (seconds)", Ionosphere::couplingInterval);
+
+      Readparameters::add<Real>("ionosphere.centerX", "X coordinate of ionosphere center (m)",this->center[0],0.0);
+      Readparameters::add<Real>("ionosphere.centerY", "Y coordinate of ionosphere center (m)",this->center[1],0.0);
+      Readparameters::add<Real>("ionosphere.centerZ", "Z coordinate of ionosphere center (m)",this->center[2],0.0);
+      Readparameters::add<Real>("ionosphere.radius", "Radius of the inner simulation boundary (unit is assumed to be R_E if value < 1000, otherwise m).", Ionosphere::radius,1.0e7);
+      Readparameters::add<Real>("ionosphere.innerRadius", "Radius of the ionosphere model (m).", Ionosphere::innerRadius,physicalconstants::R_E+100e3);
+      Readparameters::add<uint>("ionosphere.geometry", "Select the geometry of the ionosphere, 0: inf-norm (diamond), 1: 1-norm (square), 2: 2-norm (circle, DEFAULT), 3: 2-norm cylinder aligned with y-axis, use with polar plane/line dipole.", this->geometry,2);
+      Readparameters::add<uint>("ionosphere.precedence", "Precedence value of the ionosphere system boundary condition (integer), the higher the stronger.",this->precedence,3);
+      Readparameters::add<bool>("ionosphere.reapplyUponRestart", "If 0 (default), keep going with the state existing in the restart file. If 1, calls again applyInitialState. Can be used to change boundary condition behaviour during a run.", this->applyUponRestart,false);
+      Readparameters::add<string>("ionosphere.baseShape", "Select the seed mesh geometry for the spherical ionosphere grid. Options are: sphericalFibonacci, tetrahedron, icosahedron.", this->baseShape,std::string("sphericalFibonacci"));
+      Readparameters::add<SBC::Ionosphere::IonosphereConductivityModel>("ionosphere.conductivityModel", "Select ionosphere conductivity tensor construction model. Options are: 0=GUMICS style (Vertical B, only SigmaH and SigmaP), 1=Ridley et al 2004 (1000 mho longitudinal conductivity), 2=Koskinen 2011 full conductivity tensor.", Ionosphere::conductivityModel,IonosphereConductivityModel::GUMICS);
+      Readparameters::add<Real>("ionosphere.ridleyParallelConductivity", "Constant parallel conductivity value. 1000 mho is given without justification by Ridley et al 2004.", Ionosphere::ridleyParallelConductivity,1000);
+      Readparameters::add<int>("ionosphere.fibonacciNodeNum", "Number of nodes in the spherical fibonacci mesh.", this->fibonacciNodeNum,256);
+      Readparameters::add<std::vector<Real>>("ionosphere.refineMinLatitude", "Refine the grid polewards of the given latitude. Multiple of these lines can be given for successive refinement, paired up with refineMaxLatitude lines.",this->refineMinLatitudes);
+      Readparameters::add<std::vector<Real>>("ionosphere.refineMaxLatitude", "Refine the grid equatorwards of the given latitude. Multiple of these lines can be given for successive refinement, paired up with refineMinLatitude lines.",this->refineMaxLatitudes);
+      Readparameters::add<string>("ionosphere.atmosphericModelFile", "Filename to read the MSIS atmosphere data from (default: NRLMSIS.dat)", this->atmosphericModelFile,std::string("NRLMSIS.dat"));
+      Readparameters::add<Real>("ionosphere.recombAlpha", "Ionospheric recombination parameter (m^3/s)", Ionosphere::recombAlpha,2.4e-13);
+      Readparameters::add<string>("ionosphere.ionizationModel", "Ionospheric electron production rate model. Options are: Rees1963, Rees1989, SergienkoIvanov (default).", this->ionizationModelString,std::string("SergienkoIvanov"));
+      Readparameters::add<string>("ionosphere.innerBoundaryVDFmode", "Inner boundary VDF construction method. Options ar: FixedMoments, AverageMoments, AverageAllMoments, CopyAndLosscone.", this->VDFmodeString,std::string("FixedMoments"));
+      Readparameters::add<Real>("ionosphere.F10_7", "Solar 10.7 cm radio flux (sfu = 10^{-22} W/m^2)", Ionosphere::F10_7,100);
+      Readparameters::add<Real>("ionosphere.backgroundIonisation", "Background ionoisation due to cosmic rays (mho)", Ionosphere::backgroundIonisation,0.5);
+      Readparameters::add<int>("ionosphere.solverMaxIterations", "Maximum number of iterations for the conjugate gradient solver", Ionosphere::solverMaxIterations,2000);
+      Readparameters::add<Real>("ionosphere.solverRelativeL2ConvergenceThreshold", "Convergence threshold for the relative L2 metric", Ionosphere::solverRelativeL2ConvergenceThreshold,1e-6);
+      Readparameters::add<int>("ionosphere.solverMaxFailureCount", "Maximum number of iterations allowed to diverge before restarting the ionosphere solver", Ionosphere::solverMaxFailureCount,5);
+      Readparameters::add<Real>("ionosphere.solverMaxErrorGrowthFactor", "Maximum allowed factor of growth with respect to the minimum error before restarting the ionosphere solver", Ionosphere::solverMaxErrorGrowthFactor,100);
+      Readparameters::add<string>("ionosphere.solverGaugeFixing", "Gauge fixing method of the ionosphere solver. Options are: pole, integral, equator",this->gaugeFixingString,std::string("equator"));
+      Readparameters::add<Real>("ionosphere.shieldingLatitude", "Latitude below which the potential is set to zero in the equator gauge fixing scheme (degree)", Ionosphere::shieldingLatitude,70);
+      Readparameters::add<bool>("ionosphere.solverPreconditioning", "Use preconditioning for the solver? (0/1)", Ionosphere::solverPreconditioning,true);
+      Readparameters::add<bool>("ionosphere.solverUseMinimumResidualVariant", "Use minimum residual variant", Ionosphere::solverUseMinimumResidualVariant,0);
+      Readparameters::add<bool>("ionosphere.solverToggleMinimumResidualVariant", "Toggle use of minimum residual variant at every solver restart", Ionosphere::solverToggleMinimumResidualVariant,false);
+      Readparameters::add<Real>("ionosphere.earthAngularVelocity", "Angular velocity of inner boundary convection, in rad/s", this->Ionosphere::earthAngularVelocity,7.2921159e-5);
+      Readparameters::add<Real>("ionosphere.plasmapauseL", "L-shell at which the plasmapause resides (for corotation)", this->Ionosphere::plasmapauseL,5.0);
+      Readparameters::add<Real>("ionosphere.downmapRadius", "Radius from which FACs are coupled down into the ionosphere. Units are assumed to be RE if value < 1000, otherwise m. If -1: use inner boundary cells.", Ionosphere::downmapRadius,-1.0);
+      Readparameters::add<Real>("ionosphere.unmappedNodeRho", "Electron density of ionosphere nodes that do not connect to the magnetosphere domain.", Ionosphere::unmappedNodeRho,1e4);
+      Readparameters::add<Real>("ionosphere.unmappedNodeTe", "Electron temperature of ionosphere nodes that do not connect to the magnetosphere domain.", Ionosphere::unmappedNodeTe,1e6);
+      Readparameters::add<Real>("ionosphere.couplingTimescale", "Magnetosphere->Ionosphere coupling timescale (seconds, 0=immediate coupling", Ionosphere::couplingTimescale,1.0);
+      Readparameters::add<Real>("ionosphere.couplingInterval", "Time interval at which the ionosphere is solved (seconds)", Ionosphere::couplingInterval,0);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
 
-         IonosphereSpeciesParameters newsP;
+         IonosphereSpeciesParameters *sP=new IonosphereSpeciesParameters();
 
-         speciesParams.push_back(newsP);
-         auto sP = &speciesParams.at(i);
+         speciesParams.push_back(sP);
          const std::string& pop =getObjectWrapper().particleSpecies[i]->name;
-         Readparameters::add(pop + "_ionosphere.rho", "Number density of the ionosphere (m^-3)", sP->rho);
-         Readparameters::add(pop + "_ionosphere.T", "Temperature of the ionosphere (K)", sP->T);
-         Readparameters::add(pop + "_ionosphere.VX0", "Bulk velocity of ionospheric distribution function in X direction (m/s)",sP->V0[0]);
-         Readparameters::add(pop + "_ionosphere.VY0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", sP->V0[1]);
-         Readparameters::add(pop + "_ionosphere.VZ0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", sP->V0[2]);
+         Readparameters::add<Real>(pop + "_ionosphere.rho", "Number density of the ionosphere (m^-3)", sP->rho,0.0);
+         Readparameters::add<Real>(pop + "_ionosphere.T", "Temperature of the ionosphere (K)", sP->T,0.0);
+         Readparameters::add<Real>(pop + "_ionosphere.VX0", "Bulk velocity of ionospheric distribution function in X direction (m/s)",sP->V0[0],0.0);
+         Readparameters::add<Real>(pop + "_ionosphere.VY0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", sP->V0[1],0.0);
+         Readparameters::add<Real>(pop + "_ionosphere.VZ0", "Bulk velocity of ionospheric distribution function in X direction (m/s)", sP->V0[2],0.0);
          // if(sP.T == 0) {
          //   //Readparameters::get(pop + "_Magnetosphere.T", sP.T);
          // }
@@ -2293,18 +2279,18 @@ namespace SBC {
       //Readparameters::get("ionosphere.conductivityModel", cm);
       // conductivityModel = static_cast<Ionosphere::IonosphereConductivityModel>(cm);
 
-      std::string VDFmodeString;
+      // std::string VDFmodeString;
       //Readparameters::get("ionosphere.innerBoundaryVDFmode", VDFmodeString);
-      if(VDFmodeString == "FixedMoments") {
+      if(this->VDFmodeString == "FixedMoments") {
          boundaryVDFmode = FixedMoments;
-      } else if(VDFmodeString == "AverageMoments") {
+      } else if(this->VDFmodeString == "AverageMoments") {
          boundaryVDFmode = AverageMoments;
-      } else if(VDFmodeString == "AverageAllMoments") {
+      } else if(this->VDFmodeString == "AverageAllMoments") {
          boundaryVDFmode = AverageAllMoments;
-      } else if(VDFmodeString == "CopyAndLosscone") {
+      } else if(this->VDFmodeString == "CopyAndLosscone") {
          boundaryVDFmode = CopyAndLosscone;
       } else {
-         cerr << "(IONOSPHERE) Unknown inner boundary VDF mode \"" << VDFmodeString << "\". Aborting." << endl;
+         cerr << "(IONOSPHERE) Unknown inner boundary VDF mode \"" << this->VDFmodeString << "\". Aborting." << endl;
          abort();
       }
       //Readparameters::get("ionosphere.ridleyParallelConductivity", ridleyParallelConductivity);
@@ -2313,18 +2299,17 @@ namespace SBC {
       //Readparameters::get("ionosphere.solverRelativeL2ConvergenceThreshold", solverRelativeL2ConvergenceThreshold);
       //Readparameters::get("ionosphere.solverMaxFailureCount", solverMaxFailureCount);
       //Readparameters::get("ionosphere.solverMaxErrorGrowthFactor", solverMaxErrorGrowthFactor);
-      std::string gaugeFixingString;
       //Readparameters::get("ionosphere.solverGaugeFixing", gaugeFixingString);
-      if(gaugeFixingString == "pole") {
+      if(this->gaugeFixingString == "pole") {
          ionosphereGrid.gaugeFixing = SphericalTriGrid::Pole;
-      } else if (gaugeFixingString == "integral") {
+      } else if (this->gaugeFixingString == "integral") {
          ionosphereGrid.gaugeFixing = SphericalTriGrid::Integral;
-      } else if (gaugeFixingString == "equator") {
+      } else if (this->gaugeFixingString == "equator") {
          ionosphereGrid.gaugeFixing = SphericalTriGrid::Equator;
-      } else if (gaugeFixingString == "None") {
+      } else if (this->gaugeFixingString == "None") {
          ionosphereGrid.gaugeFixing = SphericalTriGrid::None;
       } else {
-         cerr << "(IONOSPHERE) Unknown solver gauge fixing method \"" << gaugeFixingString << "\". Aborting." << endl;
+         cerr << "(IONOSPHERE) Unknown solver gauge fixing method \"" << this->gaugeFixingString << "\". Aborting." << endl;
          abort();
       }
       //Readparameters::get("ionosphere.shieldingLatitude", shieldingLatitude);
@@ -2350,16 +2335,15 @@ namespace SBC {
       //Readparameters::get("ionosphere.refineMaxLatitude",refineMaxLatitudes);
       //Readparameters::get("ionosphere.atmosphericModelFile",atmosphericModelFile);
       //Readparameters::get("ionosphere.recombAlpha",recombAlpha);
-      std::string ionizationModelString;
       //Readparameters::get("ionosphere.ionizationModel", ionizationModelString);
-      if(ionizationModelString == "Rees1963") {
+      if(this->ionizationModelString == "Rees1963") {
          ionosphereGrid.ionizationModel = SphericalTriGrid::Rees1963;
-      } else if(ionizationModelString == "Rees1989") {
+      } else if(this->ionizationModelString == "Rees1989") {
          ionosphereGrid.ionizationModel = SphericalTriGrid::Rees1989;
-      } else if(ionizationModelString == "SergienkoIvanov") {
+      } else if(this->ionizationModelString == "SergienkoIvanov") {
          ionosphereGrid.ionizationModel = SphericalTriGrid::SergienkoIvanov;
       } else {
-         cerr << "(IONOSPHERE) Unknown ionization production model \"" << ionizationModelString << "\". Aborting." << endl;
+         cerr << "(IONOSPHERE) Unknown ionization production model \"" << this->ionizationModelString << "\". Aborting." << endl;
          abort();
       }
       //Readparameters::get("ionosphere.F10_7",F10_7);
@@ -3158,8 +3142,8 @@ namespace SBC {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
             case FixedMoments:
-               density = speciesParams[popID].rho;
-               temperature = speciesParams[popID].T;
+               density = speciesParams[popID]->rho;
+               temperature = speciesParams[popID]->T;
                break;
             case AverageAllMoments:// Fall through (handled by if further down)
             case AverageMoments:
@@ -3302,8 +3286,8 @@ namespace SBC {
                   creal RZ = cell.parameters[CellParams::ZCRD] + 0.5*cell.parameters[CellParams::DZ];
 
                   cell.clear(popID,false); // Clear previous velocity space completely, do not de-allocate memory
-                  creal initRho = speciesParams[popID].rho;
-                  creal initT = speciesParams[popID].T;
+                  creal initRho = speciesParams[popID]->rho;
+                  creal initT = speciesParams[popID]->T;
                   creal initV0X = vDrift[0];
                   creal initV0Y = vDrift[1];
                   creal initV0Z = vDrift[2];
@@ -3432,7 +3416,7 @@ namespace SBC {
       // Loop over particle species
       for (uint popID=0; popID<getObjectWrapper().particleSpecies.size(); ++popID) {
          templateCell.clear(popID,false); //clear, do not de-allocate memory
-         const IonosphereSpeciesParameters& sP = this->speciesParams[popID];
+         const IonosphereSpeciesParameters& sP = *this->speciesParams[popID];
          const Real mass = getObjectWrapper().particleSpecies[popID]->mass;
          initRho = sP.rho;
          initT = sP.T;

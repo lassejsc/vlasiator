@@ -665,32 +665,68 @@ Project* createProject() {
    Project* rvalue=nullptr;
     // Project* rvalue = project_temp[Parameters::projectName];
    if (rank==MASTER_RANK or true) { 
+
+
+
+
+
+
+
     if(Parameters::projectName == "") {
         cerr << rank << "No project specified! Please set 'project' parameter!" << Parameters::projectName << endl;
         abort();
     }
-    if (Parameters::projectName == "MultiPeak") {
-      std::cout << "MULTPEAK FINE" << std::endl;
-      projects::MultiPeak* multipeak=new projects::MultiPeak();
-      multipeak->addParameters();
-      rvalue=multipeak;
-      
-    }
-    else if (Parameters::projectName == "Flowthrough") {
-      std::cout << "FLOWTHROUGH FINE" << std::endl;
-      projects::Flowthrough* flowthrough=new projects::Flowthrough();
-      flowthrough->addParameters();
-      rvalue=flowthrough;
-      
-    }
-     else if (Parameters::projectName == "Magnetosphere") {
-      std::cout << "MAGNETO FINE" << std::endl;
-      projects::Magnetosphere* magnetosphere=new projects::Magnetosphere();
-      magnetosphere->addParameters();
-      rvalue=magnetosphere;
-      
+
+    if (Parameters::projectName=="MultiPeak") {
+        std::cout << "MULTPEAK FINE" << std::endl;
+        projects::MultiPeak* multipeak=new projects::MultiPeak();
+        multipeak->addParameters();
+        rvalue=multipeak;
+    } else if (Parameters::projectName=="Flowthrough") {
+        std::cout << "FLOWTHROUGH FINE" << std::endl;
+        projects::Flowthrough* flowthrough=new projects::Flowthrough();
+        flowthrough->addParameters();
+        rvalue=flowthrough;
+
+    } else if (Parameters::projectName=="Magnetosphere") {
+        std::cout << "MAGNETO FINE" << std::endl;
+        projects::Magnetosphere* magnetosphere=new projects::Magnetosphere();
+        magnetosphere->addParameters();
+        rvalue=magnetosphere;
+
+    } else if (Parameters::projectName=="LossCone") {
+        std::cout << "LOSSCONE FINE" << std::endl;
+        projects::LossCone* losscone=new projects::LossCone();
+        losscone->addParameters();
+        rvalue=losscone;
+
+    } else {
+        cerr << "Unknown project name! = "<<Parameters::projectName << endl;
+        abort();
     }
 
+    // if (Parameters::projectName == "MultiPeak") {
+    //   std::cout << "MULTPEAK FINE" << std::endl;
+    //   projects::MultiPeak* multipeak=new projects::MultiPeak();
+    //   multipeak->addParameters();
+    //   rvalue=multipeak;
+    //
+    // }
+    // else if (Parameters::projectName == "Flowthrough") {
+    //   std::cout << "FLOWTHROUGH FINE" << std::endl;
+    //   projects::Flowthrough* flowthrough=new projects::Flowthrough();
+    //   flowthrough->addParameters();
+    //   rvalue=flowthrough;
+    //
+    // }
+    //  else if (Parameters::projectName == "Magnetosphere") {
+    //   std::cout << "MAGNETO FINE" << std::endl;
+    //   projects::Magnetosphere* magnetosphere=new projects::Magnetosphere();
+    //   magnetosphere->addParameters();
+    //   rvalue=magnetosphere;
+    //
+    // }
+    //
 
 
     // for (auto project : project_temp){
@@ -702,7 +738,7 @@ Project* createProject() {
     // }
    
    if (rvalue == nullptr) {
-      cerr << "Unknown project name!" << endl;
+      cerr << "Something went wrong with setting a project! Project value null" << endl;
       abort();
     } 
    
