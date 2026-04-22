@@ -47,7 +47,9 @@
 #endif
 
 namespace SBC {
-   Copysphere::Copysphere(): SysBoundaryCondition() { this->addParameters();}
+
+   std::vector<CopysphereSpeciesParameters*> Copysphere::speciesParams;
+   Copysphere::Copysphere(): SysBoundaryCondition() {}
 
    Copysphere::~Copysphere() { }
 
@@ -64,10 +66,10 @@ namespace SBC {
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
-         CopysphereSpeciesParameters newsP;
+         CopysphereSpeciesParameters* sP=new CopysphereSpeciesParameters();
 
-         this->speciesParams.push_back(newsP);
-         auto sP = &this->speciesParams.at(i);
+         this->speciesParams.push_back(sP);
+         // auto sP = &this->speciesParams.at(i);
          Readparameters::add(pop + "_copysphere.rho", "Number density of the copysphere (m^-3)", sP->rho);
          Readparameters::add(pop + "_copysphere.T", "Temperature of the copysphere (K)", sP->T);
          Readparameters::add(pop + "_copysphere.VX0", "Bulk velocity of copyspheric distribution function in X direction (m/s)", sP->V0[0]);
@@ -740,7 +742,7 @@ namespace SBC {
       const uint popID,
       const bool calculate_V_moments
    ) {
-      this->vlasovBoundaryFluffyCopyFromAllCloseNbrs(mpiGrid, cellID, popID, calculate_V_moments, this->speciesParams[popID].fluffiness);
+      this->vlasovBoundaryFluffyCopyFromAllCloseNbrs(mpiGrid, cellID, popID, calculate_V_moments, this->speciesParams[popID]->fluffiness);
    }
 
    /**
@@ -762,7 +764,7 @@ namespace SBC {
       // Loop over particle species
       for (uint popID=0; popID<getObjectWrapper().particleSpecies.size(); ++popID) {
          templateCell.clear(popID,false); //clear, do not de-allocate memory
-         const CopysphereSpeciesParameters& sP = this->speciesParams[popID];
+         const CopysphereSpeciesParameters& sP = *this->speciesParams[popID];
          const Real mass = getObjectWrapper().particleSpecies[popID]->mass;
          initRho = sP.rho;
          initT = sP.T;

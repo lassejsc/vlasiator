@@ -59,23 +59,23 @@ namespace projects {
 
    void Flowthrough::addParameters(){
       typedef Readparameters RP;
-      RP::add("Flowthrough.emptyBox","Is the simulation domain empty initially?",this->emptyBox);
-      RP::add("Flowthrough.densityModel","Plasma density model, 'Maxwellian' or 'SheetMaxwellian'",this->densityModelString);
-      RP::add("Flowthrough.densityWidth","Width of signal around origin",this->densityWidth);
-      RP::add("Flowthrough.rescaleDensity","Rescale VDF to match spatial ",this->rescaleDensityFlag);
-      RP::add("Flowthrough.Bx", "Magnetic field x component (T)", this->Bx);
-      RP::add("Flowthrough.By", "Magnetic field y component (T)", this->By);
-      RP::add("Flowthrough.Bz", "Magnetic field z component (T)", this->Bz);
+      RP::add<bool>("Flowthrough.emptyBox","Is the simulation domain empty initially?",this->emptyBox,false);
+      RP::add<string>("Flowthrough.densityModel","Plasma density model, 'Maxwellian' or 'SheetMaxwellian'",this->densityModelString,string("Maxwellian"));
+      RP::add<Real>("Flowthrough.densityWidth","Width of signal around origin",this->densityWidth,6.e7);
+      RP::add<bool>("Flowthrough.rescaleDensity","Rescale VDF to match spatial ",this->rescaleDensityFlag,false);
+      RP::add<Real>("Flowthrough.Bx", "Magnetic field x component (T)", this->Bx,0.0);
+      RP::add<Real>("Flowthrough.By", "Magnetic field y component (T)", this->By,0.0);
+      RP::add<Real>("Flowthrough.Bz", "Magnetic field z component (T)", this->Bz,0.0);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-         FlowthroughSpeciesParameters newsP;
+         FlowthroughSpeciesParameters* sP = new FlowthroughSpeciesParameters();
 
-         this->speciesParams.push_back(newsP);
-         auto sP=&this->speciesParams.at(i); 
+         this->speciesParams.push_back(sP);
+         // auto sP=&this->speciesParams.at(i); 
          const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
          RP::add(pop + "_Flowthrough.rho", "Number density (m^-3)", sP->rho);
-         RP::add(pop + "_Flowthrough.rhoBase", "Background number density (m^-3)", sP->rhoBase);
+         RP::add<Real>(pop + "_Flowthrough.rhoBase", "Background number density (m^-3)", sP->rhoBase,0.0);
          RP::add(pop + "_Flowthrough.T", "Temperature (K)", sP->T);
          RP::add(pop + "_Flowthrough.VX0", "Initial bulk velocity in x-direction", sP->V0[0]);
          RP::add(pop + "_Flowthrough.VY0", "Initial bulk velocity in y-direction", sP->V0[1]);
@@ -122,7 +122,7 @@ namespace projects {
       // }
    }
    Real Flowthrough::getCorrectNumberDensity(spatial_cell::SpatialCell* cell,const uint popID) const {
-      const FlowthroughSpeciesParameters& sP = speciesParams[popID];
+      const FlowthroughSpeciesParameters& sP = *speciesParams[popID];
       Real rvalue;
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
       const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
@@ -176,7 +176,7 @@ namespace projects {
                                        const uint popID,
                                        const uint nRequested
       ) const {
-      const FlowthroughSpeciesParameters& sP = speciesParams[popID];
+      const FlowthroughSpeciesParameters& sP = *speciesParams[popID];
 
       const Real mass = getObjectWrapper().particleSpecies[popID]->mass;
       Real initRho = this->getCorrectNumberDensity(cell, popID);
@@ -236,7 +236,7 @@ namespace projects {
                                         const uint popID,
                                         Real vx_in, Real vy_in, Real vz_in
       ) const {
-      const FlowthroughSpeciesParameters& sP = speciesParams[popID];
+      const FlowthroughSpeciesParameters& sP = *speciesParams[popID];
       const Real mass = getObjectWrapper().particleSpecies[popID]->mass;
       Real initRho = this->getCorrectNumberDensity(cell, popID);
       Real initT = sP.T;
@@ -272,7 +272,7 @@ namespace projects {
       creal z,
       const uint popID
    ) const {
-      const FlowthroughSpeciesParameters& sP = speciesParams[popID];
+      const FlowthroughSpeciesParameters& sP = *speciesParams[popID];
       vector<std::array<Real, 3>> centerPoints;
       std::array<Real, 3> point {{sP.V0[0], sP.V0[1], sP.V0[2]}};
       centerPoints.push_back(point);

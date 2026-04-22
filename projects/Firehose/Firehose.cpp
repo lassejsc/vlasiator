@@ -51,10 +51,9 @@ namespace projects {
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-        FirehoseSpeciesParameters newsP;
-         this->speciesParams.push_back(newsP);
+        FirehoseSpeciesParameters *sP=new FirehoseSpeciesParameters();
+         this->speciesParams.push_back(sP);
          const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
-         auto sP=&this->speciesParams.at(i);
          RP::add(pop + "_Firehose.rho1", "Number density, first peak (m^-3)", sP->rho[0]);
          RP::add(pop + "_Firehose.rho2", "Number density, second peak (m^-3)", sP->rho[1]);
          RP::add(pop + "_Firehose.Tx1", "Temperature x, first peak (K)", sP->Tx[0]);
@@ -111,7 +110,7 @@ namespace projects {
                                        const uint popID,
                                        const uint nRequested
       ) const {
-      const FirehoseSpeciesParameters& sP = speciesParams[popID];
+      const FirehoseSpeciesParameters& sP = *speciesParams[popID];
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
       // const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];

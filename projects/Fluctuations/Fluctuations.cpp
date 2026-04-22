@@ -46,28 +46,27 @@ namespace projects {
 
    void Fluctuations::addParameters() {
       typedef Readparameters RP;
-      RP::add("Fluctuations.BX0", "Background field value (T)", this->BX0);
-      RP::add("Fluctuations.BY0", "Background field value (T)", this->BY0);
-      RP::add("Fluctuations.BZ0", "Background field value (T)", this->BZ0);
-      RP::add("Fluctuations.magXPertAbsAmp", "Amplitude of the magnetic perturbation along x", this->magXPertAbsAmp);
-      RP::add("Fluctuations.magYPertAbsAmp", "Amplitude of the magnetic perturbation along y", this->magYPertAbsAmp);
-      RP::add("Fluctuations.magZPertAbsAmp", "Amplitude of the magnetic perturbation along z", this->magZPertAbsAmp);
+      RP::add<Real>("Fluctuations.BX0", "Background field value (T)", this->BX0,1.0e-9);
+      RP::add<Real>("Fluctuations.BY0", "Background field value (T)", this->BY0,2.0e-9);
+      RP::add<Real>("Fluctuations.BZ0", "Background field value (T)", this->BZ0,3.0e-9);
+      RP::add<Real>("Fluctuations.magXPertAbsAmp", "Amplitude of the magnetic perturbation along x", this->magXPertAbsAmp,1.0e-9);
+      RP::add<Real>("Fluctuations.magYPertAbsAmp", "Amplitude of the magnetic perturbation along y", this->magYPertAbsAmp,1.0e-9);
+      RP::add<Real>("Fluctuations.magZPertAbsAmp", "Amplitude of the magnetic perturbation along z", this->magZPertAbsAmp,1.0e-9);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
 
-         FluctuationsSpeciesParameters newsP;
-         speciesParams.push_back(newsP);
-         auto sP=&this->speciesParams.at(i);
-         RP::add(pop + "_Fluctuations.rho", "Number density (m^-3)", sP->DENSITY);
-         RP::add(pop + "_Fluctuations.TemperatureX", "Temperature (K)", sP->TEMPERATUREX);
-         RP::add(pop + "_Fluctuations.TemperatureY", "Temperature (K)", sP->TEMPERATUREY);
-         RP::add(pop + "_Fluctuations.TemperatureZ", "Temperature (K)", sP->TEMPERATUREZ);
-         RP::add(pop + "_Fluctuations.densityPertRelAmp", "Amplitude factor of the density perturbation", sP->densityPertRelAmp);
-         RP::add(pop + "_Fluctuations.velocityPertAbsAmp", "Amplitude of the velocity perturbation", sP->velocityPertAbsAmp);
-         RP::add(pop + "_Fluctuations.maxwCutoff", "Cutoff for the maxwellian distribution", sP->maxwCutoff);
-      }
+         FluctuationsSpeciesParameters* sP=new FluctuationsSpeciesParameters();
+         speciesParams.push_back(sP);
+         RP::add<Real>(pop + "_Fluctuations.rho", "Number density (m^-3)", sP->DENSITY,1.0e7);
+         RP::add<Real>(pop + "_Fluctuations.TemperatureX", "Temperature (K)", sP->TEMPERATUREX,2.0e6);
+         RP::add<Real>(pop + "_Fluctuations.TemperatureY", "Temperature (K)", sP->TEMPERATUREY,2.0e6);
+         RP::add<Real>(pop + "_Fluctuations.TemperatureZ", "Temperature (K)", sP->TEMPERATUREZ,2.0e6);
+         RP::add<Real>(pop + "_Fluctuations.densityPertRelAmp", "Amplitude factor of the density perturbation", sP->densityPertRelAmp,0.1);
+         RP::add<Real>(pop + "_Fluctuations.velocityPertAbsAmp", "Amplitude of the velocity perturbation", sP->velocityPertAbsAmp,1.0e6);
+         RP::add<Real>(pop + "_Fluctuations.maxwCutoff", "Cutoff for the maxwellian distribution", sP->maxwCutoff,1e-12);
+      }          
    }
 
    void Fluctuations::getParameters() {
@@ -101,7 +100,7 @@ namespace projects {
                                        const uint popID,
                                        const uint nRequested
       ) const {
-      const FluctuationsSpeciesParameters& sP = speciesParams[popID];
+      const FluctuationsSpeciesParameters& sP = *speciesParams[popID];
       // Fetch spatial cell center coordinates
       // const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
       // const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
@@ -160,7 +159,7 @@ namespace projects {
                                         const uint popID,
                                         Real vx_in, Real vy_in, Real vz_in
       ) const {
-      const FluctuationsSpeciesParameters& sP = speciesParams[popID];
+      const FluctuationsSpeciesParameters& sP = *speciesParams[popID];
       // Fetch spatial cell center coordinates
       // const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
       // const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];

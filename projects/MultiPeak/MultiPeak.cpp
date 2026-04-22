@@ -21,9 +21,11 @@
  */
 
 #include <cmath>
+#include <cstddef>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <optional>
 
 #include "../../backgroundfield/backgroundfield.h"
 #include "../../backgroundfield/constantfield.hpp"
@@ -49,25 +51,25 @@ void MultiPeak::addParameters() {
    typedef Readparameters RP;
 
    std::function<void(const std::string)> lambda_fun = [this](std::string densModelString) {
-      if (densModelString == "uniform" )
+      if (this->densModelString == "uniform")
          this->densityModel = Uniform;
-      else if (densModelString == "testcase")
+      else if (this->densModelString == "testcase")
          this->densityModel = TestCase;
    };
-   this->densModelString="uniform";
+   this->densModelString = "uniform";
    RP::add("MultiPeak.Bx", "Magnetic field x component (T)", this->Bx);
    RP::add("MultiPeak.By", "Magnetic field y component (T)", this->By);
    RP::add("MultiPeak.Bz", "Magnetic field z component (T)", this->Bz);
-   RP::add<Real>("MultiPeak.dBx", "Magnetic field x component cosine perturbation amplitude (T)", this->dBx,0.0);
-   RP::add<Real>("MultiPeak.dBy", "Magnetic field y component cosine perturbation amplitude (T)", this->dBy,0.0);
-   RP::add<Real>("MultiPeak.dBz", "Magnetic field z component cosine perturbation amplitude (T)", this->dBz,0.0);
+   RP::add<Real>("MultiPeak.dBx", "Magnetic field x component cosine perturbation amplitude (T)", this->dBx, 0.0);
+   RP::add<Real>("MultiPeak.dBy", "Magnetic field y component cosine perturbation amplitude (T)", this->dBy, 0.0);
+   RP::add<Real>("MultiPeak.dBz", "Magnetic field z component cosine perturbation amplitude (T)", this->dBz, 0.0);
    RP::add<Real>("MultiPeak.magXPertAbsAmp", "Absolute amplitude of the random magnetic perturbation along x (T)",
-           this->magXPertAbsAmp,0.0);
+                 this->magXPertAbsAmp, 0.0);
    RP::add<Real>("MultiPeak.magYPertAbsAmp", "Absolute amplitude of the random magnetic perturbation along y (T)",
-           this->magYPertAbsAmp,0.0);
+                 this->magYPertAbsAmp, 0.0);
    RP::add<Real>("MultiPeak.magZPertAbsAmp", "Absolute amplitude of the random magnetic perturbation along z (T)",
-           this->magZPertAbsAmp,0.0);
-   RP::add<Real>("MultiPeak.lambda", "B cosine perturbation wavelength (m)", this->lambda,1.0);
+                 this->magZPertAbsAmp, 0.0);
+   RP::add<Real>("MultiPeak.lambda", "B cosine perturbation wavelength (m)", this->lambda, 1.0);
    RP::add_each_lambda("MultiPeak.densityModel", "Which spatial density model is used?", this->densModelString,
                        lambda_fun);
 
@@ -75,13 +77,13 @@ void MultiPeak::addParameters() {
    for (uint i = 0; i < getObjectWrapper().particleSpecies.size(); i++) {
       const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
       // MultiPeakSpeciesParameters* newsP=new MultiPeakSpeciesParameters();
-      MultiPeakSpeciesParameters* sP=new MultiPeakSpeciesParameters();
+      MultiPeakSpeciesParameters* sP = new MultiPeakSpeciesParameters();
       this->speciesParams.push_back(sP);
       // std::cout << "POP NAME " << pop << " " << newsP.numberOfPeaks << std::endl;
       std::function<void(const std::string)> lambda_fun1 = [this](std::string s) {
          std::cout << "inside MULTIPEAK AD THINGY AOJF" << s << std::endl;
       };
-      RP::add(pop + "_MultiPeak.n", "Number of peaks to create", sP->numberOfPeaks);
+      RP::add<uint>(pop + "_MultiPeak.n", "Number of peaks to create", sP->numberOfPeaks);
       RP::add(pop + "_MultiPeak.rho", "Number density (m^-3)", sP->rho);
       RP::add(pop + "_MultiPeak.Tx", "Temperature (K)", sP->Tx);
       RP::add(pop + "_MultiPeak.Ty", "Temperature", sP->Ty);
@@ -106,27 +108,41 @@ void MultiPeak::getParameters() {
    std::cout << this->lambda << std::endl;
    std::cout << this->magXPertAbsAmp << std::endl;
 
-   
+   std::cout << "HERE?" << std::endl;
    for (uint i = 0; i < getObjectWrapper().particleSpecies.size(); i++) {
+
+      const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
       auto sP = this->speciesParams.at(i);
-      std::cout << "N=" << sP->numberOfPeaks << std::endl; 
-      std::cout <<"DENSMODEL"<< densModelString << std::endl;
-      std::cout <<"MULTIPEAK:"<<  sP->rho[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Tx[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Ty[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Tz[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Vx[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Vy[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Vz[0]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->rhoPertAbsAmp[0]<<std::endl;
+      std::vector<size_t> vecSizes{sP->Tx.size(), sP->Ty.size(),  sP->Tz.size(),           sP->Vx.size(), sP->Vy.size(),
+                                   sP->Vz.size(), sP->rho.size(), sP->rhoPertAbsAmp.size()
+
+      };
+      for (size_t vecSize : vecSizes) {
+         if (sP->numberOfPeaks != vecSize) {
+            std::cerr << "Invalid number of " << pop << "_MultiPeak parameters, n=" << sP->numberOfPeaks
+                      << " but found an input of vector length=" << vecSize << std::endl;
+            abort();
+         }
+      }
+
+      std::cout << "N=" << sP->numberOfPeaks << std::endl;
+      std::cout << "DENSMODEL" << densModelString << std::endl;
+      std::cout << "MULTIPEAK:" << sP->rho[0] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Tx[0] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Ty[0] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Tz[0] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Vx[0] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Vy[0] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Vz[0] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->rhoPertAbsAmp[0] << std::endl;
       std::cout << "INDX" << std::endl;
-      std::cout <<"MULTIPEAK:"<<  sP->rho[1]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Tx[1]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Ty[1]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Tz[1]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Vx[1]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Vy[1]<<std::endl;
-      std::cout <<"MULTIPEAK:"<< sP->Vz[1]<<std::endl;
+      std::cout << "MULTIPEAK:" << sP->rho[1] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Tx[1] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Ty[1] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Tz[1] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Vx[1] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Vy[1] << std::endl;
+      std::cout << "MULTIPEAK:" << sP->Vz[1] << std::endl;
    }
 
    // Project::getParameters();
@@ -156,11 +172,11 @@ void MultiPeak::getParameters() {
    // RP::get(pop + "_MultiPeak.Vz", sP.Vz);
 
    // RP::get(pop + "_MultiPeak.rhoPertAbsAmp", sP.rhoPertAbsAmp);
-    // if(!sP.isConsistent()) {
-    //    cerr << "You should define all parameters (MultiPeak.rho, MultiPeak.Tx, MultiPeak.Ty, MultiPeak.Tz,
-    //    MultiPeak.Vx, MultiPeak.Vy, MultiPeak.Vz, MultiPeak.rhoPertAbsAmp) for all " << sP.numberOfPeaks << " peaks of
-    //    population " << pop << "." << endl; abort();
-    // }
+   // if(!sP.isConsistent()) {
+   //    cerr << "You should define all parameters (MultiPeak.rho, MultiPeak.Tx, MultiPeak.Ty, MultiPeak.Tz,
+   //    MultiPeak.Vx, MultiPeak.Vy, MultiPeak.Vz, MultiPeak.rhoPertAbsAmp) for all " << sP.numberOfPeaks << " peaks of
+   //    population " << pop << "." << endl; abort();
+   // }
 
    // speciesParams.push_back(sP);
    // }
@@ -168,8 +184,8 @@ void MultiPeak::getParameters() {
    // string densModelString;
    // //RP::get("MultiPeak.densityModel",densModelString);
    //
-   if (densModelString == "uniform") densityModel = Uniform;
-   else if (densModelString == "testcase") densityModel = TestCase;
+   // if (this->densModelString == "uniform") densityModel = Uniform;
+   // else if (this->densModelString == "testcase") densityModel = TestCase;
 }
 
 Realf MultiPeak::fillPhaseSpace(spatial_cell::SpatialCell* cell, const uint popID, const uint nRequested) const {

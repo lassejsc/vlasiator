@@ -19,7 +19,9 @@ bool ObjectWrapper::addParameters() {
    //  projects::Project::addParameters();
    std::function<void(const std::string)> lambda_fun = [this](std::string s) {
       this->initpop(s);
-      std::cout << "inside addParam " << s << std::endl;
+      int rank;
+      MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+      std::cout << "RRAnk=" << rank <<  " inside addParam " << s << std::endl;
       // if (!RP::get_app()->get_option_no_throw("HACKY")){
       //   std::function<void(const std::string)> lamba_funny=[](std::string s){projects::Project::addParameters();};
       //   int uh;

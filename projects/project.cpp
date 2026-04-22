@@ -30,6 +30,7 @@
 #include "../logger.h"
 #include "../object_wrapper.h"
 #include "../velocity_mesh_parameters.h"
+#include <omp.h>
 
 #include "Alfven/Alfven.h"
 #include "Diffusion/Diffusion.h"
@@ -75,34 +76,34 @@ namespace projects {
 
    void Project::addParameters() {
       typedef Readparameters RP;
-      // TODO add all projects' static addParameters() functions here.
-      projects::Alfven* _Alfven= new Alfven();
-      _Alfven->addParameters();
-      project_temp["Alfven"]=_Alfven;
-      projects::Diffusion* _Diffusion=new Diffusion();_Diffusion->addParameters();project_temp["Diffusion"]=_Diffusion;
-      projects::Dispersion* _Dispersion=new Dispersion();_Dispersion->addParameters();project_temp["Dispersion"]=_Dispersion;
-      projects::Distributions* _Distributions=new Distributions();_Distributions->addParameters();project_temp["Distributions"]=_Distributions;
-      projects::Firehose* _Firehose=new Firehose();_Firehose->addParameters();project_temp["Firehose"]=_Firehose;
-      projects::Flowthrough* _Flowthrough=new Flowthrough();_Flowthrough->addParameters();project_temp["Flowthrough"]=_Flowthrough;
-      projects::Fluctuations* _Fluctuations=new Fluctuations();_Fluctuations->addParameters();project_temp["Fluctuations"]=_Fluctuations;
-      projects::Harris* _Harris=new Harris();_Harris->addParameters();project_temp["Harris"]=_Harris;
-      projects::KHB* _KHB=new KHB();_KHB->addParameters();project_temp["KHB"]=_KHB;
-      // projects::Larmor* _Larmor=new Larmor();_Larmor->addParameters();project_temp["Larmor"]=_Larmor;
-      // projects::KHB* _KHB=new KHB();_KHB->addParameters();projects::project_temp["KHB"]=_KHB;
-      projects::Larmor* _Larmor=new Larmor();_Larmor->addParameters();projects::project_temp["Larmor"]=_Larmor;
-      projects::Magnetosphere* _Magnetosphere=new Magnetosphere();_Magnetosphere->addParameters();projects::project_temp["Magnetosphere"]=_Magnetosphere;
-      projects::MultiPeak* _MultiPeak=new MultiPeak();_MultiPeak->addParameters();projects::project_temp["MultiPeak"]=_MultiPeak;
-      projects::Riemann1* _Riemann1=new Riemann1();_Riemann1->addParameters();projects::project_temp["Riemann1"]=_Riemann1;
-      projects::Shock* _Shock=new Shock();_Shock->addParameters();projects::project_temp["Shock"]=_Shock;
-      projects::IPShock* _IPShock=new IPShock();_IPShock->addParameters();projects::project_temp["IPShock"]=_IPShock;
-      projects::Template* _Template=new Template();_Template->addParameters();projects::project_temp["Template"]=_Template;
-      projects::test_fp* _test_fp=new test_fp();_test_fp->addParameters();projects::project_temp["test_fp"]=_test_fp;
-      projects::TestHall* _TestHall=new TestHall();_TestHall->addParameters();projects::project_temp["TestHall"]=_TestHall;
-      projects::verificationLarmor* _verificationLarmor=new verificationLarmor();_verificationLarmor->addParameters();projects::project_temp["verificationLarmor"]=_verificationLarmor;
-      projects::Shocktest* _Shocktest=new Shocktest();_Shocktest->addParameters();projects::project_temp["Shocktest"]=_Shocktest;
-      projects::LossCone* _LossCone=new LossCone();_LossCone->addParameters();projects::project_temp["LossCone"]=_LossCone;
-      // RP::add("Project_common.seed", "Seed for the RNG", this->seed);
-
+      // // TODO add all projects' static addParameters() functions here.
+      // projects::Alfven* _Alfven= new Alfven();
+      // _Alfven->addParameters();
+      // project_temp["Alfven"]=_Alfven;
+      // projects::Diffusion* _Diffusion=new Diffusion();_Diffusion->addParameters();project_temp["Diffusion"]=_Diffusion;
+      // projects::Dispersion* _Dispersion=new Dispersion();_Dispersion->addParameters();project_temp["Dispersion"]=_Dispersion;
+      // projects::Distributions* _Distributions=new Distributions();_Distributions->addParameters();project_temp["Distributions"]=_Distributions;
+      // projects::Firehose* _Firehose=new Firehose();_Firehose->addParameters();project_temp["Firehose"]=_Firehose;
+      // projects::Flowthrough* _Flowthrough=new Flowthrough();_Flowthrough->addParameters();project_temp["Flowthrough"]=_Flowthrough;
+      // projects::Fluctuations* _Fluctuations=new Fluctuations();_Fluctuations->addParameters();project_temp["Fluctuations"]=_Fluctuations;
+      // projects::Harris* _Harris=new Harris();_Harris->addParameters();project_temp["Harris"]=_Harris;
+      // projects::KHB* _KHB=new KHB();_KHB->addParameters();project_temp["KHB"]=_KHB;
+      // // projects::Larmor* _Larmor=new Larmor();_Larmor->addParameters();project_temp["Larmor"]=_Larmor;
+      // // projects::KHB* _KHB=new KHB();_KHB->addParameters();projects::project_temp["KHB"]=_KHB;
+      // projects::Larmor* _Larmor=new Larmor();_Larmor->addParameters();projects::project_temp["Larmor"]=_Larmor;
+      // projects::Magnetosphere* _Magnetosphere=new Magnetosphere();_Magnetosphere->addParameters();projects::project_temp["Magnetosphere"]=_Magnetosphere;
+      // projects::MultiPeak* _MultiPeak=new MultiPeak();_MultiPeak->addParameters();projects::project_temp["MultiPeak"]=_MultiPeak;
+      // projects::Riemann1* _Riemann1=new Riemann1();_Riemann1->addParameters();projects::project_temp["Riemann1"]=_Riemann1;
+      // projects::Shock* _Shock=new Shock();_Shock->addParameters();projects::project_temp["Shock"]=_Shock;
+      // projects::IPShock* _IPShock=new IPShock();_IPShock->addParameters();projects::project_temp["IPShock"]=_IPShock;
+      // projects::Template* _Template=new Template();_Template->addParameters();projects::project_temp["Template"]=_Template;
+      // projects::test_fp* _test_fp=new test_fp();_test_fp->addParameters();projects::project_temp["test_fp"]=_test_fp;
+      // projects::TestHall* _TestHall=new TestHall();_TestHall->addParameters();projects::project_temp["TestHall"]=_TestHall;
+      // projects::verificationLarmor* _verificationLarmor=new verificationLarmor();_verificationLarmor->addParameters();projects::project_temp["verificationLarmor"]=_verificationLarmor;
+      // projects::Shocktest* _Shocktest=new Shocktest();_Shocktest->addParameters();projects::project_temp["Shocktest"]=_Shocktest;
+      // projects::LossCone* _LossCone=new LossCone();_LossCone->addParameters();projects::project_temp["LossCone"]=_LossCone;
+      // // RP::add("Project_common.seed", "Seed for the RNG", this->seed);
+      //
    }
 
    void Project::getParameters() {
@@ -659,32 +660,55 @@ Project* createProject() {
    int rank;
 
    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-     
-    std::cout << rank << "PROJNAME THREAD = " << Parameters::projectName << std::endl;
-
-    Project* rvalue = project_temp[Parameters::projectName];
-   if (rank==MASTER_RANK) { 
+   std::cout << "THREAD="<< omp_get_thread_num() << std::endl;
+   std::cout << rank << "PROJNAME THREAD = " << Parameters::projectName << std::endl;
+   Project* rvalue=nullptr;
+    // Project* rvalue = project_temp[Parameters::projectName];
+   if (rank==MASTER_RANK or true) { 
     if(Parameters::projectName == "") {
-        cerr << "No project specified! Please set 'project' parameter!" << endl;
+        cerr << rank << "No project specified! Please set 'project' parameter!" << Parameters::projectName << endl;
         abort();
     }
-
-    for (auto project : project_temp){
-      if (project.first != Parameters::projectName){
-        std::cout << "DELETED: " << project.first<< std::endl;
-        delete project.second;
-        project.second=nullptr;
-      }
+    if (Parameters::projectName == "MultiPeak") {
+      std::cout << "MULTPEAK FINE" << std::endl;
+      projects::MultiPeak* multipeak=new projects::MultiPeak();
+      multipeak->addParameters();
+      rvalue=multipeak;
+      
     }
+    else if (Parameters::projectName == "Flowthrough") {
+      std::cout << "FLOWTHROUGH FINE" << std::endl;
+      projects::Flowthrough* flowthrough=new projects::Flowthrough();
+      flowthrough->addParameters();
+      rvalue=flowthrough;
+      
+    }
+     else if (Parameters::projectName == "Magnetosphere") {
+      std::cout << "MAGNETO FINE" << std::endl;
+      projects::Magnetosphere* magnetosphere=new projects::Magnetosphere();
+      magnetosphere->addParameters();
+      rvalue=magnetosphere;
+      
+    }
+
+
+
+    // for (auto project : project_temp){
+    //   if (project.first != Parameters::projectName){
+    //     std::cout << "DELETED: " << project.first<< std::endl;
+    //     delete project.second;
+    //     project.second=nullptr;
+    //   }
+    // }
    
-   if (rvalue == NULL) {
+   if (rvalue == nullptr) {
       cerr << "Unknown project name!" << endl;
       abort();
     } 
    
-
+   // rvalue->addParameters();
    getObjectWrapper().project = rvalue;
-
+    
    }
   
    return rvalue;

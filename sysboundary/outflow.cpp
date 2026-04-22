@@ -51,22 +51,22 @@ namespace SBC {
    void Outflow::addParameters() {
       const string defStr = "Copy";
       Readparameters::add("outflow.faceNoFields", "List of faces on which no field outflow boundary conditions are to be applied ([xyz][+-]).",this->faceNoFieldsList);
-      Readparameters::add("outflow.precedence", "Precedence value of the outflow system boundary condition (integer), the higher the stronger.", this->precedence);
-      Readparameters::add("outflow.reapplyUponRestart", "If 0 (default), keep going with the state existing in the restart file. If 1, calls again applyInitialState. Can be used to change boundary condition behaviour during a run.", this->applyUponRestart);
+      Readparameters::add<uint>("outflow.precedence", "Precedence value of the outflow system boundary condition (integer), the higher the stronger.", this->precedence,4);
+      Readparameters::add<bool>("outflow.reapplyUponRestart", "If 0 (default), keep going with the state existing in the restart file. If 1, calls again applyInitialState. Can be used to change boundary condition behaviour during a run.", this->applyUponRestart,false);
 
       // Per-population parameters
       for(uint i=0; i < getObjectWrapper().particleSpecies.size(); i++) {
         const string& pop = getObjectWrapper().particleSpecies[i]->name;
         
-        OutflowSpeciesParameters newsP = OutflowSpeciesParameters {{true,true,true,true,true,true},{0,0,0,0,0,0},std::vector<std::string>{""},0.0};
+        OutflowSpeciesParameters* sP = new OutflowSpeciesParameters {{true,true,true,true,true,true},{0,0,0,0,0,0},std::vector<std::string>{""},0.0};
 
-        this->speciesParams.push_back(newsP);
-        auto sP=&this->speciesParams.at(i); 
+        this->speciesParams.push_back(sP);
         for(int j=0; j<6; j++) {
           sP->facesToSkipVlasov[j] = true;
         }
         sP->faceVlasovScheme={0,0,0,0,0,0};
         Readparameters::add(pop + "_outflow.reapplyFaceUponRestart", "List of faces on which outflow boundary conditions are to be reapplied upon restart ([xyz][+-]).",sP->faceToReapplyUponRestartList);
+        //maybe pointless if it is done in getParam?
         std::function<void(const string)> lambda_fun=[this](const string face){  
           if(face == "x+") { this->facesToProcess[0] = true;}// sP.facesToSkipVlasov[0] = false; }  This processing has to be done laters
           if(face == "x-") { this->facesToProcess[1] = true;}// sP.facesToSkipVlasov[1] = false; }
@@ -76,14 +76,14 @@ namespace SBC {
           if(face == "z-") { this->facesToProcess[5] = true;}// sP.facesToSkipVlasov[5] = false; }
         };
         Readparameters::add_each_lambda(pop + "_outflow.face", "List of faces on which outflow boundary conditions are to be applied ([xyz][+-]).",this->faceList,lambda_fun);
-        Readparameters::add(pop + "_outflow.vlasovScheme_face_x+", "Scheme to use on the face x+ (Copy, None)", this->vlasovSysBoundarySchemeName);
-        // Readparameters::add(pop + "_outflow.vlasovScheme_face_x-", "Scheme to use on the face x- (Copy, None)", defStr);
-        // Readparameters::add(pop + "_outflow.vlasovScheme_face_y+", "Scheme to use on the face y+ (Copy, None)", defStr);
-        // Readparameters::add(pop + "_outflow.vlasovScheme_face_y-", "Scheme to use on the face y- (Copy, None)", defStr);
-        // Readparameters::add(pop + "_outflow.vlasovScheme_face_z+", "Scheme to use on the face z+ (Copy, None)", defStr);
-        // Readparameters::add(pop + "_outflow.vlasovScheme_face_z-", "Scheme to use on the face z- (Copy, None)", defStr);
+        Readparameters::add<string>(pop + "_outflow.vlasovScheme_face_x+", "Scheme to use on the face x+ (Copy, None)", this->vlasovSysBoundarySchemeName[0],"Copy");
+        Readparameters::add<string>(pop + "_outflow.vlasovScheme_face_x-", "Scheme to use on the face x- (Copy, None)", this->vlasovSysBoundarySchemeName[1],"Copy");
+        Readparameters::add<string>(pop + "_outflow.vlasovScheme_face_y+", "Scheme to use on the face y+ (Copy, None)", this->vlasovSysBoundarySchemeName[2],"Copy");
+        Readparameters::add<string>(pop + "_outflow.vlasovScheme_face_y-", "Scheme to use on the face y- (Copy, None)", this->vlasovSysBoundarySchemeName[3],"Copy");
+        Readparameters::add<string>(pop + "_outflow.vlasovScheme_face_z+", "Scheme to use on the face z+ (Copy, None)", this->vlasovSysBoundarySchemeName[4],"Copy");
+        Readparameters::add<string>(pop + "_outflow.vlasovScheme_face_z-", "Scheme to use on the face z- (Copy, None)", this->vlasovSysBoundarySchemeName[5],"Copy");
 
-        Readparameters::add(pop + "_outflow.quench", "Factor by which to quench the inflowing parts of the velocity distribution function.", sP->quenchFactor);
+        Readparameters::add<Real>(pop + "_outflow.quench", "Factor by which to quench the inflowing parts of the velocity distribution function.", sP->quenchFactor,1.0);
       }
    }
 
@@ -97,7 +97,7 @@ namespace SBC {
       // Per-species parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
         // const string& pop = getObjectWrapper().particleSpecies[i]->name;
-        OutflowSpeciesParameters* sP=&this->speciesParams.at(i);
+        OutflowSpeciesParameters* sP=this->speciesParams.at(i);
 
         // Unless we find out otherwise, we assume that this species will not be treated at any boundary
         // for(int j=0; j<6; j++) {
@@ -171,7 +171,7 @@ namespace SBC {
       }
 
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-         OutflowSpeciesParameters& sP = this->speciesParams[i];
+         OutflowSpeciesParameters& sP = *this->speciesParams[i];
          for (it = sP.faceToReapplyUponRestartList.begin();
               it != sP.faceToReapplyUponRestartList.end();
          it++) {
@@ -409,7 +409,7 @@ namespace SBC {
       const bool calculate_V_moments
    ) {
 
-      const OutflowSpeciesParameters& sP = this->speciesParams[popID];
+      const OutflowSpeciesParameters& sP = *this->speciesParams[popID];
       if (mpiGrid[cellID]->sysBoundaryFlag != this->getIndex()) {
          return;
       }
@@ -464,7 +464,7 @@ namespace SBC {
             determineFace(isThisCellOnAFace, mpiGrid, cellID, true);
 
             for (uint popID=0; popID<getObjectWrapper().particleSpecies.size(); ++popID) {
-               const OutflowSpeciesParameters& sP = this->speciesParams[popID];
+               const OutflowSpeciesParameters& sP = *this->speciesParams[popID];
                for(uint i=0; i<6; i++) {
                   if(isThisCellOnAFace[i] && facesToProcess[i] && !sP.facesToSkipVlasov[i]) {
                      switch(sP.faceVlasovScheme[i]) {
@@ -505,7 +505,7 @@ namespace SBC {
             determineFace(isThisCellOnAFace, mpiGrid, cellID, true);
 
             for (uint popID=0; popID<getObjectWrapper().particleSpecies.size(); ++popID) {
-               const OutflowSpeciesParameters& sP = this->speciesParams[popID];
+               const OutflowSpeciesParameters& sP = *this->speciesParams[popID];
                for(uint i=0; i<6; i++) {
                   if(isThisCellOnAFace[i] && facesToProcess[i] && !sP.facesToSkipVlasov[i]) {
                      switch(sP.faceVlasovScheme[i]) {

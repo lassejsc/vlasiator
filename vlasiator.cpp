@@ -271,33 +271,90 @@ int simulate(int argn,char* args[]) {
    // init parameter file reader
    Readparameters readparameters(argn,args);
 
-   if (myRank==MASTER_RANK)  { 
-      std::cout << "INISDE VLASIATOR.CPP IF STATMEENT" << std::endl;
-      getObjectWrapper().addParameters();
-      auto app = readparameters.get_app();
+   getObjectWrapper().addParameters();
 
-      readparameters.parse();
+   P::addParameters();
+
+   sysBoundaryContainer.addParameters();
+   if (myRank==MASTER_RANK or true)  { 
+      std::cout << "INISDE VLASIATOR.CPP IF STATMEENT" << std::endl;
+
+
+      // std::function<void(std::string)> l =[](std::string s){
+      //     std::cout <<"INPUT="<< s << std::endl;
+      //     Parameters::projectName=s;
+      //     projects::createProject();
+      // };
+      // Readparameters::add_each_lambda("project","aiosjd",Parameters::projectName,l);
+      auto app = readparameters.get_app();
+      //we have to handle particle species separately because we need the full number of particle species
+      //during the population init
+      app->allow_config_extras();
+      readparameters.parse(false);
       if (!Readparameters::helpRequested){
+        //this can be replaced with if parsed type thing that was already there
         app->remove_option(app->get_option("--ParticlePopulations"));
       } else {
         getObjectWrapper().addHelp();
       }
-      
-      projects::Project::addParameters();
+      // app->remove_option(app->get_option("--project"));
 
       // P::addParameters();
    // Add parameters for number of populations
 
    // getObjectWrapper().addPopulationParameters();
-   sysBoundaryContainer.addParameters();
    // projects::Project::addParameters();
    // project->addParameters();
+    
+    // projects::createProject();
    }
+   
+  //  int pop_size;
+  //  if (myRank==MASTER_RANK) {
+  //     string uh=Readparameters::getPops(0);
+  //
+  //
+  //     pop_size=Readparameters::populations.size();
+  //     std::cout <<pop_size<<" and "<<"WHAT="<<uh << std::endl;
+  //  }
+  // MPI_Bcast(&pop_size, 1, MPI_INT,
+  //             MASTER_RANK, MPI_COMM_WORLD);
+  //  int string_size;
+  //  string pop_name;
+  //  if (myRank!=MASTER_RANK) {
+  //     auto app = readparameters.get_app();
+  //     app->remove_option(app->get_option("--ParticlePopulations"));
+  //  }
+  // for (size_t i=0;i<pop_size;++i ){
+  //    if (myRank==MASTER_RANK) {
+  //       pop_name=Readparameters::getPops(i); 
+  //       string_size=pop_name.size();
+  //       std::cout << "SENDING"<< string_size <<" and " << pop_name << std::endl;
+  //    }
+  //    MPI_Bcast(&string_size, 1, MPI_INT,
+  //             MASTER_RANK, MPI_COMM_WORLD);
+  //    if (myRank!=MASTER_RANK) {
+  //       pop_name.resize(string_size);
+  //    }
+  //    MPI_Bcast(pop_name.data(),string_size,MPI_CHAR,MASTER_RANK,MPI_COMM_WORLD);
+  //    if (myRank!=MASTER_RANK){
+  //      std::cout << "INITING POP=" << pop_name <<"!"<< std::endl;
+  //       getObjectWrapper().initpop(pop_name); 
+  //
+  //    }
+  //
+  //  }
+   // projects::Project::addParameters();
    std::cout << "test1" << std::endl;
-
- 
-   P::addParameters();
-   readparameters.parse(); // 2nd parsing for specific population parameters
+   
+   sysBoundaryContainer.getParameters(); 
+   projects::createProject();
+   
+  if (myRank==MASTER_RANK) {
+    auto app = readparameters.get_app();
+    app->allow_config_extras();
+  }
+   readparameters.parse(true); // 2nd parsing for specific population parameters
                            // 
    std::cout << "PROJ NAME="<<P::projectName << std::endl;
    P::getParameters();
@@ -321,12 +378,13 @@ int simulate(int argn,char* args[]) {
    std::cout << "test4" << std::endl;
 
    std::cout << "test5" << std::endl;
-   Project* project = projects::createProject();
+   Project* project = getObjectWrapper().project;
+
    // getObjectWrapper().project = project;
    std::cout << "test6" << std::endl;
 
    getObjectWrapper().getPopulationParameters();
-   sysBoundaryContainer.getParameters();
+   // sysBoundaryContainer.getParameters();
    project->getParameters();
 
    std::cout << "test7" << std::endl;

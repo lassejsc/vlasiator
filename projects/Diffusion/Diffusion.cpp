@@ -45,7 +45,7 @@ namespace projects {
 
    void Diffusion::addParameters() {
       typedef Readparameters RP;
-      RP::add("Diffusion.B0", "Background field value (T)", this->B0);
+      RP::add<Real>("Diffusion.B0", "Background field value (T)", this->B0,1.0e-9);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
@@ -53,14 +53,13 @@ namespace projects {
          const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
         
 
-         DiffusionSpeciesParameters newsP;
+         DiffusionSpeciesParameters* sP=new DiffusionSpeciesParameters;
     
-         this->speciesParams.push_back(newsP);
-         auto sP=&this->speciesParams.at(i); 
-         RP::add(pop + "_Diffusion.rho", "Number density (m^-3)",sP->DENSITY );
-         RP::add(pop + "_Diffusion.Temperature", "Temperature (K)", sP->TEMPERATURE);
-         RP::add(pop + "_Diffusion.Scale_x", "Scale length in x (m)", sP->SCA_X);
-         RP::add(pop + "_Diffusion.Scale_y", "Scale length in y (m)", sP->SCA_Y);
+         this->speciesParams.push_back(sP);
+         RP::add<Real>(pop + "_Diffusion.rho", "Number density (m^-3)",sP->DENSITY ,1.0e7);
+         RP::add<Real>(pop + "_Diffusion.Temperature", "Temperature (K)", sP->TEMPERATURE,2.0e6);
+         RP::add<Real>(pop + "_Diffusion.Scale_x", "Scale length in x (m)", sP->SCA_X,100000.0);
+         RP::add<Real>(pop + "_Diffusion.Scale_y", "Scale length in y (m)", sP->SCA_Y,100000.0);
       }
    }
 
@@ -88,7 +87,7 @@ namespace projects {
                                        const uint popID,
                                        const uint nRequested
       ) const {
-      const DiffusionSpeciesParameters& sP = speciesParams[popID];
+      const DiffusionSpeciesParameters& sP = *speciesParams[popID];
       creal mass = getObjectWrapper().particleSpecies[popID]->mass;
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];

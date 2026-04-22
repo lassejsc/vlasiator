@@ -95,7 +95,7 @@ namespace projects {
       Real magYPertAbsAmp;
       Real magZPertAbsAmp;
       Real lambda;
-      string densModelString;
+      string densModelString="";
       enum densitymodel {
          Uniform,
          TestCase

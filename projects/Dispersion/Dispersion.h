@@ -71,7 +71,7 @@ namespace projects {
       Real angleXY;
       Real angleXZ;
       Real maxwCutoff;
-      std::vector<DispersionSpeciesParameters> speciesParams;
+      std::vector<DispersionSpeciesParameters*> speciesParams;
       uint seed;
       
       static Real rndRho, rndVel[3];

@@ -42,20 +42,19 @@ namespace projects {
 
    void Harris::addParameters(){
       typedef Readparameters RP;
-      RP::add("Harris.Scale_size", "Harris sheet scale size (m)", this->SCA_LAMBDA);
-      RP::add("Harris.BX0", "Magnetic field at infinity (T)", this->BX0);
-      RP::add("Harris.BY0", "Magnetic field at infinity (T)", this->BY0);
-      RP::add("Harris.BZ0", "Magnetic field at infinity (T)", this->BZ0);
+      RP::add<Real>("Harris.Scale_size", "Harris sheet scale size (m)", this->SCA_LAMBDA,150000.0);
+      RP::add<Real>("Harris.BX0", "Magnetic field at infinity (T)", this->BX0,8.33061003094e-8);
+      RP::add<Real>("Harris.BY0", "Magnetic field at infinity (T)", this->BY0,8.33061003094e-8);
+      RP::add<Real>("Harris.BZ0", "Magnetic field at infinity (T)", this->BZ0,8.33061003094e-8);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
-         HarrisSpeciesParameters newsP;
-         speciesParams.push_back(newsP);
-         auto sP=&this->speciesParams.at(i);
+         HarrisSpeciesParameters* sP=new HarrisSpeciesParameters();
+         speciesParams.push_back(sP);
 
-         RP::add(pop + "_Harris.Temperature", "Temperature (K)", sP->TEMPERATURE);
-         RP::add(pop + "_Harris.rho", "Number density at infinity (m^-3)", sP->DENSITY);
+         RP::add<Real>(pop + "_Harris.Temperature", "Temperature (K)", sP->TEMPERATURE,2.0e6);
+         RP::add<Real>(pop + "_Harris.rho", "Number density at infinity (m^-3)", sP->DENSITY,1.0e7);
       }
    }
 
@@ -84,7 +83,7 @@ namespace projects {
                                        const uint popID,
                                        const uint nRequested
       ) const {
-      const HarrisSpeciesParameters& sP = speciesParams[popID];
+      const HarrisSpeciesParameters& sP = *speciesParams[popID];
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
       // const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
@@ -144,7 +143,7 @@ namespace projects {
                                         const uint popID,
                                         Real vx_in, Real vy_in, Real vz_in
       ) const {
-      const HarrisSpeciesParameters& sP = speciesParams[popID];
+      const HarrisSpeciesParameters& sP = *speciesParams[popID];
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
       // const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];

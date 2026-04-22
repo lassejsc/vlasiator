@@ -24,6 +24,7 @@
 #include "CLI11.hpp"
 #include "object_wrapper.h"
 #include "particle_species.h"
+#include "projects/project.h"
 #include "readparameters.h"
 #include <algorithm>
 #include <cstdlib>
@@ -312,12 +313,16 @@ bool P::addParameters() {
            "Minimum rho value used for the Hall and electron pressure gradient terms in the Lorentz force and in the "
            "field solver. Default is very low and has no effect in practice.",
            hallRho);
-   std::function<void(std::string)> lambda_fun=[](const std::string s){std::cout << "PROJNAME SET TO=" << s << std::endl;};
-   RP::add_each_lambda("project",
+   std::function<void(std::string)> lambda_fun=[](const std::string s){std::cout << "PROJNAME SET TO=" << s << std::endl;
+     // P::projectName=s;
+    // projects::createProject();
+   };
+
+   RP::add("project",
            "Specify the name of the project to use. Supported to date (20150610): Alfven Diffusion Dispersion "
            "Distributions Firehose Flowthrough Fluctuations Harris KHB Larmor Magnetosphere Multipeak Riemann1 Shock "
            "Shocktest Template test_fp testHall test_trans verificationLarmor",
-           P::projectName,lambda_fun);
+           P::projectName);
 
    RP::add("restart.write_as_float", "If true, write restart fields in floats instead of doubles", P::writeRestartAsFloat);
    RP::add_each_lambda("restart.filename", "Restart from this vlsv file. No restart if empty file.", P::restartFileName,lambda_fun);
@@ -1164,6 +1169,7 @@ void Parameters::getParameters() {
       cerr << __FILE__ << ":" << __LINE__ << " ERROR: Unknown value for fieldtracing.fieldLineTracer: " << tracerString << endl;
       abort();
    }
+  std::cout << "RANK=" << myRank << std::endl;
 std::cout << P::xmin <<std::endl;
 std::cout << P::xmax <<std::endl;
 std::cout << P::ymin <<std::endl;

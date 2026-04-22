@@ -152,7 +152,7 @@ namespace SBC {
       Real radius; /*!< Radius of the copy sphere. */
       uint geometry; /*!< Geometry of the copy sphere, 0: inf-norm (diamond), 1: 1-norm (square), 2: 2-norm (circle, DEFAULT), 3: polar-plane cylinder with line dipole. */
 
-      std::vector<CopysphereSpeciesParameters> speciesParams;
+      static std::vector<CopysphereSpeciesParameters*> speciesParams;
       bool zeroPerB;
       uint reapply;
       

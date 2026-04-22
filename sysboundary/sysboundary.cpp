@@ -101,13 +101,45 @@ void SysBoundary::addParameters() {
  * SysBoundaryCondition's initialization function.
  */
 void SysBoundary::getParameters() {
-   string periodic_x, periodic_y, periodic_z;
-
+   // string periodic_x, periodic_y, periodic_z;
+   // for (auto boundary : this->sysBoundaryCondList) {
+   //    std::cout << "BOUNDARY="<< boundary << std::endl;
+   //    if (boundary=="Maxwellian") {
+   //      SBC::Maxwellian::addParameters();
+   //    } else if (boundary =="Outflow"){
+   //      SBC::Outflow::addParameters();
+   //    }
+   // }
    //Readparameters::get("boundaries.boundary", sysBoundaryCondList);
    //Readparameters::get("boundaries.periodic_x", periodic_x);
    //Readparameters::get("boundaries.periodic_y", periodic_y);
    //Readparameters::get("boundaries.periodic_z", periodic_z);
 
+   vector<string>::const_iterator it;
+   for (it = sysBoundaryCondList.begin(); it != sysBoundaryCondList.end(); it++) {
+      if (*it == "Outflow" || *it == "outflow") {
+        std::cout << "I ADDED SYSBOUNDARY" << std::endl;
+         SBC::Outflow* bc= new SBC::Outflow();
+         bc->addParameters();
+        sysBoundaries.push_back(bc);
+        indexToSysBoundary[bc->getIndex()] = bc;
+   }
+      if (*it == "Maxwellian" || *it == "maxwellian") {
+        std::cout << "I ADDED SYSBOUNDARY MAXWELLIAN" << std::endl;
+        SBC::Maxwellian* bc= new SBC::Maxwellian();
+        bc->addParameters();
+        sysBoundaries.push_back(bc);
+        indexToSysBoundary[bc->getIndex()] = bc;
+   }
+       if (*it == "Copysphere" || *it == "copysphere") {
+        std::cout << "I ADDED SYSBOUNDARY COPYSPHERE" << std::endl;
+        SBC::Copysphere* bc= new SBC::Copysphere();
+        bc->addParameters();
+        sysBoundaries.push_back(bc);
+        indexToSysBoundary[bc->getIndex()] = bc;
+   }
+      
+  }
 }
 
 /*! Add a new SBC::SysBoundaryCondition which has been created with new sysBoundary.
@@ -123,16 +155,17 @@ void SysBoundary::addSysBoundary(SBC::SysBoundaryCondition* bc, Project& project
    stringstream timername;
    timername<<"Initialize system boundary condition "<<bc->getName();
    phiprof::Timer timer {timername.str()};
+   std::cout << "INITING SYSBOUNDARY"<<bc->getName() << std::endl;
    bc->initSysBoundary(t, project);
    timer.stop();
 
-   sysBoundaries.push_back(bc);
-   if (sysBoundaries.size() > 1) {
-      sysBoundaries.sort(precedenceSort);
-   }
+   // sysBoundaries.push_back(bc);
+   // if (sysBoundaries.size() > 1) {
+   //    sysBoundaries.sort(precedenceSort);
+   // }
 
    // This assumes that only one instance of each type is created.
-   indexToSysBoundary[bc->getIndex()] = bc;
+   // indexToSysBoundary[bc->getIndex()] = bc;
 }
 
 /*!\brief Initialise all system boundary conditions actually used.
@@ -151,7 +184,13 @@ void SysBoundary::initSysBoundaries(Project& project, creal& t) {
    int myRank;
    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
    vector<string>::const_iterator it;
+   std::cout << "SYSBOUNDARYSIZE="<<sysBoundaries.size() << std::endl;
+   for (auto& b : sysBoundaries)  {
+     std::cout << "LOOP INIT=" <<b->getName()<< std::endl;
+     this->addSysBoundary(b, project, t);
 
+      b->setPeriodicity(periodic);
+   }
    if (sysBoundaryCondList.size() == 0) {
       if (!periodic[0] && !Readparameters::helpRequested) {
          abort_mpi("Non-periodic in x but no boundary condtion loaded!");
@@ -166,7 +205,7 @@ void SysBoundary::initSysBoundaries(Project& project, creal& t) {
 
    for (it = sysBoundaryCondList.begin(); it != sysBoundaryCondList.end(); it++) {
       if (*it == "Outflow" || *it == "outflow") {
-         this->addSysBoundary(::new SBC::Outflow, project, t);
+         // this->addSysBoundary(::new SBC::Outflow, project, t);
 
          anyDynamic = anyDynamic | this->getSysBoundary(sysboundarytype::OUTFLOW)->isDynamic();
          bool faces[6];
@@ -195,15 +234,15 @@ void SysBoundary::initSysBoundaries(Project& project, creal& t) {
          }
 
       } else if (*it == "Ionosphere" || *it == "ionosphere") {
-         this->addSysBoundary(::new SBC::Ionosphere, project, t);
-         this->addSysBoundary(::new SBC::DoNotCompute, project, t);
+         // this->addSysBoundary(::new SBC::Ionosphere, project, t);
+         // this->addSysBoundary(::new SBC::DoNotCompute, project, t);
          anyDynamic = anyDynamic | this->getSysBoundary(sysboundarytype::IONOSPHERE)->isDynamic();
       } else if(*it == "Copysphere" || *it == "copysphere") {
-         this->addSysBoundary(::new SBC::Copysphere, project, t);
-         this->addSysBoundary(::new SBC::DoNotCompute, project, t);
+         // this->addSysBoundary(::new SBC::Copysphere, project, t);
+         // this->addSysBoundary(::new SBC::DoNotCompute, project, t);
          anyDynamic = anyDynamic | this->getSysBoundary(sysboundarytype::COPYSPHERE)->isDynamic();
       } else if (*it == "Maxwellian" || *it == "maxwellian") {
-         this->addSysBoundary(::new SBC::Maxwellian, project, t);
+         // this->addSysBoundary(::new SBC::Maxwellian, project, t);
          anyDynamic = anyDynamic | this->getSysBoundary(sysboundarytype::MAXWELLIAN)->isDynamic();
          bool faces[6];
          this->getSysBoundary(sysboundarytype::MAXWELLIAN)->getFaces(&faces[0]);
@@ -232,9 +271,11 @@ void SysBoundary::initSysBoundaries(Project& project, creal& t) {
       }
    }
 
-   for (auto& b : sysBoundaries)  {
-      b->setPeriodicity(periodic);
+   if (sysBoundaries.size() > 1) {
+      sysBoundaries.sort(precedenceSort);
    }
+
+
 }
 
 /*!\brief Boolean check if queried sysboundarycondition exists

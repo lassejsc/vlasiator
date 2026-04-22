@@ -34,6 +34,7 @@
 #include "../../backgroundfield/vectordipole.hpp"
 #include "../../object_wrapper.h"
 #include "../../sysboundary/ionosphere.h"
+#include "../../sysboundary/copysphere.h"
 
 #include "Magnetosphere.h"
 #include "../../fieldsolver/derivatives.hpp"
@@ -48,56 +49,55 @@ namespace projects {
    void Magnetosphere::addParameters() {
       typedef Readparameters RP;
       // Common (field / etc.) parameters
-      RP::add("Magnetosphere.constBgBX", "Constant flat Bx component in the whole simulation box. Default is none.", this->constBgB[0]);
-      RP::add("Magnetosphere.constBgBY", "Constant flat By component in the whole simulation box. Default is none.", this->constBgB[1]);
-      RP::add("Magnetosphere.constBgBZ", "Constant flat Bz component in the whole simulation box. Default is none.", this->constBgB[2]);
-      RP::add("Magnetosphere.noDipoleInSW", "If set to 1, the dipole magnetic field is not set in the solar wind inflow cells. Default 0.", this->noDipoleInSW);
-      RP::add("Magnetosphere.dipoleScalingFactor","Scales the field strength of the magnetic dipole compared to Earths.", this->dipoleScalingFactor);
-      RP::add("Magnetosphere.dipoleType","0: Normal 3D dipole, 1: line-dipole for 2D polar simulations, 2: line-dipole with mirror, 3: 3D dipole with mirror", this->dipoleType);
-      RP::add("Magnetosphere.dipoleMirrorLocationX","x-coordinate of dipole Mirror", this->dipoleMirrorLocationX);
+      RP::add<Real>("Magnetosphere.constBgBX", "Constant flat Bx component in the whole simulation box. Default is none.", this->constBgB[0],0.0);
+      RP::add<Real>("Magnetosphere.constBgBY", "Constant flat By component in the whole simulation box. Default is none.", this->constBgB[1],0.0);
+      RP::add<Real>("Magnetosphere.constBgBZ", "Constant flat Bz component in the whole simulation box. Default is none.", this->constBgB[2],0.0);
+      RP::add<bool>("Magnetosphere.noDipoleInSW", "If set to 1, the dipole magnetic field is not set in the solar wind inflow cells. Default 0.", this->noDipoleInSW,0);
+      RP::add<Real>("Magnetosphere.dipoleScalingFactor","Scales the field strength of the magnetic dipole compared to Earths.", this->dipoleScalingFactor,1.0);
+      RP::add<uint>("Magnetosphere.dipoleType","0: Normal 3D dipole, 1: line-dipole for 2D polar simulations, 2: line-dipole with mirror, 3: 3D dipole with mirror", this->dipoleType,0);
+      RP::add<Real>("Magnetosphere.dipoleMirrorLocationX","x-coordinate of dipole Mirror", this->dipoleMirrorLocationX,-1.0);
 
-      RP::add("Magnetosphere.refine_L4radius","Radius of L4-refined sphere or cap", this->refine_L4radius);
-      RP::add("Magnetosphere.refine_L4nosexmin","Low x-value of nose L4-refined box", this->refine_L4nosexmin);
+      RP::add<Real>("Magnetosphere.refine_L4radius","Radius of L4-refined sphere or cap", this->refine_L4radius,6.0e7);
+      RP::add<Real>("Magnetosphere.refine_L4nosexmin","Low x-value of nose L4-refined box", this->refine_L4nosexmin,5.5e7);
 
-      RP::add("Magnetosphere.refine_L3radius","Radius of L3-refined sphere or cap", this->refine_L3radius); // 10 RE
-      RP::add("Magnetosphere.refine_L3nosexmin","Low x-value of nose L3-refined box", this->refine_L3nosexmin); //
-      RP::add("Magnetosphere.refine_L3tailheight","Height in +-z of tail L3-refined box", this->refine_L3tailheight); //
-      RP::add("Magnetosphere.refine_L3tailwidth","Width in +-y of tail L3-refined box", this->refine_L3tailwidth); // 10 RE
-      RP::add("Magnetosphere.refine_L3tailxmin","Low x-value of tail L3-refined box", this->refine_L3tailxmin); // 10 RE
-      RP::add("Magnetosphere.refine_L3tailxmax","High x-value of tail L3-refined box", this->refine_L3tailxmax); // 10 RE
-
-      RP::add("Magnetosphere.refine_L2radius","Radius of L2-refined sphere", this->refine_L2radius); // 15 RE
-      RP::add("Magnetosphere.refine_L2tailthick","Thickness of L2-refined tail region", this->refine_L2tailthick); // 5 RE
-      RP::add("Magnetosphere.refine_L1radius","Radius of L1-refined sphere", this->refine_L1radius); // 25 RE
-      RP::add("Magnetosphere.refine_L1tailthick","Thickness of L1-refined tail region", this->refine_L1tailthick); // 10 RE
-
-      RP::add("Magnetosphere.dipoleTiltPhi","Magnitude of dipole tilt, in degrees", this->dipoleTiltPhi);
-      RP::add("Magnetosphere.dipoleTiltTheta","Direction of dipole tilt from Sun-Earth-line, in degrees", this->dipoleTiltTheta);
-      RP::add("Magnetosphere.dipoleXFull","X-coordinate up to which dipole is at full strength, in metres", this->dipoleXFull); // 15 RE
-      RP::add("Magnetosphere.dipoleXZero","X-coordinate after which dipole is at zero strength, in metres", this->dipoleXZero); // 30 RE
-      RP::add("Magnetosphere.dipoleInflowBX","Inflow magnetic field Bx component to which the vector potential dipole converges. Default is none.", this->dipoleInflowB[0]);
-      RP::add("Magnetosphere.dipoleInflowBY","Inflow magnetic field By component to which the vector potential dipole converges. Default is none.", this->dipoleInflowB[1]);
-      RP::add("Magnetosphere.dipoleInflowBZ","Inflow magnetic field Bz component to which the vector potential dipole converges. Default is none.", this->dipoleInflowB[2]);
+      RP::add<Real>("Magnetosphere.refine_L3radius","Radius of L3-refined sphere or cap", this->refine_L3radius,6.371e7); // 10 RE
+      RP::add<Real>("Magnetosphere.refine_L3nosexmin","Low x-value of nose L3-refined box", this->refine_L3nosexmin,5.0e7); //
+      RP::add<Real>("Magnetosphere.refine_L3tailheight","Height in +-z of tail L3-refined box", this->refine_L3tailheight,1.0e7); //
+      RP::add<Real>("Magnetosphere.refine_L3tailwidth","Width in +-y of tail L3-refined box", this->refine_L3tailwidth,5.0e7); // 10 RE
+      RP::add<Real>("Magnetosphere.refine_L3tailxmin","Low x-value of tail L3-refined box", this->refine_L3tailxmin,-20.0e7); // 10 RE
+      RP::add<Real>("Magnetosphere.refine_L3tailxmax","High x-value of tail L3-refined box", this->refine_L3tailxmax,-5.0e7); // 10 RE
+                                                                                                                                                          // //
+      RP::add<Real>("Magnetosphere.refine_L2radius","Radius of L2-refined sphere", this->refine_L2radius,9.5565e7); // 15 RE
+      RP::add<Real>("Magnetosphere.refine_L2tailthick","Thickness of L2-refined tail region", this->refine_L2tailthick,3.1855e7); // 5 RE
+      RP::add<Real>("Magnetosphere.refine_L1radius","Radius of L1-refined sphere", this->refine_L1radius,1.59275e8); // 25 RE
+      RP::add<Real>("Magnetosphere.refine_L1tailthick","Thickness of L1-refined tail region", this->refine_L1tailthick,6.371e7); // 10 RE
+                                                                                                                                                       //
+      RP::add<Real>("Magnetosphere.dipoleTiltPhi","Magnitude of dipole tilt, in degrees", this->dipoleTiltPhi,0.0);
+      RP::add<Real>("Magnetosphere.dipoleTiltTheta","Direction of dipole tilt from Sun-Earth-line, in degrees", this->dipoleTiltTheta,0.0);
+      RP::add<Real>("Magnetosphere.dipoleXFull","X-coordinate up to which dipole is at full strength, in metres", this->dipoleXFull,9.5565e7); // 15 RE
+      RP::add<Real>("Magnetosphere.dipoleXZero","X-coordinate after which dipole is at zero strength, in metres", this->dipoleXZero,1.9113e8); // 30 RE
+      RP::add<Real>("Magnetosphere.dipoleInflowBX","Inflow magnetic field Bx component to which the vector potential dipole converges. Default is none.", this->dipoleInflowB[0],0.0);
+      RP::add<Real>("Magnetosphere.dipoleInflowBY","Inflow magnetic field By component to which the vector potential dipole converges. Default is none.", this->dipoleInflowB[1],0.0);
+      RP::add<Real>("Magnetosphere.dipoleInflowBZ","Inflow magnetic field Bz component to which the vector potential dipole converges. Default is none.", this->dipoleInflowB[2],0.0);
       //New Parameter for zeroing out derivativeNew Parameter for zeroing out derivativess
-      RP::add("Magnetosphere.zeroOutDerivativesX","Zero Out Perpendicular components", this->zeroOutComponents[0]);
-      RP::add("Magnetosphere.zeroOutDerivativesY","Zero Out Perpendicular components", this->zeroOutComponents[1]);
-      RP::add("Magnetosphere.zeroOutDerivativesZ","Zero Out Perpendicular components", this->zeroOutComponents[2]);
+      RP::add<Real>("Magnetosphere.zeroOutDerivativesX","Zero Out Perpendicular components", this->zeroOutComponents[0],1.0);
+      RP::add<Real>("Magnetosphere.zeroOutDerivativesY","Zero Out Perpendicular components", this->zeroOutComponents[1],1.0);
+      RP::add<Real>("Magnetosphere.zeroOutDerivativesZ","Zero Out Perpendicular components", this->zeroOutComponents[2],1.0);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
         
-         MagnetosphereSpeciesParameters newsP;
+         MagnetosphereSpeciesParameters* sP=new MagnetosphereSpeciesParameters();
          const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
 
-         this->speciesParams.push_back(newsP);
-         auto sP=&this->speciesParams.at(i);
-         RP::add(pop + "_Magnetosphere.rho", "Tail region number density (m^-3)", sP->rho);
-         RP::add(pop + "_Magnetosphere.T", "Temperature (K)", sP->T);
-         RP::add(pop + "_Magnetosphere.VX0", "Initial bulk velocity in x-direction", sP->V0[0]);
-         RP::add(pop + "_Magnetosphere.VY0", "Initial bulk velocity in y-direction", sP->V0[1]);
-         RP::add(pop + "_Magnetosphere.VZ0", "Initial bulk velocity in z-direction", sP->V0[2]);
-         RP::add(pop + "_Magnetosphere.taperInnerRadius", "Inner radius of the zone with a density tapering from the ionospheric value to the background (m)", sP->taperInnerRadius);
-         RP::add(pop + "_Magnetosphere.taperOuterRadius", "Outer radius of the zone with a density tapering from the ionospheric value to the background (m)", sP->taperOuterRadius);
+         this->speciesParams.push_back(sP);
+         RP::add<Real>(pop + "_Magnetosphere.rho", "Tail region number density (m^-3)", sP->rho,0.0);
+         RP::add<Real>(pop + "_Magnetosphere.T", "Temperature (K)", sP->T,0.0);
+         RP::add<Real>(pop + "_Magnetosphere.VX0", "Initial bulk velocity in x-direction", sP->V0[0],0.0);
+         RP::add<Real>(pop + "_Magnetosphere.VY0", "Initial bulk velocity in y-direction", sP->V0[1],0.0);
+         RP::add<Real>(pop + "_Magnetosphere.VZ0", "Initial bulk velocity in z-direction", sP->V0[2],0.0);
+         RP::add<Real>(pop + "_Magnetosphere.taperInnerRadius", "Inner radius of the zone with a density tapering from the ionospheric value to the background (m)", sP->taperInnerRadius,0.0);
+         RP::add<Real>(pop + "_Magnetosphere.taperOuterRadius", "Outer radius of the zone with a density tapering from the ionospheric value to the background (m)", sP->taperOuterRadius,0.0);
 
       }
    }
@@ -133,12 +133,24 @@ namespace projects {
 
       /** Read inner boundary parameters from either ionospheric or copysphere sysboundary condition */
       if (sysBoundaryContainer.existSysBoundary("Copysphere")) {
+        SBC::Copysphere* copysphere=(SBC::Copysphere*)sysBoundaryContainer.getSysBoundary(sysboundarytype::COPYSPHERE);
+         this->ionosphereRadius=copysphere->radius;
+         this->center[0]=copysphere->center[0];
+         this->center[1]=copysphere->center[1];
+         this->center[2]=copysphere->center[2];
+         this->ionosphereGeometry=copysphere->geometry;
          //RP::get("copysphere.radius", this->ionosphereRadius);
          //RP::get("copysphere.centerX", this->center[0]);
          //RP::get("copysphere.centerY", this->center[1]);
          //RP::get("copysphere.centerZ", this->center[2]);
          //RP::get("copysphere.geometry", this->ionosphereGeometry);
       } else if (sysBoundaryContainer.existSysBoundary("Ionosphere")) {
+          SBC::Ionosphere* ionosphere=(SBC::Ionosphere*)sysBoundaryContainer.getSysBoundary(sysboundarytype::IONOSPHERE);
+         this->ionosphereRadius=ionosphere->radius;
+         this->center[0]=ionosphere->center[0];
+         this->center[1]=ionosphere->center[1];
+         this->center[2]=ionosphere->center[2];
+         this->ionosphereGeometry=ionosphere->geometry;
          //RP::get("ionosphere.radius", this->ionosphereRadius);
          //RP::get("ionosphere.centerX", this->center[0]);
          //RP::get("ionosphere.centerY", this->center[1]);
@@ -184,7 +196,7 @@ namespace projects {
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
-         MagnetosphereSpeciesParameters sP;
+         MagnetosphereSpeciesParameters* sP=this->speciesParams[i];
 
          //RP::get(pop + "_Magnetosphere.rho", sP.rho);
          //RP::get(pop + "_Magnetosphere.T", sP.T);
@@ -194,12 +206,41 @@ namespace projects {
 
          /** Read inner boundary parameters from either ionospheric or copysphere sysboundary condition */
          if (sysBoundaryContainer.existSysBoundary("Copysphere")) {
+              std::vector<SBC::CopysphereSpeciesParameters*>& speciesParams = SBC::Copysphere::speciesParams;
+
+              // for(uint i=0; i < getObjectWrapper().particleSpecies.size(); i++) {
+                  const string& pop_get = getObjectWrapper().particleSpecies[i]->name;
+                  if (pop_get==pop) {
+                    sP->ionosphereT=speciesParams[i]->T;
+                    sP->ionosphereRho=speciesParams[i]->rho;
+                    sP->V0[0]=speciesParams[i]->V0[0];
+                    sP->V0[1]=speciesParams[i]->V0[1];
+                    sP->V0[2]=speciesParams[i]->V0[2];
+
+                  }
             //RP::get(pop + "_copysphere.rho", sP.ionosphereRho);
             //RP::get(pop + "_copysphere.T", sP.ionosphereT);
             //RP::get(pop + "_copysphere.VX0", sP.ionosphereV0[0]);
             //RP::get(pop + "_copysphere.VY0", sP.ionosphereV0[1]);
             //RP::get(pop + "_copysphere.VZ0", sP.ionosphereV0[2]);
          } else if (sysBoundaryContainer.existSysBoundary("Ionosphere")) {
+              // SBC::Ionosphere* ionosphere=(SBC::Ionosphere*)sysBoundaryContainer.getSysBoundary(sysboundarytype::IONOSPHERE);
+              //
+              std::vector<SBC::IonosphereSpeciesParameters>& speciesParams = SBC::Ionosphere::speciesParams;
+
+              // for(uint i=0; i < getObjectWrapper().particleSpecies.size(); i++) {
+                  const string& pop_get = getObjectWrapper().particleSpecies[i]->name;
+                  if (pop_get==pop) {
+                    sP->ionosphereT=speciesParams[i].T;
+                    sP->ionosphereRho=speciesParams[i].rho;
+                    sP->V0[0]=speciesParams[i].V0[0];
+                    sP->V0[1]=speciesParams[i].V0[1];
+                    sP->V0[2]=speciesParams[i].V0[2];
+
+                  }
+              // }
+              // auto speciesParams=ionosphere->speciesParams;
+
             //RP::get(pop + "_ionosphere.rho", sP.ionosphereRho);
             //RP::get(pop + "_ionosphere.T", sP.ionosphereT);
             //RP::get(pop + "_ionosphere.VX0", sP.ionosphereV0[0]);
@@ -210,49 +251,49 @@ namespace projects {
          //RP::get(pop + "_Magnetosphere.taperOuterRadius", sP.taperOuterRadius);
          // Backward-compatibility: cfgs from before Sep 2021 setting pop_ionosphere.taperRadius will fail with the unknown option.
          // Some fail-safety checks
-         if(sP.taperInnerRadius < 0 || sP.taperOuterRadius < 0) {
+         if(sP->taperInnerRadius < 0 || sP->taperOuterRadius < 0) {
             if(myRank == MASTER_RANK) {
                cerr << "Error: " << pop << "_Magnetosphere.taperInnerRadius and tapeOuterRadius should be >= 0! Aborting." << endl;
             }
             abort();
          }
-         if(sP.taperInnerRadius > sP.taperOuterRadius) {
+         if(sP->taperInnerRadius > sP->taperOuterRadius) {
             if(myRank == MASTER_RANK) {
                cerr << "Error: " << pop << "_Magnetosphere.taperInnerRadius should be <= taperOuterRadius! Aborting." << endl;
             }
             abort();
          }
-         if(sP.taperOuterRadius > 0 && sP.taperOuterRadius <= this->ionosphereRadius) {
+         if(sP->taperOuterRadius > 0 && sP->taperOuterRadius <= this->ionosphereRadius) {
             if(myRank == MASTER_RANK) {
                cerr << "Error: " << pop << "_Magnetosphere.taperOuterRadius is non-zero yet smaller than ionosphere.radius / copysphere.radius! Aborting." << endl;
             }
             abort();
          }
-         if(sP.taperInnerRadius == 0 && sP.taperOuterRadius > 0) {
+         if(sP->taperInnerRadius == 0 && sP->taperOuterRadius > 0) {
             if(myRank == MASTER_RANK) {
                cerr << "Warning: " << pop << "_Magnetosphere.taperInnerRadius is zero (default), now setting this to the same value as ionosphere.radius / copysphere.radius, that is " << this->ionosphereRadius << ". Set/change " << pop << "_Magnetosphere.taperInnerRadius if this is not the expected behavior." << endl;
             }
-            sP.taperInnerRadius = this->ionosphereRadius;
+            sP->taperInnerRadius = this->ionosphereRadius;
          }
-         if(sP.ionosphereT == 0) {
+         if(sP->ionosphereT == 0) {
             if(myRank == MASTER_RANK) {
                if (sysBoundaryContainer.existSysBoundary("Copysphere")) {
-                  cerr << "Warning: " << pop << "_copysphere.T is zero (default), now setting to the same value as " << pop << "_Magnetosphere.T, that is " << sP.T << ". Set/change " << pop << "_copysphere.T if this is not the expected behavior." << endl;
+                  cerr << "Warning: " << pop << "_copysphere.T is zero (default), now setting to the same value as " << pop << "_Magnetosphere.T, that is " << sP->T << ". Set/change " << pop << "_copysphere.T if this is not the expected behavior." << endl;
                } else if (sysBoundaryContainer.existSysBoundary("Ionosphere")) {
-                  cerr << "Warning: " << pop << "_ionosphere.T is zero (default), now setting to the same value as " << pop << "_Magnetosphere.T, that is " << sP.T << ". Set/change " << pop << "_ionosphere.T if this is not the expected behavior." << endl;
+                  cerr << "Warning: " << pop << "_ionosphere.T is zero (default), now setting to the same value as " << pop << "_Magnetosphere.T, that is " << sP->T << ". Set/change " << pop << "_ionosphere.T if this is not the expected behavior." << endl;
                }
             }
-            sP.ionosphereT = sP.T;
+            sP->ionosphereT = sP->T;
          }
-         if(sP.ionosphereRho == 0) {
+         if(sP->ionosphereRho == 0) {
             if(myRank == MASTER_RANK) {
                if (sysBoundaryContainer.existSysBoundary("Copysphere")) {
-                  cerr << "Warning: " << pop << "_copysphere.rho is zero (default), now setting to the same value as " << pop << "_Magnetosphere.rho, that is " << sP.rho << ". Set/change " << pop << "_copysphere.rho if this is not the expected behavior." << endl;
+                  cerr << "Warning: " << pop << "_copysphere.rho is zero (default), now setting to the same value as " << pop << "_Magnetosphere.rho, that is " << sP->rho << ". Set/change " << pop << "_copysphere.rho if this is not the expected behavior." << endl;
                } else if (sysBoundaryContainer.existSysBoundary("Ionosphere")) {
-                  cerr << "Warning: " << pop << "_ionosphere.rho is zero (default), now setting to the same value as " << pop << "_Magnetosphere.rho, that is " << sP.rho << ". Set/change " << pop << "_ionosphere.rho if this is not the expected behavior." << endl;
+                  cerr << "Warning: " << pop << "_ionosphere.rho is zero (default), now setting to the same value as " << pop << "_Magnetosphere.rho, that is " << sP->rho << ". Set/change " << pop << "_ionosphere.rho if this is not the expected behavior." << endl;
                }
             }
-            sP.ionosphereRho = sP.rho;
+            sP->ionosphereRho = sP->rho;
          }
 
          // speciesParams.push_back(sP);
@@ -493,7 +534,7 @@ namespace projects {
                                        const uint popID,
                                        const uint nRequested
       ) const {
-      const MagnetosphereSpeciesParameters& sP = this->speciesParams[popID];
+      const MagnetosphereSpeciesParameters& sP = *this->speciesParams[popID];
 
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
@@ -564,7 +605,7 @@ namespace projects {
                                         const uint popID,
                                         Real vx_in, Real vy_in, Real vz_in
       ) const {
-      const MagnetosphereSpeciesParameters& sP = this->speciesParams[popID];
+      const MagnetosphereSpeciesParameters& sP = *this->speciesParams[popID];
 
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
@@ -604,7 +645,7 @@ namespace projects {
       creal z,
       const uint popID
    ) const {
-      const MagnetosphereSpeciesParameters& sP = this->speciesParams[popID];
+      const MagnetosphereSpeciesParameters& sP = *this->speciesParams[popID];
 
       vector<std::array<Real, 3> > centerPoints;
       std::array<Real, 3> V0 {{sP.V0[0], sP.V0[1], sP.V0[2]}};

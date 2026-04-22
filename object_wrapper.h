@@ -54,8 +54,8 @@ struct ObjectWrapper {
    bool getPopulationParameters();                          /**< Use parsed config file parameters for objects held in this wrapper */
    bool addHelp(); 
 
- private:
    void initpop(const std::string pop);
+ private:
    ObjectWrapper(const ObjectWrapper& ow);
    ObjectWrapper& operator=(const ObjectWrapper& ow);
 };

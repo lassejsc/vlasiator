@@ -51,24 +51,23 @@ namespace projects {
 
    void Alfven::addParameters() {
       typedef Readparameters RP;
-      RP::add("Alfven.B0", "Guiding field value (T)", this->B0);
-      RP::add("Alfven.Bx_guiding", "Guiding field x component", this->Bx_guiding);
-      RP::add("Alfven.By_guiding", "Guiding field y component", this->By_guiding);
-      RP::add("Alfven.Bz_guiding", "Guiding field z component", this->Bz_guiding);
-      RP::add("Alfven.Wavelength", "Wavelength (m)", this->WAVELENGTH);
-      RP::add("Alfven.A_mag", "Amplitude of the magnetic perturbation", this->A_MAG);
+      RP::add<Real>("Alfven.B0", "Guiding field value (T)", this->B0,1.0e-10);
+      RP::add<Real>("Alfven.Bx_guiding", "Guiding field x component", this->Bx_guiding,1.0);
+      RP::add<Real>("Alfven.By_guiding", "Guiding field y component", this->By_guiding,0.0);
+      RP::add<Real>("Alfven.Bz_guiding", "Guiding field z component", this->Bz_guiding,0.0);
+      RP::add<Real>("Alfven.Wavelength", "Wavelength (m)", this->WAVELENGTH,100000.0);
+      RP::add<Real>("Alfven.A_mag", "Amplitude of the magnetic perturbation", this->A_MAG,0.1);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i]->name;
 
-         AlfvenSpeciesParameters newsP;
+         AlfvenSpeciesParameters* sP=new AlfvenSpeciesParameters();
          
-         this->speciesParams.push_back(newsP);
-         auto sP=&this->speciesParams.at(i);
-         RP::add(pop + "_Alfven.rho", "Number density (m^-3)", sP->rho);
-         RP::add(pop + "_Alfven.Temperature", "Temperature (K)", sP->T);
-         RP::add(pop + "_Alfven.A_vel", "Amplitude of the velocity perturbation", sP->A_VEL);
+         this->speciesParams.push_back(sP);
+         RP::add<Real>(pop + "_Alfven.rho", "Number density (m^-3)", sP->rho,10.e8);
+         RP::add<Real>(pop + "_Alfven.Temperature", "Temperature (K)", sP->T,0.86456498092);
+         RP::add<Real>(pop + "_Alfven.A_vel", "Amplitude of the velocity perturbation", sP->A_VEL,0.1);
 
       }
    }
@@ -101,7 +100,7 @@ namespace projects {
                                        const uint popID,
                                        const uint nRequested
       ) const {
-      const AlfvenSpeciesParameters& sP = this->speciesParams[popID];
+      const AlfvenSpeciesParameters& sP = *this->speciesParams[popID];
 
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];

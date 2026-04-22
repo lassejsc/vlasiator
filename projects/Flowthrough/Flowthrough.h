@@ -80,7 +80,7 @@ namespace projects {
       Real Bx;
       Real By;
       Real Bz;
-      std::vector<FlowthroughSpeciesParameters> speciesParams;
+      std::vector<FlowthroughSpeciesParameters*> speciesParams;
    }; // class Flowthrough
 } // namespace projects
 
