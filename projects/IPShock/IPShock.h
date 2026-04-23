@@ -57,7 +57,7 @@ namespace projects {
       virtual ~IPShock();
 
       virtual bool initialize(void) override;
-      void addParameters(void);
+      static void addParameters(void);
       virtual void getParameters(void) override;
 
       virtual void setProjectBField(

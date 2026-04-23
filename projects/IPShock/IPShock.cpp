@@ -49,49 +49,45 @@ namespace projects {
    bool IPShock::initialize() {
       return Project::initialize();
    }
+  
    void IPShock::addParameters() {
       typedef Readparameters RP;
       // Common (field / etc.) parameters
-      RP::add("IPShock.BX0u", "Upstream mag. field value (T)",this->B0u[0]);
-      RP::add("IPShock.BY0u", "Upstream mag. field value (T)",this->B0u[1]);
-      RP::add("IPShock.BZ0u", "Upstream mag. field value (T)",this->B0u[2]);
-      RP::add("IPShock.BX0d", "Downstream mag. field value (T)",this->B0d[0]);
-      RP::add("IPShock.BY0d", "Downstream mag. field value (T)",this->B0d[1]);
-      RP::add("IPShock.BZ0d", "Downstream mag. field value (T)",this->B0d[2]);
-      RP::add("IPShock.Width", "Shock Width (m)",this->Shockwidth);
+      RP::add("IPShock.BX0u", "Upstream mag. field value (T)", 1.0e-9);
+      RP::add("IPShock.BY0u", "Upstream mag. field value (T)", 2.0e-9);
+      RP::add("IPShock.BZ0u", "Upstream mag. field value (T)", 3.0e-9);
+      RP::add("IPShock.BX0d", "Downstream mag. field value (T)", 1.0e-9);
+      RP::add("IPShock.BY0d", "Downstream mag. field value (T)", 2.0e-9);
+      RP::add("IPShock.BZ0d", "Downstream mag. field value (T)", 3.0e-9);
+      RP::add("IPShock.Width", "Shock Width (m)", 50000);
 
-      RP::add("IPShock.AMR_L1width", "L1 AMR region width (m)",this->AMR_L1width);
-      RP::add("IPShock.AMR_L2width", "L2 AMR region width (m)",this->AMR_L2width);
-      RP::add("IPShock.AMR_L3width", "L3 AMR region width (m)",this->AMR_L3width);
-      RP::add("IPShock.AMR_L4width", "L4 AMR region width (m)",this->AMR_L4width);
+      RP::add("IPShock.AMR_L1width", "L1 AMR region width (m)", 0);
+      RP::add("IPShock.AMR_L2width", "L2 AMR region width (m)", 0);
+      RP::add("IPShock.AMR_L3width", "L3 AMR region width (m)", 0);
+      RP::add("IPShock.AMR_L4width", "L4 AMR region width (m)", 0);
 
       // Per-population parameters
       for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
          const std::string& pop = getObjectWrapper().particleSpecies[i].name;
-         
-         IPShockSpeciesParameters newsP;
-         this->speciesParams.push_back(newsP);
-         auto sP=&this->speciesParams.at(i);
+         RP::add(pop + "_IPShock.VX0u", "Upstream Bulk velocity in x", 0.0);
+         RP::add(pop + "_IPShock.VY0u", "Upstream Bulk velocity in y", 0.0);
+         RP::add(pop + "_IPShock.VZ0u", "Upstream Bulk velocuty in z", 0.0);
+         RP::add(pop + "_IPShock.rhou", "Upstream Number density (m^-3)", 1.0e7);
+         RP::add(pop + "_IPShock.Temperatureu", "Upstream Temperature (K)", 2.0e6);
 
-         RP::add(pop + "_IPShock.VX0u", "Upstream Bulk velocity in x",sP->V0u[0]);
-         RP::add(pop + "_IPShock.VY0u", "Upstream Bulk velocity in y",sP->V0u[1]);
-         RP::add(pop + "_IPShock.VZ0u", "Upstream Bulk velocuty in z",sP->V0u[2]);
-         RP::add(pop + "_IPShock.rhou", "Upstream Number density (m^-3)",sP->DENSITYu);
-         RP::add(pop + "_IPShock.Temperatureu", "Upstream Temperature (K)",sP->TEMPERATUREu);
+         RP::add(pop + "_IPShock.VX0d", "Downstream Bulk velocity in x", 0.0);
+         RP::add(pop + "_IPShock.VY0d", "Downstream Bulk velocity in y", 0.0);
+         RP::add(pop + "_IPShock.VZ0d", "Downstream Bulk velocuty in z", 0.0);
+         RP::add(pop + "_IPShock.rhod", "Downstream Number density (m^-3)", 1.0e7);
+         RP::add(pop + "_IPShock.Temperatured", "Downstream Temperature (K)", 2.0e6);
 
-         RP::add(pop + "_IPShock.VX0d", "Downstream Bulk velocity in x",sP->V0d[0]);
-         RP::add(pop + "_IPShock.VY0d", "Downstream Bulk velocity in y",sP->V0d[1]);
-         RP::add(pop + "_IPShock.VZ0d", "Downstream Bulk velocuty in z",sP->V0d[2]);
-         RP::add(pop + "_IPShock.rhod", "Downstream Number density (m^-3)",sP->DENSITYd);
-         RP::add(pop + "_IPShock.Temperatured", "Downstream Temperature (K)",sP->TEMPERATUREd);
-
-         RP::add(pop + "_IPShock.maxwCutoff", "Cutoff for the maxwellian distribution",sP->maxwCutoff);
+         RP::add(pop + "_IPShock.maxwCutoff", "Cutoff for the maxwellian distribution", 1e-12);
       }
 
    }
 
    void IPShock::getParameters() {
-      // Project::getParameters();
+      Project::getParameters();
 
       typedef Readparameters RP;
       //RP::get("IPShock.BX0u", this->B0u[0]);
@@ -108,26 +104,26 @@ namespace projects {
       //RP::get("IPShock.AMR_L4width", this->AMR_L4width);
 
       // Per-population parameters
-      // for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
-      //    const std::string& pop = getObjectWrapper().particleSpecies[i].name;
-      //    IPShockSpeciesParameters sP;
-      //
-      //    //RP::get(pop + "_IPShock.VX0u", sP.V0u[0]);
-      //    //RP::get(pop + "_IPShock.VY0u", sP.V0u[1]);
-      //    //RP::get(pop + "_IPShock.VZ0u", sP.V0u[2]);
-      //    //RP::get(pop + "_IPShock.rhou", sP.DENSITYu);
-      //    //RP::get(pop + "_IPShock.Temperatureu", sP.TEMPERATUREu);
-      //
-      //    //RP::get(pop + "_IPShock.VX0d", sP.V0d[0]);
-      //    //RP::get(pop + "_IPShock.VY0d", sP.V0d[1]);
-      //    //RP::get(pop + "_IPShock.VZ0d", sP.V0d[2]);
-      //    //RP::get(pop + "_IPShock.rhod", sP.DENSITYd);
-      //    //RP::get(pop + "_IPShock.Temperatured", sP.TEMPERATUREd);
-      //
-      //    //RP::get(pop + "_IPShock.maxwCutoff", sP.maxwCutoff);
-      //
-      //    speciesParams.push_back(sP);
-      // }
+      for(uint i=0; i< getObjectWrapper().particleSpecies.size(); i++) {
+         const std::string& pop = getObjectWrapper().particleSpecies[i].name;
+         IPShockSpeciesParameters sP;
+
+         //RP::get(pop + "_IPShock.VX0u", sP.V0u[0]);
+         //RP::get(pop + "_IPShock.VY0u", sP.V0u[1]);
+         //RP::get(pop + "_IPShock.VZ0u", sP.V0u[2]);
+         //RP::get(pop + "_IPShock.rhou", sP.DENSITYu);
+         //RP::get(pop + "_IPShock.Temperatureu", sP.TEMPERATUREu);
+
+         //RP::get(pop + "_IPShock.VX0d", sP.V0d[0]);
+         //RP::get(pop + "_IPShock.VY0d", sP.V0d[1]);
+         //RP::get(pop + "_IPShock.VZ0d", sP.V0d[2]);
+         //RP::get(pop + "_IPShock.rhod", sP.DENSITYd);
+         //RP::get(pop + "_IPShock.Temperatured", sP.TEMPERATUREd);
+
+         //RP::get(pop + "_IPShock.maxwCutoff", sP.maxwCutoff);
+
+         speciesParams.push_back(sP);
+      }
 
       int myRank;
 

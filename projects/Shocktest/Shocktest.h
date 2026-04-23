@@ -37,7 +37,7 @@ namespace projects {
       virtual ~Shocktest(); // Destructor
       
       virtual bool initialize(void) override;
-      void addParameters(void);
+      static void addParameters(void);
       virtual void getParameters(void) override;
       
       enum {

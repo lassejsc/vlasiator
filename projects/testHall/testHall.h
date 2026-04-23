@@ -33,7 +33,7 @@ namespace projects {
          virtual ~TestHall();
          
          virtual bool initialize(void) override;
-         void addParameters(void);
+         static void addParameters(void);
          virtual void getParameters(void) override;
          virtual void calcCellParameters(spatial_cell::SpatialCell* cell,creal& t) override;
          virtual void setProjectBField(
