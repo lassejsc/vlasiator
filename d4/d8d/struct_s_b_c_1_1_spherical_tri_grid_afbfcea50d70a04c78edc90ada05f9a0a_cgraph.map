@@ -1,0 +1,19 @@
+<map id="SBC::SphericalTriGrid::solve" name="SBC::SphericalTriGrid::solve">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,37,164,77"/>
+<area shape="rect" id="Node000002" href="$d4/d8d/struct_s_b_c_1_1_spherical_tri_grid.html#a69454c9f66f9fe884a4cb853a0df5214" title=" " alt="" coords="212,37,371,77"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,55,198,55,198,60,164,60"/>
+<area shape="rect" id="Node000003" href="$d4/d8d/struct_s_b_c_1_1_spherical_tri_grid.html#a7120890dd640ec6076873bfcce3091fd" title=" " alt="" coords="419,37,624,77"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="371,55,405,55,405,60,371,60"/>
+<area shape="rect" id="Node000004" href="$d4/d8d/struct_s_b_c_1_1_spherical_tri_grid.html#afdae6126de6c2ab1b13208ddeb4f0520" title=" " alt="" coords="672,5,849,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="624,41,658,36,659,42,624,46"/>
+<area shape="rect" id="Node000005" href="$d4/d8d/struct_s_b_c_1_1_spherical_tri_grid.html#afbcfd8fe5bde206bebd221f733431367" title=" " alt="" coords="681,69,840,109"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="624,68,668,74,667,80,624,74"/>
+<area shape="rect" id="Node000006" href="$d4/d8d/struct_s_b_c_1_1_spherical_tri_grid.html#a21cffde4ce9f0b0cba515f2ab52e7cef" title=" " alt="" coords="897,5,1056,45"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="828,67,895,47,896,52,830,72"/>
+<area shape="rect" id="Node000007" href="$d4/d8d/struct_s_b_c_1_1_spherical_tri_grid.html#a22ce5b162f5a0d425247686b356c228f" title=" " alt="" coords="897,69,1056,109"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="840,87,883,87,883,92,840,92"/>
+<area shape="rect" id="Node000009" href="$d4/d8d/struct_s_b_c_1_1_spherical_tri_grid.html#a01fdb07b4e49a1adb404966d1f814e27" title=" " alt="" coords="897,133,1056,173"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="830,107,896,127,895,132,828,112"/>
+<area shape="rect" id="Node000008" href="$de/d31/_dispersion_8m.html#af276a2aede715061015c735080cf65df" title=" " alt="" coords="1104,77,1151,102"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="1056,87,1090,87,1090,92,1056,92"/>
+</map>
