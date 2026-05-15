@@ -32,6 +32,7 @@
 #include "../vlasovsolver/arch_moments.h"
 
 #include "donotcompute.h"
+#include "inflow.h"
 #include "ionosphere.h"
 #include "copysphere.h"
 #include "outflow.h"
