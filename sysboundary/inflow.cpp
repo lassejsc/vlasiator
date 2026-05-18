@@ -370,6 +370,7 @@ namespace SBC {
 
    void Inflow::getFaces(bool* faces) {
       //in case the face is not yet initialized (for example during getParameters)
+      std::fill_n(facesToProcess, 6, false);
       for (auto& it : this->faceList) {
          if (it == "x+") {
             facesToProcess[0] = true;
