@@ -31,10 +31,8 @@
 #include "../velocity_mesh_parameters.h"
 
 #include "Alfven/Alfven.h"
-#include "Diffusion/Diffusion.h"
 #include "Dispersion/Dispersion.h"
 #include "Distributions/Distributions.h"
-#include "Firehose/Firehose.h"
 #include "Flowthrough/Flowthrough.h"
 #include "Fluctuations/Fluctuations.h"
 #include "Harris/Harris.h"
@@ -748,13 +746,73 @@ Project* createProject() {
    if (!project) {
       cerr << "Something went wrong with setting a project! Project value null" << endl;
       abort();
-    } 
-   
-   project->addParameters();
-   project->addCommonParameters();
-   getObjectWrapper().project = project;
-    
-   return project;
-  }
+   }
+   if(Parameters::projectName == "Alfven") {
+      rvalue = new projects::Alfven;
+   }
+   if(Parameters::projectName == "Dispersion") {
+      rvalue = new projects::Dispersion;
+   }
+   if(Parameters::projectName == "Distributions") {
+      rvalue = new projects::Distributions;
+   }
+   if(Parameters::projectName == "Flowthrough") {
+      rvalue = new projects::Flowthrough;
+   }
+   if(Parameters::projectName == "Fluctuations") {
+      rvalue = new projects::Fluctuations;
+   }
+   if(Parameters::projectName == "Harris") {
+      rvalue = new projects::Harris;
+   }
+   if(Parameters::projectName == "KHB") {
+      rvalue = new projects::KHB;
+   }
+   if(Parameters::projectName == "Larmor") {
+      rvalue = new projects::Larmor;
+   }
+   if(Parameters::projectName == "Magnetosphere") {
+      rvalue = new projects::Magnetosphere;
+   }
+   if(Parameters::projectName == "MultiPeak") {
+      rvalue = new projects::MultiPeak;
+   }
+   if(Parameters::projectName == "Riemann1") {
+      rvalue = new projects::Riemann1;
+   }
+   if(Parameters::projectName == "Shock") {
+      rvalue = new projects::Shock;
+   }
+   if(Parameters::projectName == "IPShock") {
+      rvalue = new projects::IPShock;
+   }
+   if(Parameters::projectName == "Template") {
+      rvalue = new projects::Template;
+   }
+   if(Parameters::projectName == "test_fp") {
+      rvalue = new projects::test_fp;
+   }
+   if(Parameters::projectName == "testHall") {
+      rvalue = new projects::TestHall;
+   }
+   if(Parameters::projectName == "verificationLarmor") {
+      rvalue = new projects::verificationLarmor;
+   }
+   if(Parameters::projectName == "Shocktest") {
+      rvalue = new projects::Shocktest;
+   }
+   if(Parameters::projectName == "LossCone") {
+      rvalue = new projects::LossCone;
+   }
+
+
+   if (rvalue == NULL) {
+      cerr << "Unknown project name!" << endl;
+      abort();
+   }
+
+   getObjectWrapper().project = rvalue;
+   return rvalue;
+}
 
 } // namespace projects
